@@ -1,0 +1,39 @@
+#%RAML 1.0
+---
+title: Service Registry API
+version: v0.1.0
+
+/find/:servicename/:serviceversion:
+    get:
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "timestamp": 1657521228,
+                                "ip": "[::ffff:127.0.0.1]",
+                                "port": "61658",
+                                "name": "iam-service",
+                                "version": "0.1.0"
+                            }
+/register/:servicename/:serviceversion/:serviceport:
+    put:
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                result: 'iam-service0.1.0[::ffff:127.0.0.1]63435'
+                            }
+/register/:servicename/:serviceversion/:serviceport:
+    delete:
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                result: 'iam-service0.1.0[::ffff:127.0.0.1]63435'
+                            }
