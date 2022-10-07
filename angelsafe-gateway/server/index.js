@@ -5,6 +5,7 @@ const ipDeniedError = require('express-ipfilter/lib/deniedError');
 const rateLimit = require('express-rate-limit');
 const createError = require('http-errors');
 const configs = require('./config');
+const IAM = require('./services/IAM');
 
 const app = express();
 const config = configs[app.get('env')];
@@ -55,12 +56,14 @@ async function processData(req, res) {
       ...req.body,
     };
     data.ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const IAMService = new IAM(config);
     switch (req.params.sub) {
       case 'auth':
         switch (req.params.ext) {
           case 'register':
             switch (req.method) {
               case 'POST':
+                result = await IAMService.register(data);
                 res.status(result.status).json(result);
                 break;
               default:
@@ -150,6 +153,9 @@ app.post('/api/:sub', async (req, res) => {
 });
 app.post('/api', async (req, res) => {
   processData(req, res);
+});
+app.get('/docs', (req, res) => {
+  res.sendFile('./docs.html', { root: 'docs' });
 });
 app.get('*', (req, res) => {
   res.sendFile('./index.html', { root: 'public' });
