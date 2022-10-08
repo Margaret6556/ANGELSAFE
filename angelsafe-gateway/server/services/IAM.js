@@ -25,42 +25,42 @@ class IAMService {
     });
   }
 
-//   async login(data) {
-//     const { ip, port } = await this.getService('iam-service');
-//     return IAMService.callService({
-//       method: 'post',
-//       url: `http://${ip}:${port}/login`,
-//       data,
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     });
-//   }
+  async otp(data) {
+    const { ip, port } = await this.getService('iam-service');
+    return IAMService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/otp`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
 
-//   async otp(data) {
-//     const { ip, port } = await this.getService('iam-service');
-//     return IAMService.callService({
-//       method: 'post',
-//       url: `http://${ip}:${port}/otp`,
-//       data,
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//     });
-//   }
+  async login(data) {
+    const { ip, port } = await this.getService('iam-service');
+    return IAMService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/login`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
 
-//   async refreshToken(data, req) {
-//     const { ip, port } = await this.getService('iam-service');
-//     return IAMService.callService({
-//       method: 'post',
-//       url: `http://${ip}:${port}/refresh-token`,
-//       data,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         Authorization: req.headers.authorization ? req.headers.authorization : '',
-//       },
-//     });
-//   }
+  async refreshToken(data, req) {
+    const { ip, port } = await this.getService('iam-service');
+    return IAMService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/refresh-token`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: req.headers.authorization ? req.headers.authorization : '',
+      },
+    });
+  }
 
   static async callService(requestOptions) {
     const result = await circuitBreaker.callService(requestOptions);

@@ -16,16 +16,68 @@ class UsersService {
   }
 
   static isRequestValid(data) {
-    return TypeCheck('{mobileNumber: String, password: String, ip: String}', data);
+    return TypeCheck('{mobileNumber: String, ip: String}', data);
+  }
+
+  static isRequestEmailLoginValid(data) {
+    return TypeCheck('{mfa: String, email: String, password: String, ip: String}', data);
+  }
+
+  // TODO Biometric Login
+  static isRequestFingerprintLoginValid(data) {
+    return TypeCheck('{mfa: String, fingerprint: String, ip: String}', data);
+  }
+
+  // TODO Social Media Login
+  static isRequestSocialLoginValid(data) {
+    return TypeCheck('{mfa: String, socialId: String, socialAccount: String, ip: String}', data);
   }
 
   static isRequestOTPValid(data) {
-    return TypeCheck('{mobileNumber: String, otp: String, ip: String}', data);
+    return TypeCheck('{mfa: String, mobileNumber: String, otp: String, ip: String}', data);
   }
 
   static isRequestTokenValid(data) {
     return TypeCheck('{ip: String}', data);
   }
+
+  static isRequestAuthValid(auth, mfa){
+      if(auth && auth.length > 6){
+        auth = Buffer.from(auth.slice(7), 'base64').toString('ascii');
+        switch(mfa){
+          case this.MFA.mobileNumber:
+            return auth.length > 0;
+          case this.MFA.email:
+            const authSplit = auth.split(':');
+            return (authSplit[0].length > 0 && authSplit[1].length > 0);
+          case this.MFA.fingerprint:
+            return false;
+          case this.MFA.social:
+            return false;
+          default:
+            return false;
+        }
+      }
+  }
+
+  static getRequestAuth(auth, mfa){
+    if(auth && auth.length > 6){
+      auth = Buffer.from(auth.slice(7), 'base64').toString('ascii');
+      switch(mfa){
+        case this.MFA.mobileNumber:
+          return auth;
+        case this.MFA.email:
+          const authSplit = auth.split(':');
+          return authSplit;
+        case this.MFA.fingerprint:
+          return null;
+        case this.MFA.social:
+          return null;
+        default:
+          return null;
+      }
+    }
+}
 
   static isPasswordValid(password){
     const strongRegex = new RegExp("^(?=.{14,})(?=.*[A-Z])(?=.*[a-z])(?=.*[0-9])(?=.*\\W).*$", "g");

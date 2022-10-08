@@ -91,6 +91,7 @@ async function processData(req, res) {
           case 'otp':
             switch (req.method) {
               case 'POST':
+                result = await IAMService.otp(data);
                 res.status(result.status).json(result);
                 break;
               default:
