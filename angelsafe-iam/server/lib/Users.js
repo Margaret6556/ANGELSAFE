@@ -43,7 +43,7 @@ class UsersService {
 
   static isRequestAuthValid(auth, mfa){
       if(auth && auth.length > 6){
-        auth = Buffer.from(auth.slice(7), 'base64').toString('ascii');
+        auth = Buffer.from(auth.slice(6), 'base64').toString();
         switch(mfa){
           case this.MFA.mobileNumber:
             return auth.length > 0;
@@ -62,7 +62,7 @@ class UsersService {
 
   static getRequestAuth(auth, mfa){
     if(auth && auth.length > 6){
-      auth = Buffer.from(auth.slice(7), 'base64').toString('ascii');
+      auth = Buffer.from(auth.slice(6), 'base64').toString();
       switch(mfa){
         case this.MFA.mobileNumber:
           return auth;

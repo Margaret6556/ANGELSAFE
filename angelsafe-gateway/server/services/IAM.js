@@ -14,7 +14,7 @@ class IAMService {
   }
 
   async register(data) {
-    const { ip, port } = await this.getService('iam-service');
+    const { ip, port } = await this.getService('angelsafe-iam');
     return IAMService.callService({
       method: 'post',
       url: `http://${ip}:${port}/register`,
@@ -26,7 +26,7 @@ class IAMService {
   }
 
   async otp(data) {
-    const { ip, port } = await this.getService('iam-service');
+    const { ip, port } = await this.getService('angelsafe-iam');
     return IAMService.callService({
       method: 'post',
       url: `http://${ip}:${port}/otp`,
@@ -37,20 +37,21 @@ class IAMService {
     });
   }
 
-  async login(data) {
-    const { ip, port } = await this.getService('iam-service');
+  async login(req, data) {
+    const { ip, port } = await this.getService('angelsafe-iam');
     return IAMService.callService({
       method: 'post',
       url: `http://${ip}:${port}/login`,
       data,
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
       },
     });
   }
 
   async refreshToken(data, req) {
-    const { ip, port } = await this.getService('iam-service');
+    const { ip, port } = await this.getService('angelsafe-iam');
     return IAMService.callService({
       method: 'post',
       url: `http://${ip}:${port}/refresh-token`,

@@ -111,13 +111,13 @@ module.exports = (config) => {
     try {
       switch(data.mfa){
         case Users.MFA.mobileNumber.toString():
-          if (!Users.isRequestAuthValid(req.headers.authorization, Integer.parseInt(data.mfa))) {
+          if (!Users.isRequestAuthValid(req.headers.authorization, parseInt(data.mfa))) {
             result.status = 400;
             result.error = 'Bad Request';
             result.message = 'Invalid Authorization';
             throw result;
           }
-          data.mobileNumber = Users.getRequestAuth(req.headers.authorization, Integer.parseInt(data.mfa));
+          data.mobileNumber = Users.getRequestAuth(req.headers.authorization, parseInt(data.mfa));
           if (!Users.isRequestOTPValid(data)) {
             result.status = 400;
             result.error = 'Bad Request';

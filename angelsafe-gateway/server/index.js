@@ -82,6 +82,7 @@ async function processData(req, res) {
           case 'login':
             switch (req.method) {
               case 'POST':
+                result = await IAMService.login(req,data);
                 res.status(result.status).json(result);
                 break;
               default:
