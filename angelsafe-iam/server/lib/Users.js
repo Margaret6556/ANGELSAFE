@@ -19,6 +19,10 @@ class UsersService {
     return TypeCheck('{mobileNumber: String, ip: String}', data);
   }
 
+  static isRequestEmailValid(data) {
+    return TypeCheck('{email: String, password: String, ip: String}', data);
+  }
+
   static isRequestEmailLoginValid(data) {
     return TypeCheck('{mfa: String, email: String, password: String, ip: String}', data);
   }
@@ -41,6 +45,10 @@ class UsersService {
     return TypeCheck('{ip: String}', data);
   }
 
+  static isRequestCodeValid(data){
+    return TypeCheck('{code: String}', data);
+  }
+
   static isRequestAuthValid(auth, mfa){
       if(auth && auth.length > 6){
         auth = Buffer.from(auth.slice(6), 'base64').toString();
@@ -49,7 +57,10 @@ class UsersService {
             return auth.length > 0;
           case this.MFA.email:
             const authSplit = auth.split(':');
-            return (authSplit[0].length > 0 && authSplit[1].length > 0);
+            if(authSplit.length > 1)
+              return (authSplit[0].length > 0 && authSplit[1].length > 0);
+            else
+              return false;
           case this.MFA.fingerprint:
             return false;
           case this.MFA.social:
@@ -96,6 +107,18 @@ class UsersService {
     }
   }
 
+  static isEmailValid(email){
+    return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+  }
+
+  static validatePassword(hash, password){
+    return Bcrypt.compareSync(password, hash);
+  }
+
   static generateOTP(length) {
     return Math.floor(10 ** (length - 1) + Math.random() * (10 ** length - 10 ** (length - 1) - 1));
   }
@@ -111,7 +134,8 @@ class UsersService {
     return text;
   }
 
-  static encryptPassword(password, salt){
+  static encryptPassword(password, saltRounds = 10){
+    const salt = Bcrypt.genSaltSync(saltRounds);
     return Bcrypt.hashSync(password, salt);
   }
 

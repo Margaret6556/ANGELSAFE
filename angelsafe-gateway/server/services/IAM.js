@@ -25,6 +25,19 @@ class IAMService {
     });
   }
 
+  async registerEmail(req, data) {
+    const { ip, port } = await this.getService('angelsafe-iam');
+    return IAMService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/register-email`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   async otp(data) {
     const { ip, port } = await this.getService('angelsafe-iam');
     return IAMService.callService({
@@ -46,6 +59,18 @@ class IAMService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': req.headers.authorization
+      },
+    });
+  }
+
+  async verifyEmail(data) {
+    const { ip, port } = await this.getService('angelsafe-iam');
+    return IAMService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/verify-email/`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
       },
     });
   }

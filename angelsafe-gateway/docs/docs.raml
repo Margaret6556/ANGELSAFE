@@ -19,6 +19,29 @@ version: v0.1.0
                             {
                                 "mobileNumber": 09123456789
                             }
+/api/auth/register-email:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "email": "test@email.com",
+                        "password": "thisIsMyPassword"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "email": "test@email.com",
+                            }
 /api/auth/otp:
     post:
         body:

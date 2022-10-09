@@ -50,12 +50,6 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
-      // if (!Users.isPasswordValid(data.password)) {
-      //   result.status = 400;
-      //   result.error = 'Bad Request';
-      //   result.message = 'Invalid Password';
-      //   throw result;
-      // }
       if (!MobileNumber.validateNumber(data.mobileNumber, config.countryCode)) {
         result.status = 400;
         result.error = 'Bad Request';
@@ -75,7 +69,6 @@ module.exports = (config) => {
       data.timestamp = new Date().valueOf();
       data.otpTimestamp = data.timestamp;
       data.otp = 123456;// TODO Users.generateOTP(config.OTPMax);
-      // data.password = Users.encryptPassword(data.password, config.iamHash);
       data.mfa = [Users.MFA.mobileNumber];
       const insertResult = await DBHelper.getCollection(config.usersCollection).insertOne(data);
       log.debug(insertResult);
@@ -98,6 +91,93 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/register-email', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Users.isRequestEmailValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      if (!Users.isPasswordValid(data.password)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Password';
+        throw result;
+      }
+      if (!Users.isEmailValid(data.email)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Email Address';
+        throw result;
+      }
+      const isExisting = await DBHelper
+        .getCollection(config.usersCollection)
+        .findOne({ email: data.email, token: { $ne: token} });
+      if (isExisting) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Existing Email Address';
+        throw result;
+      }
+      data.password = Users.encryptPassword(data.password);
+      const code = (new Date().valueOf() + Users.generateOTP(5)).toString();
+      const updatedResult = await DBHelper.getCollection(config.usersCollection).updateOne(
+        { token },
+        {
+          $set: {
+            lastLoginTimestamp: new Date().valueOf(),
+            email: data.email,
+            emailVerified: 0,
+            emailVerificationCode: code,
+            password: data.password,
+          },
+          $addToSet: { mfa: Users.MFA.email }
+        },
+      );
+      log.debug(updatedResult);
+      if (!updatedResult.modifiedCount) {
+        result.status = 500;
+        result.error = 'Internal Server Error';
+        result.message = 'Something is wrong';
+        throw result;
+      } else {
+        // TODO send Email verification code
+        result.status = 200;
+        result.error = null;
+        result.message = 'Registration Successful';
+        result.data = { email: data.email };
+      }
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   service.post('/login', async (req, res, next) => {
     const result = {
       status: 400,
@@ -108,6 +188,9 @@ module.exports = (config) => {
       ...req.query,
       ...req.body,
     };
+    let isExisting = null;
+    let token = null;
+    let updatedResult = null;
     try {
       switch(data.mfa){
         case Users.MFA.mobileNumber.toString():
@@ -131,7 +214,7 @@ module.exports = (config) => {
             throw result;
           }
           data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber, config.countryCode);
-          const isExisting = await DBHelper
+          isExisting = await DBHelper
             .getCollection(config.usersCollection)
             .findOne({
               mobileNumber: data.mobileNumber,
@@ -144,11 +227,11 @@ module.exports = (config) => {
             result.message = 'Mobile Number and OTP combination is not valid!';
             throw result;
           }
-          const token = jwt.sign({
+          token = jwt.sign({
             // eslint-disable-next-line no-underscore-dangle
             data: { id: isExisting._id.toString(), timestamp: new Date().valueOf() },
           }, config.iamHash, { expiresIn: '1h' });
-          const updatedResult = await DBHelper.getCollection(config.usersCollection).updateOne(
+          updatedResult = await DBHelper.getCollection(config.usersCollection).updateOne(
             { mobileNumber: data.mobileNumber },
             {
               $set: {
@@ -173,11 +256,76 @@ module.exports = (config) => {
           }
           break;
         case Users.MFA.email.toString():
+          if (!Users.isRequestAuthValid(req.headers.authorization, parseInt(data.mfa))) {
+            result.status = 400;
+            result.error = 'Bad Request';
+            result.message = 'Invalid Authorization';
+            throw result;
+          }
+          const splittedData = Users.getRequestAuth(req.headers.authorization, parseInt(data.mfa));
+          data.email = splittedData[0];
+          data.password = splittedData[1];
           if (!Users.isRequestEmailLoginValid(data)) {
             result.status = 400;
             result.error = 'Bad Request';
             result.message = 'Invalid Data';
             throw result;
+          }
+          if (!Users.isPasswordValid(data.password)) {
+            result.status = 400;
+            result.error = 'Bad Request';
+            result.message = 'Invalid Password';
+            throw result;
+          }
+          if (!Users.isEmailValid(data.email)) {
+            result.status = 400;
+            result.error = 'Bad Request';
+            result.message = 'Invalid Email Address';
+            throw result;
+          }
+          isExisting = await DBHelper
+            .getCollection(config.usersCollection)
+            .findOne({
+              email: data.email,
+            });
+          if (!isExisting) {
+            result.status = 400;
+            result.error = 'Bad Request';
+            result.message = 'Email Address and Password combination is not valid!';
+            throw result;
+          }
+          if(!Users.validatePassword(isExisting.password, data.password)){
+            result.status = 400;
+            result.error = 'Bad Request';
+            result.message = 'Email Address and Password combination is not valid!';
+            throw result;
+          }
+          token = jwt.sign({
+            // eslint-disable-next-line no-underscore-dangle
+            data: { id: isExisting._id.toString(), timestamp: new Date().valueOf() },
+          }, config.iamHash, { expiresIn: '1h' });
+          updatedResult = await DBHelper.getCollection(config.usersCollection).updateOne(
+            { email: data.email },
+            {
+              $set: {
+                lastLoginTimestamp: new Date().valueOf(),
+                token,
+                ip: data.ip,
+              },
+            },
+          );
+          log.debug(updatedResult);
+          if (!updatedResult.modifiedCount) {
+            result.status = 500;
+            result.error = 'Internal Server Error';
+            result.message = 'Something is wrong';
+            throw result;
+          } else {
+            log.debug('Token: ', token);
+            result.status = 200;
+            result.error = null;
+            result.message = 'Getting Token Successful';
+            result.data = { token };
           }
           break;
         case Users.MFA.fingerprint.toString():
@@ -265,6 +413,49 @@ module.exports = (config) => {
         result.error = null;
         result.message = 'Sending OTP Successful';
         result.data = { mobileNumber: data.mobileNumber };
+      }
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  service.post('/verify-email', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      if (!Users.isRequestCodeValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      updatedResult = await DBHelper.getCollection(config.usersCollection).updateOne(
+        { emailVerificationCode: data.code },
+        {
+          $set: {
+            emailVerified: 1
+          },
+        },
+      );
+      log.debug(updatedResult);
+      if (!updatedResult.modifiedCount) {
+        result.status = 500;
+        result.error = 'Internal Server Error';
+        result.message = 'Something is wrong';
+        throw result;
+      } else {
+        result.status = 200;
+        result.error = null;
+        result.message = 'Email Address is verified';
+        result.data = {};
       }
       return res.status(result.status).json(result);
     } catch (err) {
