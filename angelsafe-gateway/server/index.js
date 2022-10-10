@@ -6,6 +6,7 @@ const rateLimit = require('express-rate-limit');
 const createError = require('http-errors');
 const configs = require('./config');
 const IAM = require('./services/IAM');
+const Profile = require('./services/Profile');
 
 const app = express();
 const config = configs[app.get('env')];
@@ -57,6 +58,7 @@ async function processData(req, res) {
     };
     data.ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const IAMService = new IAM(config);
+    const ProfileService = new Profile(config);
     switch (req.params.sub) {
       case 'info': 
         switch (req.params.ext) {
@@ -149,7 +151,23 @@ async function processData(req, res) {
           default:
             res.status(result.status).json(result);
         }
-        break;
+      break;
+      case 'profile':
+        switch (req.params.ext) {
+          case 'register':
+            switch (req.method) {
+              case 'POST':
+                result = await ProfileService.register(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          default:
+            res.status(result.status).json(result);
+        }
+      break;
       default:
         res.status(result.status).json(result);
     }
