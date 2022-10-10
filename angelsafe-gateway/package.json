@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "raml2html -o 'docs/docs.html' -i 'docs/docs.raml'",
     "start": "node server"
   },
   "author": "JMAcreation",

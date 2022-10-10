@@ -5,12 +5,13 @@ const ipDeniedError = require('express-ipfilter/lib/deniedError');
 const rateLimit = require('express-rate-limit');
 const createError = require('http-errors');
 const configs = require('./config');
+const IAM = require('./services/IAM');
 
 const app = express();
 const config = configs[app.get('env')];
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000,
-  max: 100,
+  max: 30,
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -55,12 +56,43 @@ async function processData(req, res) {
       ...req.body,
     };
     data.ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const IAMService = new IAM(config);
     switch (req.params.sub) {
+      case 'info': 
+        switch (req.params.ext) {
+          case 'version':
+            switch (req.method) {
+              case 'GET':
+                result.status = 200;
+                result.error = null;
+                result.message = 'Getting Information Successful';
+                result.data = { version: "v0.1.0" }; // TODO create version on config and create entry on API docu
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          default:
+            res.status(result.status).json(result);
+        }
+      break;
       case 'auth':
         switch (req.params.ext) {
           case 'register':
             switch (req.method) {
               case 'POST':
+                result = await IAMService.register(data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'register-email':
+            switch (req.method) {
+              case 'POST':
+                result = await IAMService.registerEmail(req, data);
                 res.status(result.status).json(result);
                 break;
               default:
@@ -79,6 +111,7 @@ async function processData(req, res) {
           case 'login':
             switch (req.method) {
               case 'POST':
+                result = await IAMService.login(req,data);
                 res.status(result.status).json(result);
                 break;
               default:
@@ -88,6 +121,7 @@ async function processData(req, res) {
           case 'otp':
             switch (req.method) {
               case 'POST':
+                result = await IAMService.otp(data);
                 res.status(result.status).json(result);
                 break;
               default:
@@ -106,15 +140,6 @@ async function processData(req, res) {
           case 'logout':
             switch (req.method) {
               case 'POST':
-                res.status(result.status).json(result);
-                break;
-              default:
-                res.status(result.status).json(result);
-            }
-            break;
-          case 'verify':
-            switch (req.method) {
-              case 'GET':
                 res.status(result.status).json(result);
                 break;
               default:
@@ -150,6 +175,26 @@ app.post('/api/:sub', async (req, res) => {
 });
 app.post('/api', async (req, res) => {
   processData(req, res);
+});
+app.get('/docs', (req, res) => {
+  res.sendFile('./docs.html', { root: 'docs' });
+});
+app.get('/verify-email/:code', async (req, res) => {
+  const IAMService = new IAM(config);
+  let result = {
+    status: 500,
+    error: 'Internal Server Error',
+    message: 'Something went wrong.',
+  };
+  try{
+    result = await IAMService.verifyEmail(req.params);
+    if(result.status == 200)
+      res.sendFile('./email-verified.html', { root: 'public' });
+    else
+      res.sendFile('./email-not-verified.html', { root: 'public' });
+  } catch (err) {
+    res.sendFile('./email-not-verified.html', { root: 'public' });
+  }
 });
 app.get('*', (req, res) => {
   res.sendFile('./index.html', { root: 'public' });

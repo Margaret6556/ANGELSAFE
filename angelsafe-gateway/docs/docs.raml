@@ -1,0 +1,82 @@
+#%RAML 1.0
+---
+title: ANGELSAFE API
+version: v0.1.0
+
+/api/auth/register:
+    post:
+        body:
+            application/json:
+                example: |
+                    {
+                        "mobileNumber": 09123456789
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "mobileNumber": 09123456789
+                            }
+/api/auth/register-email:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "email": "test@email.com",
+                        "password": "thisIsMyPassword"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "email": "test@email.com",
+                            }
+/api/auth/otp:
+    post:
+        body:
+            application/json:
+                example: |
+                    {
+                        "mobileNumber": 09123456789
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "mobileNumber": 09123456789
+                            }
+/api/auth/login:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Basic authentication base 64 encoded string
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "mfa": "1"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                            }
