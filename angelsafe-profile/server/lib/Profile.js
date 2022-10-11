@@ -1,4 +1,5 @@
 const TypeCheck = require('type-check').typeCheck;
+const IsBase64 = require('is-base64');
 
 class ProfileService {
   constructor() {
@@ -273,6 +274,10 @@ class ProfileService {
     return TypeCheck('{username: Maybe String, year: Maybe String, country: Maybe String, gender: Maybe String, ip: String}', data);
   }
 
+  static isRequestUpdatePicValid(data) {
+    return TypeCheck('{ profilePic: String, ip: String}', data);
+  }
+
   static isUsernameValid(data){
     return data.length > 6 && data.length < 14;
   }
@@ -295,6 +300,10 @@ class ProfileService {
 
   static isGenderValid(data){
     return ProfileService.Gender.hasOwnProperty(data);
+  }
+
+  static async isProfilePicValid(data){
+    return IsBase64(data, { mime: true });
   }
 
 }

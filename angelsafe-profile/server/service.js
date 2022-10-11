@@ -217,6 +217,73 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/update-pic', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Profile.isRequestUpdatePicValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      const profilePicValid = await Profile.isProfilePicValid(data.profilePic);
+      if (profilePicValid) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Profile Picture';
+        throw result;
+      }
+      data.lastUpdateTimestamp = new Date().valueOf();
+      const updatedResult = await DBHelper.getCollection(config.profileCollection).updateOne(
+        { ownerId: DB.getObjectId(decodedAuth.data.id) },
+        {
+          $set: {
+            profilePic: data.profilePic
+          }
+        }
+      );
+      log.debug(updatedResult);
+      if (!updatedResult.modifiedCount) {
+        result.status = 500;
+        result.error = 'Internal Server Error';
+        result.message = 'Something is wrong';
+        throw result;
+      } else {
+        result.status = 200;
+        result.error = null;
+        result.message = 'Updating Profile Picture Successful';
+        result.data = null;
+      }
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   service.get('/info', async (req, res, next) => {
     const result = {
       status: 400,

@@ -174,6 +174,16 @@ async function processData(req, res) {
                 res.status(result.status).json(result);
             }
           break;
+          case 'update-pic':
+            switch (req.method) {
+              case 'POST':
+                result = await ProfileService.updatePic(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
           case 'info':
             switch (req.method) {
               case 'GET':

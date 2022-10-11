@@ -142,3 +142,22 @@ version: v0.1.0
                                 "gender": "Female",
                                 "country": "North Korea"
                             }
+/api/profile/update-pic:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "profilePic": "data:image/png;base64,iVY..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null

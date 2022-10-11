@@ -39,6 +39,19 @@ class ProfileService {
     });
   }
 
+  async updatePic(req, data) {
+    const { ip, port } = await this.getService('angelsafe-profile');
+    return ProfileService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/update-pic`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   async getInfo(req) {
     const { ip, port } = await this.getService('angelsafe-profile');
     return ProfileService.callService({
