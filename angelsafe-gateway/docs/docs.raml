@@ -101,4 +101,44 @@ version: v0.1.0
             200:
                 body:
                     application/json:
-                        example: | null
+                        example: null
+/api/profile/update:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "country": "Canada",
+                        "gender": "Female"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/profile/info:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "username": "johnytest",
+                                "profilePic": "data:image/png;base64,iVY...",
+                                "year": "1994",
+                                "gender": "Female",
+                                "country": "North Korea"
+                            }

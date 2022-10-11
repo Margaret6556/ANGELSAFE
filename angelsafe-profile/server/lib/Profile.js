@@ -269,6 +269,10 @@ class ProfileService {
     return TypeCheck('{username: String, year: String, country: String, gender: String, ip: String}', data);
   }
 
+  static isRequestUpdateValid(data) {
+    return TypeCheck('{username: Maybe String, year: Maybe String, country: Maybe String, gender: Maybe String, ip: String}', data);
+  }
+
   static isUsernameValid(data){
     return data.length > 6 && data.length < 14;
   }
