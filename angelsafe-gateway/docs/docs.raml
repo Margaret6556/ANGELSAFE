@@ -80,3 +80,84 @@ version: v0.1.0
                             {
                                 "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
                             }
+/api/profile/register:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "username": "testeruser",
+                        "year": "1994",
+                        "country": "Philippines",
+                        "gender": "Male"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/profile/update:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "country": "Canada",
+                        "gender": "Female"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/profile/info:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "username": "johnytest",
+                                "profilePic": "data:image/png;base64,iVY...",
+                                "year": "1994",
+                                "gender": "Female",
+                                "country": "North Korea"
+                            }
+/api/profile/update-pic:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "profilePic": "data:image/png;base64,iVY..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
