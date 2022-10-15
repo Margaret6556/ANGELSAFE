@@ -7,6 +7,7 @@ const createError = require('http-errors');
 const configs = require('./config');
 const IAM = require('./services/IAM');
 const Profile = require('./services/Profile');
+const Group = require('./services/Group');
 
 const app = express();
 const config = configs[app.get('env')];
@@ -59,6 +60,7 @@ async function processData(req, res) {
     data.ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const IAMService = new IAM(config);
     const ProfileService = new Profile(config);
+    const GroupService = new Group(config);
     switch (req.params.sub) {
       case 'info': 
         switch (req.params.ext) {
@@ -188,6 +190,103 @@ async function processData(req, res) {
             switch (req.method) {
               case 'GET':
                 result = await ProfileService.getInfo(req);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          default:
+            res.status(result.status).json(result);
+        }
+      break;
+      case 'group':
+        switch (req.params.ext) {
+          case 'register':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.register(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'update':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.update(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'update-pic':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.updatePic(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'info':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.getInfo(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'join':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.join(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'unjoin':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.unjoin(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'ban':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.ban(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'members':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.getMembers(req, data);
+                result = await ProfileService.getProfiles(req, { ids: result.data, ip: data.ip});
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
+          case 'list':
+            switch (req.method) {
+              case 'GET':
+                result = await GroupService.getGroups(req, data);
                 res.status(result.status).json(result);
                 break;
               default:
