@@ -161,3 +161,183 @@ version: v0.1.0
                 body:
                     application/json:
                         example: null
+/api/group/register:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupname": "angelsafe",
+                        "description": "sample group for angelsafe"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/group/update:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupname": "angelsafev2",
+                        "description": "sample group"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/group/update-pic:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "profilePic": "data:image/png;base64,iVY..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/group/info:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupId": "Y3ODkwIiwibmFtZSI6Ikpva..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                        {
+                            "id": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                            "groupname": "angelsafev2",
+                            "description": "sample group",
+                            "profilePic": "data:image/png;base64,iVY..."
+                        }
+/api/group/join:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupId": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/group/unjoin:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupId": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/group/members:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupId": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                <profiles>
+                            }
+/api/group/list:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                <groups>
+                            }
+/api/group/ban:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupId": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                        "id": "kpvaG4gRG9lIiwiaWF0IjoxNTE..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null

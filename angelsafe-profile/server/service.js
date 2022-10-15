@@ -336,6 +336,67 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/list', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Profile.isRequestListValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      let objectIDs = [];
+      data.ids.forEach((id)=>{
+        objectIDs.push(DB.getObjectId(id));
+      });
+      const profiles = await DBHelper
+        .getCollection(config.profileCollection)
+        .find({ 'ownerId': { $in: objectIDs } }).toArray();
+      let newProfiles = [];
+      profiles.forEach((profile)=>{
+        newProfiles.push({
+          id: profile.ownerId.toString(),
+          country: profile.country,
+          gender: profile.gender,
+          profilePic: profile.profilePic,
+          username: profile.username,
+          year: profile.year,
+        });
+      });
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Profiles Successful';
+      result.data = newProfiles;
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   // eslint-disable-next-line no-unused-vars
   service.use((error, req, res, next) => {
     res.status(error.status || 500);

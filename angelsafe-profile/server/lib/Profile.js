@@ -278,6 +278,10 @@ class ProfileService {
     return TypeCheck('{ profilePic: String, ip: String}', data);
   }
 
+  static isRequestListValid(data) {
+    return TypeCheck('{ ids: Array, ip: String}', data);
+  }
+
   static isUsernameValid(data){
     return data.length > 6 && data.length < 14;
   }
