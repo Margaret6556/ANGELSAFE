@@ -88,6 +88,18 @@ class IAMService {
     });
   }
 
+  async verifyToken(data) {
+    const { ip, port } = await this.getService('angelsafe-iam');
+    return IAMService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/verify-token/`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+  }
+
   static async callService(requestOptions) {
     const result = await circuitBreaker.callService(requestOptions);
     return result;
