@@ -10,7 +10,7 @@ const configs = require('./config');
 const IAM = require('./services/IAM');
 const Profile = require('./services/Profile');
 const Group = require('./services/Group');
-const IAMService = require('./services/IAM');
+const Notif = require('./services/Notif');
 
 const app = express();
 const config = configs[app.get('env')];
@@ -64,6 +64,7 @@ async function processData(req, res) {
     const IAMService = new IAM(config);
     const ProfileService = new Profile(config);
     const GroupService = new Group(config);
+    const NotifService = new Notif(config);
     switch (req.params.sub) {
       case 'info': 
         switch (req.params.ext) {
@@ -209,6 +210,12 @@ async function processData(req, res) {
             switch (req.method) {
               case 'POST':
                 result = await GroupService.register(req, data);
+                if(result.status == 200)
+                  NotifService.create({
+                    id: result.data.id,
+                    message: result.data.message
+                  });
+                result.data = {};
                 res.status(result.status).json(result);
                 break;
               default:
@@ -269,6 +276,12 @@ async function processData(req, res) {
             switch (req.method) {
               case 'POST':
                 result = await GroupService.ban(req, data);
+                if(result.status == 200)
+                  NotifService.create({
+                    id: result.data.id,
+                    message: result.data.message
+                  });
+                result.data = {};
                 res.status(result.status).json(result);
                 break;
               default:
@@ -296,6 +309,22 @@ async function processData(req, res) {
                 res.status(result.status).json(result);
             }
           break;
+          default:
+            res.status(result.status).json(result);
+        }
+      break;
+      case 'notif':
+        switch (req.params.ext) {
+          case 'list':
+            switch (req.method) {
+              case 'GET':
+                result = await NotifService.getNotif(req);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
           default:
             res.status(result.status).json(result);
         }
