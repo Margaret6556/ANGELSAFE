@@ -590,6 +590,34 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/verify-token', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    try {
+      let decoded = null;
+      try {
+        decoded = jwt.verify(req.body.token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      result.status = 200;
+      result.error = null;
+      result.message = 'Verifying Token Successful';
+      result.data = {
+        id: decoded.data.id
+      };
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   // eslint-disable-next-line no-unused-vars
   service.use((error, req, res, next) => {
     res.status(error.status || 500);

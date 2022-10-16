@@ -1,13 +1,16 @@
 const express = require('express');
+const http = require('http');
 const cors = require('cors');
 const ipFilter = require('express-ipfilter').IpFilter;
 const ipDeniedError = require('express-ipfilter/lib/deniedError');
 const rateLimit = require('express-rate-limit');
 const createError = require('http-errors');
+const socketIO = require('socket.io');
 const configs = require('./config');
 const IAM = require('./services/IAM');
 const Profile = require('./services/Profile');
 const Group = require('./services/Group');
+const IAMService = require('./services/IAM');
 
 const app = express();
 const config = configs[app.get('env')];
@@ -352,6 +355,27 @@ app.use((err, req, res, next) => {
   res.status(err.status).json(err);
 });
 
-app.listen(config.serverPort);
-
+const server = http.createServer(app);
+const io = socketIO(server);
+io.use(async (socket, next)=>{
+  try{
+    if (socket.handshake.headers && socket.handshake.headers.token){
+      const IAMService = new IAM(config);
+      let result = await IAMService.verifyToken({ token: socket.handshake.headers.token});
+      if(!result || result.status != 200)
+        return next(new Error('Authentication error'));
+      socket.userId = result.data.id;
+      next();
+    } else {
+      next(new Error('Internal Server Error'));
+    } 
+  } catch ( err ){
+    next(new Error('Internal Server Error'));
+  }
+});
+io.on('connection', client => {
+  client.on('event', data => { /* … */ });
+  client.on('disconnect', () => { /* … */ });
+});
+server.listen(config.serverPort);
 module.export = app;
