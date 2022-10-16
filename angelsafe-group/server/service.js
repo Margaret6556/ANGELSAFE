@@ -100,7 +100,10 @@ module.exports = (config) => {
         result.status = 200;
         result.error = null;
         result.message = 'Creating Group Successful';
-        result.data = null;
+        result.data = {
+          id: decodedAuth.data.id,
+          message: `You have created the ${data.groupname} group.`
+        };
       }
       return res.status(result.status).json(result);
     } catch (err) {
@@ -660,7 +663,10 @@ module.exports = (config) => {
         result.status = 200;
         result.error = null;
         result.message = 'Banning Member Successful';
-        result.data = null;
+        result.data = {
+          id: data.id,
+          message: `You are now banned from the ${isExisting.groupname} group.`
+        };
       }
       return res.status(result.status).json(result);
     } catch (err) {
