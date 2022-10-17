@@ -501,6 +501,9 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
+      let skip = 0;
+      if(data.skip)
+        skip = parseInt(data.skip);
       const isExisting = await DBHelper
         .getCollection(config.groupCollection)
         .findOne({ _id: DB.getObjectId(data.groupId) });
@@ -513,7 +516,7 @@ module.exports = (config) => {
       result.status = 200;
       result.error = null;
       result.message = 'Getting Group Members Successful';
-      result.data = isExisting.members;
+      result.data = isExisting.members.slice(skip, skip + 20);
       return res.status(result.status).json(result);
     } catch (err) {
       return next(err);
@@ -547,29 +550,26 @@ module.exports = (config) => {
         result.message = 'Invalid Login Credentials';
         throw result;
       }
+      let options = {};
+      let skip = 0;
+      if(data.groupname)
+        options['groupname'] = {'$regex' : `.*${data.groupname}.*`, '$options' : 'i'};
+      if(data.joined && data.joined == 1)
+        options['members'] = { $in: [DB.getObjectId(decodedAuth.data.id)] };
+      if(data.joined && data.joined == 0)
+        options['members'] = { $nin: [DB.getObjectId(decodedAuth.data.id)] };
+      if(data.skip)
+        skip = parseInt(data.skip);
       const groups = await DBHelper
         .getCollection(config.groupCollection)
-        .find({ 'members': { $nin: [DB.getObjectId(decodedAuth.data.id)] } }).toArray();
-      const joinedGroups = await DBHelper
-        .getCollection(config.groupCollection)
-        .find({ 'members': { $in: [DB.getObjectId(decodedAuth.data.id)] } }).toArray();
+        .find(options).skip(skip).limit(30).toArray();
       let newGroups = [];
-      joinedGroups.forEach((group)=>{
-        newGroups.push({
-          id: group._id.toString(),
-          groupname: group.groupname,
-          description: group.description,
-          profilePic: group.profilePic,
-          joined: 1
-        });
-      });
       groups.forEach((group)=>{
         newGroups.push({
           id: group._id.toString(),
           groupname: group.groupname,
           description: group.description,
           profilePic: group.profilePic,
-          joined: 0
         });
       });
       result.status = 200;

@@ -114,6 +114,7 @@ class GroupService {
         'Content-Type': 'application/json',
         'Authorization': req.headers.authorization
       },
+      params: req.query
     });
   }
 
@@ -126,6 +127,7 @@ class GroupService {
         'Content-Type': 'application/json',
         'Authorization': req.headers.authorization
       },
+      params: req.query
     });
   }
 
