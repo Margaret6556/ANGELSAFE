@@ -25,6 +25,8 @@ type FormFields = {
 const SignUp = ({
   navigation,
 }: StackScreenProps<AuthRegisterParamList, "Sign Up">) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [_error, setError] = useState("");
   const { keyboardIsShowing } = useKeyboardShowing();
   const value = useRef(new Animated.Value(0)).current;
   const dispatch = useDispatch();
@@ -34,7 +36,6 @@ const SignUp = ({
     control,
     formState: { errors },
     handleSubmit,
-    setError,
   } = useForm<FormFields>({
     defaultValues: {
       username: "",
@@ -76,6 +77,7 @@ const SignUp = ({
   }, []);
 
   const handleSignUp = async (val: FormFields) => {
+    setIsLoading(true);
     try {
       const { data } = await api.post<{ status: number }>(
         _API.PROFILE.REGISTER,
@@ -93,11 +95,10 @@ const SignUp = ({
     } catch (e) {
       if (axios.isAxiosError(e)) {
         console.log({ e: e.message, f: e.response?.data });
-        setError("username", {
-          message: e.response?.data.message,
-        });
+        setError(e.response?.data.message);
       }
     }
+    setIsLoading(false);
   };
 
   return (
@@ -123,7 +124,9 @@ const SignUp = ({
           <Text style={styles.subtitle}>
             The digital health and comunity platform made for you.
           </Text>
-          {!!errors.username && (
+        </View>
+        <View style={styles.viewInput}>
+          {_error && (
             <Text
               style={{
                 color: "red",
@@ -131,11 +134,9 @@ const SignUp = ({
                 marginTop: 12,
               }}
             >
-              {errors.username.message}
+              {_error}
             </Text>
           )}
-        </View>
-        <View style={styles.viewInput}>
           <Controller
             name="username"
             control={control}
@@ -169,6 +170,7 @@ const SignUp = ({
                 keyboardType="number-pad"
                 label="What year were you born?"
                 inputStyle={styles.input}
+                maxLength={4}
                 {...field}
                 onChangeText={field.onChange}
               />
@@ -216,6 +218,7 @@ const SignUp = ({
             title="Sign Up"
             onPress={handleSubmit(handleSignUp)}
             disabled={!!Object.keys(errors).length}
+            loading={isLoading}
           />
         </View>
       </KeyboardAwareScrollView>
@@ -246,7 +249,7 @@ const styles = StyleSheet.create({
   },
   input: { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 },
   text: {
-    marginBottom: StyleConstants.PADDING_VERTICAL,
+    // marginBottom: StyleConstants.PADDING_VERTICAL,
   },
   subtitleh4: { color: "#00116A", marginBottom: 12 },
   subtitle: {

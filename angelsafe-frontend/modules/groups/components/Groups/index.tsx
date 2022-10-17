@@ -1,84 +1,22 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Text } from "@rneui/themed";
 import { FlatList } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
-import { GroupParamsList } from "@/groups/types";
+import { GroupParamsList, GroupsType } from "@/groups/types";
+import useAxios from "@/shared/hooks/useAxios";
+import { _API } from "@/shared/config";
+import axios from "axios";
+import { BackendResponse } from "@/shared/types";
 
-type Props = {};
-
-const groups = [
-  {
-    id: 1,
-    name: "Cancer",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=male",
-  },
-  {
-    id: 2,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=female",
-  },
-  {
-    id: 3,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=male",
-  },
-  {
-    id: 4,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=female",
-  },
-  {
-    id: 5,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=male",
-  },
-  {
-    id: 6,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=female",
-  },
-  {
-    id: 7,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=female",
-  },
-  {
-    id: 8,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=male",
-  },
-  {
-    id: 9,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=female",
-  },
-  {
-    id: 10,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=male",
-  },
-  {
-    id: 11,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=female",
-  },
-  {
-    id: 12,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=male",
-  },
-  {
-    id: 13,
-    name: "Dads with Anxiety",
-    logo: "https://xsgames.co/randomusers/avatar.php?g=female",
-  },
-];
-const Groups = (props: Props) => {
+interface GroupProps {
+  data: GroupsType[];
+}
+const Groups = ({ data }: GroupProps) => {
   const navigation = useNavigation<StackNavigationProp<GroupParamsList>>();
 
-  const handlePress = (id: number) => () => {
+  const handlePress = (id: string) => () => {
     navigation.navigate("GroupDetails", { id });
     console.log(id);
   };
@@ -86,7 +24,7 @@ const Groups = (props: Props) => {
   return (
     <View style={styles.wrapper}>
       <FlatList
-        data={groups}
+        data={data}
         numColumns={3}
         contentContainerStyle={styles.container}
         ListHeaderComponent={() => null}
@@ -98,13 +36,13 @@ const Groups = (props: Props) => {
               onPress={handlePress(item.id)}
             >
               <Avatar
-                source={{ uri: item.logo }}
+                source={{ uri: item.profilePic }}
                 rounded
                 avatarStyle={styles.avatar}
                 size={76}
               />
             </TouchableOpacity>
-            <Text>{item.name}</Text>
+            <Text>{item.groupname}</Text>
           </View>
         )}
       />
@@ -121,9 +59,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
   },
   container: {},
-  avatar: {},
+  avatar: {
+    // height: 100,
+  },
   avatarContainer: {
     alignItems: "center",
+    justifyContent: "center",
     flex: 1,
     marginVertical: 24,
     marginHorizontal: 1,

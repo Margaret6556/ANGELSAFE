@@ -23,7 +23,12 @@ const RegisterScreens = ({}: StackScreenProps<AuthParamList, "Register">) => {
         cardOverlayEnabled: false,
         header: ({ navigation, route }) => {
           const { index } = navigation.getState();
-          return <Stepper current={index} title={route.name} />;
+          return (
+            <Stepper
+              current={index}
+              title={route.name === "Account Created" ? "" : route.name}
+            />
+          );
         },
       }}
     >

@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { GroupParamsList } from "./types";
-import { EntryScreen, GroupDetailsScreen } from "./screens";
+import { AddGroupScreen, EntryScreen, GroupDetailsScreen } from "./screens";
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { TabParamList } from "@/app";
 import { Header } from "./components";
@@ -13,16 +13,33 @@ const GroupScreen = ({
 }: NativeStackScreenProps<TabParamList, "Groups">) => {
   return (
     <GroupStack.Navigator
-      screenOptions={{
-        ...TransitionScreen,
-      }}
+    // screenOptions={{
+    //   ...TransitionScreen,
+    // }}
     >
       <GroupStack.Screen
         name="Entry"
         component={EntryScreen}
         options={{ header: () => <Header /> }}
       />
-      <GroupStack.Screen name="GroupDetails" component={GroupDetailsScreen} />
+      <GroupStack.Screen
+        name="GroupDetails"
+        component={GroupDetailsScreen}
+        options={{
+          ...TransitionScreen,
+        }}
+      />
+      <GroupStack.Screen
+        name="Add Group"
+        component={AddGroupScreen}
+        options={{
+          presentation: "modal",
+          cardOverlayEnabled: false,
+          cardStyle: {
+            backgroundColor: "#efefef",
+          },
+        }}
+      />
     </GroupStack.Navigator>
   );
 };

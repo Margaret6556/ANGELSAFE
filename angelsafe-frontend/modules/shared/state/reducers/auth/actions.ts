@@ -32,7 +32,7 @@ export const login = createAsyncThunk(
       otp,
     };
     const authHeader = "Basic " + base64.encode(mobile);
-    console.log({ authHeader });
+
     const {
       data: { data },
     } = await axios.post<{ data: { mobileNumber: string }; status: number }>(

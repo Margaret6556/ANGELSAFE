@@ -32,15 +32,15 @@ const RegisterScreen = ({
 
   const handleSubmitPressed = async ({ mobile }: FieldType) => {
     try {
-      navigation.navigate("Verify Number", {
-        mobileNumber: mobile,
-      });
-      // const res = await register(mobile);
-      // if (res) {
-      //   navigation.navigate("Verify Number", {
-      //     mobileNumber: res,
-      //   });
-      // }
+      // navigation.navigate("Verify Number", {
+      //   mobileNumber: mobile,
+      // });
+      const res = await register(mobile);
+      if (res) {
+        navigation.navigate("Verify Number", {
+          mobileNumber: res,
+        });
+      }
     } catch (e) {
       if (typeof e === "string") {
         setError("mobile", { message: e });

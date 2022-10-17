@@ -25,8 +25,7 @@ export default async function login({ mobile, otp }: LoginArgs) {
         headers: { Authorization: authHeader },
       }
     );
-
-    console.log({ token: data.token });
+    console.log(data.token);
 
     SecureStore.setItemAsync(Auth.KEY, data.token);
     return { data, status };

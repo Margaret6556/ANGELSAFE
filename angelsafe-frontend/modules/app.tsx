@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Auth from "./auth";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAppSelector } from "@/shared/hooks";
@@ -8,6 +8,8 @@ import ProfileStack from "./profile";
 import GroupStack from "./groups";
 import AlertStack from "./alerts";
 import MoreStack from "./more";
+import useRestoreSession from "./shared/hooks/useRestoreSession";
+
 // import ChatStack from "./chat";
 
 export type TabParamList = {
@@ -24,6 +26,7 @@ const BottomTab = createBottomTabNavigator<TabParamList>();
 
 const App = () => {
   const { isLoggedIn } = useAppSelector((state) => state.auth);
+  useRestoreSession();
 
   return (
     <BottomTab.Navigator

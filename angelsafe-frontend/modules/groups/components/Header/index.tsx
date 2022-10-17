@@ -3,10 +3,22 @@ import React from "react";
 import { Divider, Icon, Text } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import useAxios from "@/shared/hooks/useAxios";
+import { Modal } from "@/home/components";
+import { _API } from "@/shared/config";
+import { useNavigation } from "@react-navigation/native";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { GroupParamsList } from "@/groups/types";
 
 type Props = {};
 
 const Header = (props: Props) => {
+  const navigation = useNavigation<StackNavigationProp<GroupParamsList>>();
+
+  const handleAddGroup = async () => {
+    navigation.push("Add Group");
+  };
+
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
@@ -23,7 +35,7 @@ const Header = (props: Props) => {
               containerStyle={styles.iconContainer}
             />
           </TouchableOpacity>
-          <TouchableOpacity activeOpacity={0.5}>
+          <TouchableOpacity activeOpacity={0.5} onPress={handleAddGroup}>
             <Icon
               type="antdesign"
               name="plus"

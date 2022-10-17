@@ -1,13 +1,14 @@
 import React from "react";
-import { AuthRegisterParamList, AuthScreenProps } from "@/auth/types";
+import { AuthRegisterParamList } from "@/auth/types";
 import { View, Image, StyleSheet, ImageBackground } from "react-native";
 import { useAppDispatch } from "@/shared/hooks";
 import { Text, Button } from "@rneui/themed";
 import { Container } from "@/shared/components";
+import { StackScreenProps } from "@react-navigation/stack";
 
 const CreateAccount = ({
   navigation,
-}: AuthScreenProps<AuthRegisterParamList, "Create an Account">) => {
+}: StackScreenProps<AuthRegisterParamList, "Create an Account">) => {
   return (
     <Container>
       <Image

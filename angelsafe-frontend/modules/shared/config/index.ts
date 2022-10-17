@@ -13,7 +13,7 @@ export const _API = {
     UPDATE_PIC: `${SERVER_URL}/profile/update-pic`,
     INFO: `${SERVER_URL}/profile/info`, // GET
   },
-  GROUPS: {
+  GROUP: {
     UPDATE: `${SERVER_URL}/group/update`,
     REGISTER: `${SERVER_URL}/group/register`,
     UPDATE_PIC: `${SERVER_URL}/group/update-pic`,

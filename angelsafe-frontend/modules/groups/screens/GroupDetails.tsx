@@ -1,48 +1,62 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { Avatar, Badge, Button, Icon, Image, Input, Text } from "@rneui/themed";
-import { Container } from "@/shared/components";
+import { Container, Loading } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
-import { GroupParamsList } from "../types";
-
+import { GroupParamsList, GroupsType } from "../types";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Card } from "../components";
 import Modal from "react-native-modal";
+import useAxios from "@/shared/hooks/useAxios";
+import { BackendResponse } from "@/shared/types";
+import { _API } from "@/shared/config";
+import { useIsFocused } from "@react-navigation/native";
+import axios from "axios";
+import SessionManager from "@/shared/utils/auth/SessionManager";
 
-type GroupType = {
-  id: number;
-  title: string;
-  description: string;
+type GroupDetailsType = {
   members: string;
   online: number;
-};
-
-const groups: GroupType[] = [
-  {
-    id: 1,
-    title: "Stage IV Prostate Cancer",
-    description:
-      "Welcome to Stage IV Prostate Cancer group. Here you can find support through your journey by meeting with others in the same position as you.",
-    members: "4.4k",
-    online: 30,
-  },
-];
+} & GroupsType;
 
 const GroupDetailsScreen = ({
   navigation,
   route,
 }: StackScreenProps<GroupParamsList, "GroupDetails">) => {
-  const [group, setGroup] = useState<GroupType>();
+  const [group, setGroup] = useState<GroupDetailsType>();
+  const [groupMembers] = useState();
   const [modalVisible, setModalVisible] = useState(false);
+  // const api = useAxios();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    if (route.params.id) {
-      const found = groups.find((i) => i.id === route.params.id);
-      if (found) {
-        setGroup(found);
+    const fetchSingleGroup = async (groupId: string) => {
+      try {
+        const {
+          data: { data },
+        } = await axios.post<BackendResponse<GroupDetailsType>>(
+          _API.GROUP.INFO,
+          {
+            groupId,
+          },
+          {
+            headers: await SessionManager.setHeader(),
+          }
+        );
+        console.log({ groupMembers });
+        setGroup(data);
+      } catch (e) {
+        if (axios.isAxiosError(e)) {
+          console.log({ e });
+          console.log({ e: e.message, f: e.response?.data.message });
+        }
       }
+    };
+    if (route.params.id && isFocused) {
+      console.log("running in group details");
+      fetchSingleGroup(route.params.id);
     }
-  }, [route.params.id]);
+  }, [route.params.id, isFocused]);
 
   const handleNewPost = () => {
     setModalVisible(!modalVisible);
@@ -60,7 +74,7 @@ const GroupDetailsScreen = ({
           <View style={styles.container}>
             <View style={styles.containerTop}>
               <Text h4 style={styles.title}>
-                {group.title}
+                {group.groupname}
               </Text>
               <View style={styles.stats}>
                 <Text>{group.members} members</Text>
@@ -94,7 +108,7 @@ const GroupDetailsScreen = ({
           </View>
         </>
       ) : (
-        <Text>Missing</Text>
+        <Loading />
       )}
     </Container>
   );
