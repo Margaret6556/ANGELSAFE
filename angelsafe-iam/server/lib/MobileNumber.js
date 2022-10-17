@@ -1,14 +1,15 @@
-const PhoneNumber = require('awesome-phonenumber');
+const {phone} = require('phone');
 
 class MobileNumber {
-  static validateNumber(number, regionCode) {
-    const result = new PhoneNumber(number, regionCode);
-    return result.isValid();
+  static validateNumber(number) {
+    const result = phone(number);
+    return result.isValid;
   }
 
   static validateNumberFormat(number, regionCode) {
-    const result = new PhoneNumber(number, regionCode);
-    return result.isValid() ? result.getNumber('e164') : false;
+    const result = phone(number);
+    return result.isValid ? result.phoneNumber : false;
   }
+
 }
 module.exports = MobileNumber;
