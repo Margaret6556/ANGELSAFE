@@ -18,7 +18,7 @@ class GroupService {
   }
 
   static isRequestJoinValid(data) {
-    return TypeCheck('{groupId: String, ip: String}', data);
+    return TypeCheck('{groupId: String, skip: Maybe String, ip: String}', data);
   }
 
   static isRequestBanValid(data) {
