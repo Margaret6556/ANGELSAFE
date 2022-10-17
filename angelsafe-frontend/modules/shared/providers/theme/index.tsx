@@ -1,0 +1,90 @@
+import {
+  ThemeProvider as RneuiThemeProvider,
+  createTheme,
+} from "@rneui/themed";
+import { ChildrenProps } from "@/shared/types";
+import { StyleConstants } from "@/shared/styles";
+
+const themeColors = {
+  primary: "#031166",
+  secondary: "#465BE6",
+};
+
+const commonBorderRadius = 10;
+
+const theme = createTheme({
+  components: {
+    Button: {
+      raised: false,
+      color: themeColors.secondary,
+      radius: commonBorderRadius,
+      size: "md",
+      buttonStyle: {
+        height: StyleConstants.BUTTON_HEIGHT,
+      },
+    },
+    Text: {
+      style: {
+        fontSize: 16,
+        fontFamily: "Nunito_400Regular",
+      },
+      h2Style: {
+        fontSize: 26,
+      },
+      h4Style: {
+        fontSize: 22,
+      },
+    },
+    Input: {
+      inputStyle: {
+        backgroundColor: "rgba(255,255,255,0.85)",
+        borderRadius: commonBorderRadius,
+        paddingHorizontal: 12,
+        height: StyleConstants.BUTTON_HEIGHT,
+      },
+      labelStyle: {
+        marginBottom: 8,
+        color: themeColors.primary,
+        fontSize: 18,
+        fontWeight: "400",
+        fontFamily: "Nunito_400Regular",
+      },
+      inputContainerStyle: {
+        borderBottomWidth: 0,
+      },
+      containerStyle: {
+        paddingHorizontal: 0,
+      },
+      leftIconContainerStyle: {
+        backgroundColor: "#fff",
+        paddingVertical: 0,
+        marginVertical: 0,
+        height: StyleConstants.BUTTON_HEIGHT,
+        borderTopLeftRadius: 10,
+        borderBottomLeftRadius: 10,
+        paddingLeft: 12,
+      },
+      rightIconContainerStyle: {
+        backgroundColor: "#fff",
+        paddingVertical: 0,
+        marginVertical: 0,
+        height: StyleConstants.BUTTON_HEIGHT,
+        borderTopRightRadius: 10,
+        borderBottomRightRadius: 10,
+        paddingRight: 12,
+      },
+    },
+    CheckBox: {
+      wrapperStyle: {
+        paddingHorizontal: 0,
+      },
+      containerStyle: { backgroundColor: "transparent", paddingHorizontal: 0 },
+    },
+  },
+});
+
+const ThemeProvider = ({ children }: ChildrenProps) => {
+  return <RneuiThemeProvider theme={theme}>{children}</RneuiThemeProvider>;
+};
+
+export default ThemeProvider;
