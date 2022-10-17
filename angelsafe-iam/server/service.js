@@ -50,13 +50,13 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
-      if (!MobileNumber.validateNumber(data.mobileNumber, config.countryCode)) {
+      if (!MobileNumber.validateNumber(data.mobileNumber)) {
         result.status = 400;
         result.error = 'Bad Request';
         result.message = 'Invalid Mobile Number';
         throw result;
       }
-      data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber, config.countryCode);
+      data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber);
       const isExisting = await DBHelper
         .getCollection(config.usersCollection)
         .findOne({ mobileNumber: data.mobileNumber });
@@ -207,13 +207,13 @@ module.exports = (config) => {
             result.message = 'Invalid Data';
             throw result;
           }
-          if (!MobileNumber.validateNumber(data.mobileNumber, config.countryCode)) {
+          if (!MobileNumber.validateNumber(data.mobileNumber)) {
             result.status = 400;
             result.error = 'Bad Request';
             result.message = 'Invalid Mobile Number';
             throw result;
           }
-          data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber, config.countryCode);
+          data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber);
           isExisting = await DBHelper
             .getCollection(config.usersCollection)
             .findOne({
@@ -373,13 +373,13 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
-      if (!MobileNumber.validateNumber(data.mobileNumber, config.countryCode)) {
+      if (!MobileNumber.validateNumber(data.mobileNumber)) {
         result.status = 400;
         result.error = 'Bad Request';
         result.message = 'Invalid Mobile Number';
         throw result;
       }
-      data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber, config.countryCode);
+      data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber);
       const isExisting = await DBHelper
         .getCollection(config.usersCollection)
         .findOne({ mobileNumber: data.mobileNumber });
