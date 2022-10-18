@@ -215,7 +215,7 @@ async function processData(req, res) {
                     id: result.data.id,
                     message: result.data.message
                   });
-                result.data = {};
+                result.data = { groupId: result.data.groupId };
                 res.status(result.status).json(result);
                 break;
               default:
