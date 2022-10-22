@@ -234,7 +234,7 @@ module.exports = (config) => {
       }
       data.lastUpdateTimestamp = new Date().valueOf();
       const updatedResult = await DBHelper.getCollection(config.groupCollection).updateOne(
-        { ownerId: DB.getObjectId(decodedAuth.data.id) },
+        { ownerId: DB.getObjectId(decodedAuth.data.id), _id: DB.getObjectId(data.groupId) },
         {
           $set: {
             profilePic: data.profilePic
@@ -272,6 +272,7 @@ module.exports = (config) => {
     try {
       let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
       let decodedAuth = null;
+      let online = 0;
       if (!token) {
         result.status = 401;
         result.error = 'Unauthorized';
@@ -286,7 +287,7 @@ module.exports = (config) => {
         result.message = 'Invalid Login Credentials';
         throw result;
       }
-      if (!Group.isRequestJoinValid(data)) {
+      if (!Group.isRequestInfoValid(data)) {
         result.status = 400;
         result.error = 'Bad Request';
         result.message = 'Invalid Data';
@@ -301,6 +302,10 @@ module.exports = (config) => {
         result.message = 'Group is not existing';
         throw result;
       }
+      isExisting.members.forEach((member)=>{
+        if(data.clients.indexOf(member.toString()) > -1)
+          online++;
+      });
       result.status = 200;
       result.error = null;
       result.message = 'Getting Group Successful';
@@ -308,7 +313,9 @@ module.exports = (config) => {
         id: isExisting._id.toString(),
         groupname: isExisting.groupname,
         profilePic: isExisting.profilePic,
-        description: isExisting.description
+        description: isExisting.description,
+        members: isExisting.members.length,
+        online
       };
       return res.status(result.status).json(result);
     } catch (err) {

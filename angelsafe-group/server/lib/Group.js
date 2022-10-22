@@ -14,11 +14,15 @@ class GroupService {
   }
 
   static isRequestUpdatePicValid(data) {
-    return TypeCheck('{ profilePic: String, ip: String}', data);
+    return TypeCheck('{ groupId: String, profilePic: String, ip: String}', data);
   }
 
   static isRequestJoinValid(data) {
     return TypeCheck('{groupId: String, skip: Maybe String, ip: String}', data);
+  }
+
+  static isRequestInfoValid(data) {
+    return TypeCheck('{groupId: String, clients: Array, ip: String}', data);
   }
 
   static isRequestBanValid(data) {

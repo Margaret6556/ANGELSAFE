@@ -43,6 +43,8 @@ app.use(cors());
 app.use(express.json());
 app.use(limiter);
 
+let clients = [];
+
 async function processData(req, res) {
   let result = {
     status: 500,
@@ -245,6 +247,7 @@ async function processData(req, res) {
           case 'info':
             switch (req.method) {
               case 'POST':
+                data.clients = clients;
                 result = await GroupService.getInfo(req, data);
                 res.status(result.status).json(result);
                 break;
@@ -403,8 +406,11 @@ io.use(async (socket, next)=>{
   }
 });
 io.on('connection', client => {
+  clients.push(client.userId);
   client.on('event', data => { /* … */ });
-  client.on('disconnect', () => { /* … */ });
+  client.on('disconnect', () => { 
+    clients = clients.filter(e => e !== client.userId);
+  });
 });
 server.listen(config.serverPort);
 module.export = app;
