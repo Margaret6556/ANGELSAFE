@@ -104,6 +104,7 @@ class GroupService {
     });
   }
 
+  // TODO add skip(offset).limit(limit)
   async getMembers(req, data) {
     const { ip, port } = await this.getService('angelsafe-group');
     return GroupService.callService({
@@ -118,6 +119,7 @@ class GroupService {
     });
   }
 
+  // TODO add skip(offset).limit(limit)
   async getGroups(req) {
     const { ip, port } = await this.getService('angelsafe-group');
     return GroupService.callService({
