@@ -341,3 +341,49 @@ version: v0.1.0
                 body:
                     application/json:
                         example: null
+/api/chat/create:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "receiverId": "K3OasvdgiwibmFtZSI6Ikpva...",
+                        "message": "This is a test message..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/chat/view:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "receiverId": "K3OasvdgiwibmFtZSI6Ikpva...",
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [{
+                                "id": "635429a9756d27bdb4...",
+                                "timestamp": 1666460073913,
+                                "message": "Test Message 2",
+                                "sender": "635400ee05aa48461...",
+                                "receiver": "635400ee05aa48..."
+                            }]

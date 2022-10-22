@@ -5,9 +5,13 @@ class ChatService {
   }
 
   static isRequestValid(data) {
-    return TypeCheck('{ id: String, message: String, ip: String }', data);
+    console.log(data);
+    return TypeCheck('{ receiverId: String, message: String, ip: String }', data);
   }
 
+  static isRequestViewValid(data) {
+    return TypeCheck('{ receiverId: String, ip: String }', data);
+  }
 }
 
 module.exports = ChatService;

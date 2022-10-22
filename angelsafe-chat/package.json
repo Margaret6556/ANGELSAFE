@@ -4,6 +4,7 @@
   "description": "Chat service of AngelSafe",
   "main": "index.js",
   "scripts": {
+    "start": "node bin/run | bunyan",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "JMAcreation",

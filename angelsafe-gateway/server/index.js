@@ -11,6 +11,7 @@ const IAM = require('./services/IAM');
 const Profile = require('./services/Profile');
 const Group = require('./services/Group');
 const Notif = require('./services/Notif');
+const Chat = require('./services/Chat');
 
 const app = express();
 const config = configs[app.get('env')];
@@ -67,6 +68,7 @@ async function processData(req, res) {
     const ProfileService = new Profile(config);
     const GroupService = new Group(config);
     const NotifService = new Notif(config);
+    const ChatService = new Chat(config);
     switch (req.params.sub) {
       case 'info': 
         switch (req.params.ext) {
@@ -322,6 +324,36 @@ async function processData(req, res) {
             switch (req.method) {
               case 'GET':
                 result = await NotifService.getNotif(req);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          default:
+            res.status(result.status).json(result);
+        }
+      break;
+      case 'chat':
+        switch (req.params.ext) {
+          case 'create':
+            switch (req.method) {
+              case 'POST':
+                result = await ChatService.create(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'view':
+            switch (req.method) {
+              case 'POST':
+                result = await ChatService.view(req, data);
+                // TODO get profile of sender and receiver
+                // TODO create conversations collection
+                // TODO 1:1 profile:conversations entry
+                // TODO push other participant on the conversation entry 
                 res.status(result.status).json(result);
                 break;
               default:
