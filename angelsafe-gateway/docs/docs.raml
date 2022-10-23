@@ -384,6 +384,25 @@ version: v0.1.0
                                 "id": "635429a9756d27bdb4...",
                                 "timestamp": 1666460073913,
                                 "message": "Test Message 2",
-                                "sender": "635400ee05aa48461...",
-                                "receiver": "635400ee05aa48..."
+                                "sender": <profile>,
+                                "receiver": <profile>
                             }]
+/api/chat/list:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "id": "6354e7cda1076d0dfc...",
+                                "receiver": <profile>,
+                                "read": 1,
+                                "lastMessage": "Test Message 1..."
+                            }

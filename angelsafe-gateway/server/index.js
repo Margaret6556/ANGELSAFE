@@ -350,10 +350,49 @@ async function processData(req, res) {
             switch (req.method) {
               case 'POST':
                 result = await ChatService.view(req, data);
-                // TODO get profile of sender and receiver
-                // TODO create conversations collection
-                // TODO 1:1 profile:conversations entry
-                // TODO push other participant on the conversation entry 
+                if(result.data.length){
+                  const senderProfile = await ProfileService.getProfiles(req, { ids: [result.data[0].sender], ip: data.ip});
+                  const receiverProfile = await ProfileService.getProfiles(req, { ids: [result.data[0].receiver], ip: data.ip});
+                  let newMessages = [];
+                  if(senderProfile.data.length && receiverProfile.data.length){
+                    result.data.forEach((message, i)=>{
+                      if(message.receiver == data.receiverId){
+                        newMessages.push({
+                          id: message.id,
+                          timestamp: message.timestamp,
+                          message: message.message,
+                          sender: senderProfile.data[0],
+                          receiver: receiverProfile.data[0],
+                        });
+                      } else {
+                        newMessages.push({
+                          id: message.id,
+                          timestamp: message.timestamp,
+                          message: message.message,
+                          receiver: senderProfile.data[0],
+                          sender: receiverProfile.data[0],
+                        });
+                      }
+                    });
+                    result.data = newMessages;
+                  }
+                }
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'list':
+            switch (req.method) {
+              case 'GET':
+                result = await ChatService.getList(req);
+                let newList = [];
+                await Promise.all(result.data.map(async (item) => {
+                  const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});
+                  newList.push({ ...item, receiver: profileObj.data[0]});
+                }))
+                result.data = newList;
                 res.status(result.status).json(result);
                 break;
               default:

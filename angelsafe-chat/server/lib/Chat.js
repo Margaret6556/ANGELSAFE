@@ -5,7 +5,6 @@ class ChatService {
   }
 
   static isRequestValid(data) {
-    console.log(data);
     return TypeCheck('{ receiverId: String, message: String, ip: String }', data);
   }
 

@@ -39,6 +39,18 @@ class ChatService {
     });
   }
 
+  async getList(req) {
+    const { ip, port } = await this.getService('angelsafe-chat');
+    return ChatService.callService({
+      method: 'get',
+      url: `http://${ip}:${port}/list`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   static async callService(requestOptions) {
     const result = await circuitBreaker.callService(requestOptions);
     return result;
