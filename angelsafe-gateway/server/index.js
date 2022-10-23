@@ -12,6 +12,7 @@ const Profile = require('./services/Profile');
 const Group = require('./services/Group');
 const Notif = require('./services/Notif');
 const Chat = require('./services/Chat');
+const Feed = require('./services/Feed');
 
 const app = express();
 const config = configs[app.get('env')];
@@ -69,6 +70,7 @@ async function processData(req, res) {
     const GroupService = new Group(config);
     const NotifService = new Notif(config);
     const ChatService = new Chat(config);
+    const FeedService = new Feed(config);
     switch (req.params.sub) {
       case 'info': 
         switch (req.params.ext) {
@@ -393,6 +395,98 @@ async function processData(req, res) {
                   newList.push({ ...item, receiver: profileObj.data[0]});
                 }))
                 result.data = newList;
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          default:
+            res.status(result.status).json(result);
+        }
+      break;
+      case 'stat':
+        switch (req.params.ext) {
+          case 'create':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.createStat(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'view':
+            switch (req.method) {
+              case 'GET':
+                result = await FeedService.getStat(req);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          default:
+            res.status(result.status).json(result);
+        }
+      break;
+      case 'post':
+        switch (req.params.ext) {
+          case 'create':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.createPost(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'view':
+            switch (req.method) {
+              case 'GET':
+                result = await FeedService.getPost(req);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'heart':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.heart(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'unheart':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.unheart(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'like':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.like(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'unlike':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.unlike(req, data);
                 res.status(result.status).json(result);
                 break;
               default:

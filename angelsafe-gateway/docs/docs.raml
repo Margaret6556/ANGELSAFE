@@ -406,3 +406,155 @@ version: v0.1.0
                                 "read": 1,
                                 "lastMessage": "Test Message 1..."
                             }
+/api/stat/create:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "stat": "2"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/stat/view:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "id": "635429a9756d27bdb4...",
+                                "stat": 2,
+                            }
+/api/post/create:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "message": "This is a sample Post"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/post/view:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "id": "635429a9756d27bdb4...",
+                                "message": "This is a sample Post",
+                                "timestamp" 12355476565,
+                                "comments": 12,
+                                "hearts": 3,
+                                "likes": 56
+                            }
+/api/post/heart:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "postId": "635429a9756d27bdb4..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/post/like:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "postId": "635429a9756d27bdb4..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/post/unheart:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "postId": "635429a9756d27bdb4..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/post/unlike:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "postId": "635429a9756d27bdb4..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
