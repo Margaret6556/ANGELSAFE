@@ -3,51 +3,18 @@ import { View, StyleSheet, Alert } from "react-native";
 import { Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-import { StyleConstants } from "@/shared/styles";
 import { MoreParamsList, MoreScreenProps } from "../types";
 import { ListComponent } from "../components";
 import { resources, groupChats, settings } from "../data";
+import { useLazyLogoutQuery } from "@/shared/api/auth";
 import { logout } from "@/shared/state/reducers/auth/actions";
+import SettingsComponent from "../components/Settings";
+import GroupChatComponent from "../components/GroupChats";
+import ResourcesComponent from "../components/Resources";
 
 const EntryScreen = ({
   navigation,
 }: MoreScreenProps<MoreParamsList, "Entry">) => {
-  const dispatch = useAppDispatch();
-
-  const settingsList = settings.map((i) => {
-    if (i.label.toLocaleLowerCase() === "logout") {
-      return {
-        ...i,
-        onPress: () => {
-          showAlert();
-        },
-      };
-    }
-    return i;
-  });
-
-  const showAlert = () =>
-    Alert.alert(
-      "Log out of AngelSafe?",
-      "",
-      [
-        {
-          text: "Log out",
-          onPress: async () => {
-            dispatch(logout());
-          },
-          style: "destructive",
-        },
-        {
-          text: "Cancel",
-          style: "cancel",
-        },
-      ],
-      {
-        cancelable: true,
-      }
-    );
-
   return (
     <Container
       type="scroll"
@@ -58,15 +25,15 @@ const EntryScreen = ({
     >
       <View style={styles.container}>
         <Text>Resources</Text>
-        <ListComponent list={resources} />
+        <ResourcesComponent />
       </View>
       <View style={styles.container}>
         <Text>Settings</Text>
-        <ListComponent list={settingsList} />
+        <SettingsComponent />
       </View>
       <View style={styles.container}>
         <Text>Group chats</Text>
-        <ListComponent list={groupChats} />
+        <GroupChatComponent />
       </View>
     </Container>
   );

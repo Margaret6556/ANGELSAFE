@@ -1,21 +1,24 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { GroupParamsList } from "./types";
 import { AddGroupScreen, EntryScreen, GroupDetailsScreen } from "./screens";
-import { type NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TabParamList } from "@/app";
+import { AppTabParamList } from "@/shared/types";
 import { Header } from "./components";
-import { TransitionScreen } from "@/shared/components";
+import { SearchIcon, TransitionScreen } from "@/shared/components";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { Icon } from "@rneui/themed";
 
 const GroupStack = createStackNavigator<GroupParamsList>();
 
 const GroupScreen = ({
   navigation,
-}: NativeStackScreenProps<TabParamList, "Groups">) => {
+}: BottomTabScreenProps<AppTabParamList, "Groups">) => {
   return (
     <GroupStack.Navigator
-    // screenOptions={{
-    //   ...TransitionScreen,
-    // }}
+      screenOptions={
+        {
+          // ...TransitionScreen,
+        }
+      }
     >
       <GroupStack.Screen
         name="Entry"
@@ -27,6 +30,12 @@ const GroupScreen = ({
         component={GroupDetailsScreen}
         options={{
           ...TransitionScreen,
+          headerTitle: "",
+          headerBackTitleVisible: false,
+
+          headerRight(props) {
+            return <SearchIcon />;
+          },
         }}
       />
       <GroupStack.Screen

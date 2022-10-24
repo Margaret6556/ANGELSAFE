@@ -1,22 +1,34 @@
 import {
   ThemeProvider as RneuiThemeProvider,
   createTheme,
+  useThemeMode,
 } from "@rneui/themed";
 import { ChildrenProps } from "@/shared/types";
 import { StyleConstants } from "@/shared/styles";
 
-const themeColors = {
+const lightTheme = {
   primary: "#031166",
   secondary: "#465BE6",
+  grey0: "#898989",
+};
+
+const darkTheme = {
+  primary: "#031166",
+  secondary: "#465BE6",
+  grey0: "#898989",
 };
 
 const commonBorderRadius = 10;
 
 const theme = createTheme({
+  lightColors: {
+    ...lightTheme,
+  },
+  darkColors: { ...darkTheme },
   components: {
     Button: {
       raised: false,
-      color: themeColors.secondary,
+      color: lightTheme.primary,
       radius: commonBorderRadius,
       size: "md",
       buttonStyle: {
@@ -26,7 +38,7 @@ const theme = createTheme({
     Text: {
       style: {
         fontSize: 16,
-        fontFamily: "Nunito_400Regular",
+        fontFamily: "nunitoRegular",
       },
       h2Style: {
         fontSize: 26,
@@ -44,10 +56,9 @@ const theme = createTheme({
       },
       labelStyle: {
         marginBottom: 8,
-        color: themeColors.primary,
+        color: lightTheme.primary,
         fontSize: 18,
-        fontWeight: "400",
-        fontFamily: "Nunito_400Regular",
+        fontFamily: "nunitoRegular",
       },
       inputContainerStyle: {
         borderBottomWidth: 0,

@@ -6,8 +6,6 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { Text, Button, Image } from "@rneui/themed";
 import { buttomBottomPosition } from "@/shared/styles";
 import { Container } from "@/shared/components";
-import { login } from "@/shared/state/reducers/auth/actions";
-import { useNavigation } from "@react-navigation/native";
 import { setLoggedIn, setRedirectToGroup } from "@/shared/state/reducers/auth";
 import { StackScreenProps } from "@react-navigation/stack";
 
@@ -18,9 +16,11 @@ const AccountCreated = ({
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector(({ auth }) => auth);
 
-  const handleGoToHomepage = () => {};
+  const handleGoToHomepage = () => {
+    dispatch(setLoggedIn(true));
+  };
   const handleFindGroups = () => {
-    dispatch(setRedirectToGroup(true));
+    dispatch(setRedirectToGroup());
   };
 
   return (

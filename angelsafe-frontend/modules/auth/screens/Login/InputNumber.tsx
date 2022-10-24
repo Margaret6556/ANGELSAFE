@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { AuthLoginParamsList } from "@/auth/types";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Animated, Easing } from "react-native";
 import { Button, Image, Text, Input, CheckBox } from "@rneui/themed";
-import { Container } from "@/shared/components";
 import { useAppDispatch } from "@/shared/hooks";
-import { login } from "@/shared/state/reducers/auth/actions";
 import { useForm } from "react-hook-form";
 import NumberInput from "@/shared/components/NumberInput";
 import { StackScreenProps } from "@react-navigation/stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
+import OtpInputField from "@/shared/components/OtpInput";
 
 type FieldType = {
   mobile: string;
@@ -20,6 +19,8 @@ const LoginScreen = ({
   const [isChecked, setIsChecked] = useState(false);
   const [username, setUsername] = useState("");
   const dispatch = useAppDispatch();
+  const margin = useRef(new Animated.Value(0)).current;
+  const [height, setHeight] = useState(0);
 
   const {
     control,
@@ -31,11 +32,31 @@ const LoginScreen = ({
     },
   });
 
-  const handleLogin = async (val: FieldType) => {
+  // useEffect(() => {
+  //   Animated.timing(margin, {
+  //     toValue: -height,
+  //     duration: 200,
+  //     useNativeDriver: true,
+  //     easing: Easing.linear,
+  //   }).start();
+  // }, [height]);
+
+  const handleLogin = (val: FieldType) => {
     navigation.push("Verify Number", {
       mobileNumber: val.mobile,
     });
   };
+
+  // const handleKeyboardWillShow = (
+  //   e: { duration: number; endCoordinates: { [key: string]: any } } | any
+  // ) => {
+  //   // console.log({ e });
+  //   setHeight(e.endCoordinates.height);
+  // };
+
+  // const handleKeyboardWillHide = (e: any) => {
+  //   setHeight(0);
+  // };
 
   // const handleCheckBoxPress = () => {
   //   setIsChecked(!isChecked);
@@ -49,6 +70,9 @@ const LoginScreen = ({
     <KeyboardAwareScrollView
       contentContainerStyle={styles.wrapper}
       scrollEnabled={false}
+      // onKeyboardWillShow={}
+      // onKeyboardWillHide={handleKeyboardWillHide}
+      // onKeyboardWillChangeFrame={handleKeyboardWillShow}
     >
       <View style={styles.container}>
         <View style={styles.subtitle}>
@@ -91,12 +115,21 @@ const LoginScreen = ({
       </View>
       <Button
         title="Login"
-        containerStyle={{
-          width: "100%",
-        }}
         onPress={handleSubmit(handleLogin)}
         loading={isSubmitting}
+        containerStyle={{ marginBottom: 24 }}
       />
+      {/* <Animated.View
+        style={{
+          transform: [
+            {
+              translateY: margin,
+            },
+          ],
+        }}
+      >
+      
+      </Animated.View> */}
     </KeyboardAwareScrollView>
   );
 };
@@ -110,9 +143,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
     paddingVertical: StyleConstants.PADDING_VERTICAL,
   },
-  container: {
-    width: "100%",
-  },
+  container: {},
   subtitle: {
     marginBottom: 72,
     width: "100%",

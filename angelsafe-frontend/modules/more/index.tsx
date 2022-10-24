@@ -1,23 +1,31 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { MoreParamsList } from "./types";
 import { EntryScreen } from "./screens";
-import { type NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TabParamList } from "@/app";
+import { AppTabParamList } from "@/shared/types";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import ChatScreen from "./screens/Chat";
+import { TransitionScreen } from "@/shared/components";
 
 const MoreStack = createStackNavigator<MoreParamsList>();
 
 const GroupScreen = ({
   navigation,
-}: NativeStackScreenProps<TabParamList, "More">) => {
+}: BottomTabScreenProps<AppTabParamList, "More">) => {
   return (
     <MoreStack.Navigator
       screenOptions={{
         headerStyle: {
           backgroundColor: "transparent",
         },
+        ...TransitionScreen,
       }}
     >
       <MoreStack.Screen name="Entry" component={EntryScreen} />
+      <MoreStack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{ header: () => null }}
+      />
     </MoreStack.Navigator>
   );
 };

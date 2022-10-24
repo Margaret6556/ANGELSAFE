@@ -12,9 +12,4 @@ export type AddGroupParamList = {
   GroupPhoto: { id: string };
 };
 
-export type GroupsType = {
-  description: string;
-  groupname: string;
-  id: string;
-  profilePic: string;
-};
+export { GroupsType } from "@/shared/api/groups";

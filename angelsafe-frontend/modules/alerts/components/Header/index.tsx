@@ -3,6 +3,7 @@ import React from "react";
 import { Divider, Icon, Text } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { SearchIcon } from "@/shared/components";
 
 type Props = {};
 
@@ -13,15 +14,7 @@ const Header = (props: Props) => {
         <Text h3>Alerts</Text>
         <View style={styles.icons}>
           <TouchableOpacity activeOpacity={0.5}>
-            <Icon
-              type="entypo"
-              name="magnifying-glass"
-              iconProps={{
-                size: 22,
-                name: "magnifying-glass",
-              }}
-              containerStyle={styles.iconContainer}
-            />
+            <SearchIcon />
           </TouchableOpacity>
         </View>
       </View>
@@ -44,14 +37,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     justifyContent: "space-between",
-  },
-  iconContainer: {
-    marginLeft: 20,
-    backgroundColor: "#fff",
-    borderRadius: 50,
-    height: 45,
-    width: 45,
-    justifyContent: "center",
-    alignItems: "center",
   },
 });

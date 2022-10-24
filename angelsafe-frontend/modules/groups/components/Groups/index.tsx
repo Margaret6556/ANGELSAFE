@@ -5,10 +5,7 @@ import { FlatList } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GroupParamsList, GroupsType } from "@/groups/types";
-import useAxios from "@/shared/hooks/useAxios";
 import { _API } from "@/shared/config";
-import axios from "axios";
-import { BackendResponse } from "@/shared/types";
 
 interface GroupProps {
   data: GroupsType[];
@@ -18,7 +15,6 @@ const Groups = ({ data }: GroupProps) => {
 
   const handlePress = (id: string) => () => {
     navigation.navigate("GroupDetails", { id });
-    console.log(id);
   };
 
   return (

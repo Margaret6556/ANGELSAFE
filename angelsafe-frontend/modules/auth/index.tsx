@@ -1,17 +1,11 @@
-import { TabParamList } from "@/app";
-import { createStackNavigator, TransitionSpecs } from "@react-navigation/stack";
+import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen, RegisterScreen, EntryScreen } from "./screens";
 import { AuthParamList } from "./types";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { useEffect } from "react";
 import { TransitionScreen } from "@/shared/components";
 
 const AuthStack = createStackNavigator<AuthParamList>();
 
-const AuthScreens = ({
-  navigation,
-  route,
-}: BottomTabScreenProps<TabParamList, "Auth">) => (
+const AuthScreens = () => (
   <AuthStack.Navigator
     screenOptions={{
       headerStyle: {

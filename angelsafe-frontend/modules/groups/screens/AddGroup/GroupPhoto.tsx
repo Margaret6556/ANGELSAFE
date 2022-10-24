@@ -10,20 +10,18 @@ import {
   SaveFormat,
 } from "expo-image-manipulator";
 import { StyleConstants } from "@/shared/styles";
-import useAxios from "@/shared/hooks/useAxios";
 import axios from "axios";
 import { _API } from "@/shared/config";
-import { BackendResponse } from "@/shared/types";
-
-type Props = {};
+import { useUpdateGroupPhotoMutation } from "@/shared/api/groups";
+import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 
 const GroupPhoto = ({
   navigation,
   route,
 }: StackScreenProps<AddGroupParamList, "GroupPhoto">) => {
-  const [isLoading, setLoading] = useState(false);
+  const { id } = route.params;
   const [image, setImage] = useState<ImageResult>();
-  const api = useAxios();
+  const [updatePhoto, updatePhotoResponse] = useUpdateGroupPhotoMutation();
 
   const handleSelectImage = async () => {
     try {
@@ -64,24 +62,19 @@ const GroupPhoto = ({
   };
 
   const handleUploadImage = async () => {
-    setLoading(true);
     try {
-      const {
-        data: { status },
-      } = await api.post<BackendResponse<{}>>(_API.GROUP.UPDATE_PIC, {
+      const { status } = await updatePhoto({
         profilePic: `data:image/png;base64,${image?.base64}`,
-        // groupId: route.params.id, // TODO
-      });
+        groupId: id,
+      }).unwrap();
 
       if (status === 200) {
         navigation.navigate("Entry" as any);
       }
     } catch (e) {
-      if (axios.isAxiosError(e)) {
-        console.log({ e: e.message, f: e.response?.data.message });
-      }
+      const err = e as BackendResponse<BackendErrorResponse>;
+      console.log(err, e);
     }
-    setLoading(false);
   };
 
   return (
@@ -95,8 +88,8 @@ const GroupPhoto = ({
           />
         ) : (
           <Icon
-            type="ionicon"
-            name="person"
+            type="material-community"
+            name="account-group"
             size={100}
             containerStyle={styles.iconContainer}
           />
@@ -117,7 +110,7 @@ const GroupPhoto = ({
             buttonStyle={styles.buttonStyle}
             containerStyle={styles.buttonContainerStyle}
             titleStyle={{ fontSize: 14 }}
-            loading={isLoading}
+            loading={updatePhotoResponse.isLoading}
           />
         ) : (
           <Button

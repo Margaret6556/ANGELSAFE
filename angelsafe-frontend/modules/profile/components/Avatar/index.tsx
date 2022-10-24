@@ -8,6 +8,7 @@ import {
 } from "react-native";
 import { Avatar, Text } from "@rneui/themed";
 import randomNameGenerator from "@/shared/utils/randomNameGenerator";
+import { useAppSelector } from "@/shared/hooks";
 
 interface IAvatarProps {
   source?: ImageSourcePropType;
@@ -15,6 +16,7 @@ interface IAvatarProps {
 }
 
 const AvatarComponent = (props: IAvatarProps) => {
+  const { user } = useAppSelector((state) => state.auth);
   return (
     <View style={[styles.container, props.containerStyle]}>
       <Avatar
@@ -30,7 +32,7 @@ const AvatarComponent = (props: IAvatarProps) => {
         containerStyle={{ backgroundColor: "blue" }}
       />
       <View style={styles.text}>
-        <Text h4>{randomNameGenerator()}</Text>
+        <Text h4>{user?.username}</Text>
         <Text>Member for 2 years</Text>
         <Text>He/Him</Text>
       </View>

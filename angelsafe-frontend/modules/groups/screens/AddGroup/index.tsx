@@ -3,8 +3,6 @@ import { AddGroupParamList, GroupParamsList } from "../../types";
 import GroupInfo from "./GroupInfo";
 import GroupPhoto from "./GroupPhoto";
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TabParamList } from "@/app";
-import { Header } from "../../components";
 import { TransitionScreen } from "@/shared/components";
 
 const GroupStack = createStackNavigator<AddGroupParamList>();

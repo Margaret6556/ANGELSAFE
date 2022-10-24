@@ -1,6 +1,8 @@
 export const initialSymptoms = [
   "Tiredness",
   "Morning sickness",
+  "Anxiety",
+  "Panic attacks",
   // "Headache",
   // "Bleeding",
   // "Changes on your skin",
@@ -21,7 +23,7 @@ export const moods = [
     image: require("../../../assets/home/mood/sad.png"),
   },
   {
-    label: "Annoyed",
+    label: "Sick",
     image: require("../../../assets/home/mood/annoyed.png"),
   },
   {

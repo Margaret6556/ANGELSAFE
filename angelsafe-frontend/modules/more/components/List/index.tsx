@@ -24,6 +24,6 @@ export default MoreComponent;
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: StyleConstants.GAP_VERTICAL,
+    marginVertical: 10,
   },
 });

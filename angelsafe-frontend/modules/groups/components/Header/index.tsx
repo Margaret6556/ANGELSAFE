@@ -3,12 +3,12 @@ import React from "react";
 import { Divider, Icon, Text } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import useAxios from "@/shared/hooks/useAxios";
 import { Modal } from "@/home/components";
 import { _API } from "@/shared/config";
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { GroupParamsList } from "@/groups/types";
+import { SearchIcon } from "@/shared/components";
 
 type Props = {};
 
@@ -24,17 +24,7 @@ const Header = (props: Props) => {
       <View style={styles.container}>
         <Text h3>Groups</Text>
         <View style={styles.icons}>
-          <TouchableOpacity activeOpacity={0.5}>
-            <Icon
-              type="entypo"
-              name="magnifying-glass"
-              iconProps={{
-                size: 22,
-                name: "magnifying-glass",
-              }}
-              containerStyle={styles.iconContainer}
-            />
-          </TouchableOpacity>
+          <SearchIcon />
           <TouchableOpacity activeOpacity={0.5} onPress={handleAddGroup}>
             <Icon
               type="antdesign"
@@ -55,7 +45,7 @@ const Header = (props: Props) => {
 
 export default Header;
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   wrapper: {},
   container: {
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,

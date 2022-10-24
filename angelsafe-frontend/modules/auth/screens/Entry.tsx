@@ -1,19 +1,13 @@
 import React, { useState } from "react";
-import { AuthScreenProps, AuthParamList } from "@/auth/types";
+import { AuthParamList } from "@/auth/types";
 import { View, StyleSheet } from "react-native";
-import {
-  ButtonGroup,
-  Button,
-  Image,
-  Text,
-  Input,
-  CheckBox,
-} from "@rneui/themed";
+import { Button, Image } from "@rneui/themed";
 import { Container } from "@/shared/components";
+import { StackScreenProps } from "@react-navigation/stack";
 
 const LoginScreen = ({
   navigation,
-}: AuthScreenProps<AuthParamList, "Entry">) => {
+}: StackScreenProps<AuthParamList, "Entry">) => {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCheckBoxPress = () => {

@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { AuthRegisterParamList } from "@/auth/types";
-import { View, Image, StyleSheet, Keyboard } from "react-native";
-import { useAppDispatch } from "@/shared/hooks";
-import { Text, Button, Input } from "@rneui/themed";
+import { View, StyleSheet, Keyboard } from "react-native";
+import { Text, Button } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useForm } from "react-hook-form";
 import { _API } from "@/shared/config";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { register } from "@/shared/utils/auth";
 import NumberInput from "@/shared/components/NumberInput";
 import { StackScreenProps } from "@react-navigation/stack";
+import { useRegisterMutation } from "@/shared/api/auth";
 
 type FieldType = {
   mobile: string;
@@ -18,10 +17,9 @@ type FieldType = {
 const RegisterScreen = ({
   navigation,
 }: StackScreenProps<AuthRegisterParamList, "Account Information">) => {
-  // const dispatch = useAppDispatch();
   const {
     control,
-    formState: { errors, isSubmitting },
+    formState: { isSubmitting },
     handleSubmit,
     setError,
   } = useForm<FieldType>({
@@ -30,23 +28,31 @@ const RegisterScreen = ({
     },
   });
 
+  const [register, regResponse] = useRegisterMutation();
+
   const handleSubmitPressed = async ({ mobile }: FieldType) => {
     try {
-      // navigation.navigate("Verify Number", {
-      //   mobileNumber: mobile,
-      // });
-      const res = await register(mobile);
-      if (res) {
+      const {
+        data: { mobileNumber },
+        status,
+      } = await register({ mobileNumber: mobile }).unwrap();
+
+      if (status === 200) {
         navigation.navigate("Verify Number", {
-          mobileNumber: res,
+          mobileNumber,
         });
       }
     } catch (e) {
-      if (typeof e === "string") {
-        setError("mobile", { message: e });
-      }
+      console.log({ e });
     }
   };
+
+  useEffect(() => {
+    if (regResponse.error && "status" in regResponse.error) {
+      setError("mobile", { message: regResponse.error.data.message });
+      regResponse.reset();
+    }
+  }, [regResponse.error]);
 
   return (
     <Container
@@ -62,6 +68,9 @@ const RegisterScreen = ({
               struggles as you and gain support through groups, symptom
               tracking, and by sharing your wins and losses.
             </Text>
+            {regResponse.error && "status" in regResponse.error && (
+              <Text>{regResponse.error.data.message}</Text>
+            )}
           </View>
         </TouchableWithoutFeedback>
         <NumberInput control={control} />

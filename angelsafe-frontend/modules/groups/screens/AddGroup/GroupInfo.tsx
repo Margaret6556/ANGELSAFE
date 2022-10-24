@@ -1,16 +1,14 @@
 import { StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { AddGroupParamList } from "../../types";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
 import { Input, Button, Text } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
-import useAxios from "@/shared/hooks/useAxios";
-import { _API } from "@/shared/config";
-import axios from "axios";
-import { BackendResponse } from "@/shared/types";
-import { useKeyboardShowing } from "@/shared/hooks";
+import { useAppDispatch, useKeyboardShowing } from "@/shared/hooks";
+// import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import { useAddGroupMutation } from "@/shared/api/groups";
 
 type FieldsType = {
   groupname: string;
@@ -21,11 +19,8 @@ const AddGroup = ({
   navigation,
 }: StackScreenProps<AddGroupParamList, "GroupInfo">) => {
   const [multilineHeight, setMultiLineHeight] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const { keyboardIsShowing } = useKeyboardShowing();
-
-  const ax = useAxios();
+  const [addGroup, addGroupResponse] = useAddGroupMutation();
 
   const {
     handleSubmit,
@@ -36,29 +31,20 @@ const AddGroup = ({
   });
 
   const handleAddGroup = async (val: FieldsType) => {
-    setIsLoading(true);
     try {
-      const { data } = await ax.post<
-        BackendResponse<BackendResponse<{ message: string }>>
-      >(_API.GROUP.REGISTER, val);
-      console.log({ data });
-      if (data.status === 200) {
-        console.log("success");
+      const {
+        data: { groupId },
+        status,
+      } = await addGroup(val).unwrap();
+
+      if (status === 200) {
         navigation.push("GroupPhoto", {
-          id: "634d84769320223f24cf1e0a", // TODO
+          id: groupId,
         });
       }
-      // navigation.push("GroupPhoto", {
-      //   // id: "634d8f929320223f24cf27a5", // TODO
-      //   id: "634d84769320223f24cf1e0a", // TODO
-      // });
     } catch (e) {
-      if (axios.isAxiosError(e)) {
-        setError(e.response?.data.message);
-        console.log({ e: e.message });
-      }
+      console.log({ e });
     }
-    setIsLoading(false);
   };
 
   return (
@@ -67,12 +53,22 @@ const AddGroup = ({
       contentContainerStyle={styles.wrapper}
     >
       <View style={styles.inputs}>
-        <Text style={{ color: error ? "red" : "transparent", height: 24 }}>
-          {error}
+        <Text
+          style={{
+            color: addGroupResponse.error ? "red" : "transparent",
+            height: 24,
+          }}
+        >
+          {addGroupResponse.error &&
+            "status" in addGroupResponse.error &&
+            addGroupResponse.error.data.message}
         </Text>
         <Controller
           control={control}
           name="groupname"
+          rules={{
+            max: 21,
+          }}
           render={({ field }) => (
             <Input
               label="Enter Group Name"
@@ -105,7 +101,7 @@ const AddGroup = ({
       <Button
         title="Add Group"
         onPress={handleSubmit(handleAddGroup)}
-        loading={isLoading}
+        loading={addGroupResponse.isLoading}
       />
     </KeyboardAwareScrollView>
   );

@@ -14,24 +14,21 @@ import {
 import { StyleConstants } from "@/shared/styles";
 import { initialSymptoms, moods } from "../data";
 import { StackScreenProps } from "@react-navigation/stack";
-import { setRedirectToGroup } from "@/shared/state/reducers/auth";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { TabParamList } from "@/app";
+import { AppTabParamList } from "@/shared/types";
 
 const EntryScreen = ({}: StackScreenProps<HomeParamsList, "Entry">) => {
   const [symptoms, setSymptoms] = useState(initialSymptoms);
   const [modalVisible, setModalVisible] = useState(false);
   const { user } = useAppSelector((state) => state.auth);
-  const dispatch = useAppDispatch();
-  const { navigate } = useNavigation<NavigationProp<TabParamList>>();
+  const { navigate } = useNavigation<NavigationProp<AppTabParamList>>();
   const { redirectToGroup } = useAppSelector(({ auth }) => auth);
 
   useEffect(() => {
     if (redirectToGroup) {
-      dispatch(setRedirectToGroup(false));
       navigate("Groups");
     }
-  }, [redirectToGroup]);
+  }, []);
 
   const handleOpenModal = () => {
     setModalVisible(!modalVisible);

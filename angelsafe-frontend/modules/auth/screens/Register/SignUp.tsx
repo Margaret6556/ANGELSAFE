@@ -6,31 +6,30 @@ import { Text, Button, Input } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { Stepper } from "@/auth/components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { setUser } from "@/shared/state/reducers/auth";
+import { setLoggedIn, setUser } from "@/shared/state/reducers/auth";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Controller, useForm } from "react-hook-form";
-import { Auth, _API } from "@/shared/config";
 import axios from "axios";
-import { getItemAsync } from "expo-secure-store";
-import useAxios from "@/shared/hooks/useAxios";
 import { useDispatch } from "react-redux";
+import {
+  ProfileRegisterType,
+  useRegisterProfileMutation,
+} from "@/shared/api/profile";
+import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+// import { useRegisterMutation } from "@/shared/api/auth";
 
-type FormFields = {
-  username: string;
-  year: string;
-  gender: string;
-  country: string;
-};
+type FormFields = ProfileRegisterType;
 
 const SignUp = ({
   navigation,
 }: StackScreenProps<AuthRegisterParamList, "Sign Up">) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [_error, setError] = useState("");
   const { keyboardIsShowing } = useKeyboardShowing();
   const value = useRef(new Animated.Value(0)).current;
+  const [registerProfile, profileResponse] = useRegisterProfileMutation();
   const dispatch = useDispatch();
-  const api = useAxios();
+
+  // const [register, registerResponse] = useRegisterMutation();
 
   const {
     control,
@@ -77,14 +76,11 @@ const SignUp = ({
   }, []);
 
   const handleSignUp = async (val: FormFields) => {
-    setIsLoading(true);
     try {
-      const { data } = await api.post<{ status: number }>(
-        _API.PROFILE.REGISTER,
-        val
-      );
-      console.log({ data });
-      if (data.status === 200) {
+      const { data, status } = await registerProfile(val).unwrap();
+
+      if (status === 200) {
+        console.log({ data });
         dispatch(
           setUser({
             username: val.username,
@@ -93,12 +89,9 @@ const SignUp = ({
         navigation.navigate("Account Created");
       }
     } catch (e) {
-      if (axios.isAxiosError(e)) {
-        console.log({ e: e.message, f: e.response?.data });
-        setError(e.response?.data.message);
-      }
+      setError((e as BackendResponse<BackendErrorResponse>).data.message);
+      console.log({ e });
     }
-    setIsLoading(false);
   };
 
   return (
@@ -218,7 +211,7 @@ const SignUp = ({
             title="Sign Up"
             onPress={handleSubmit(handleSignUp)}
             disabled={!!Object.keys(errors).length}
-            loading={isLoading}
+            loading={profileResponse.isLoading}
           />
         </View>
       </KeyboardAwareScrollView>

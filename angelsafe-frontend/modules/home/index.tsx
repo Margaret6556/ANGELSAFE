@@ -1,15 +1,25 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { HomeParamsList } from "./types";
 import { EntryScreen, AddNewSymptom } from "./screens/";
-import { type NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TabParamList } from "@/app";
+import { AppTabParamList } from "@/shared/types";
 import { View } from "react-native";
+import { useAppSelector } from "@/shared/hooks";
+import { useEffect } from "react";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 
 const HomeStack = createStackNavigator<HomeParamsList>();
 
 const HomeScreen = ({
   navigation,
-}: NativeStackScreenProps<TabParamList, "Home">) => {
+}: BottomTabScreenProps<AppTabParamList, "Home">) => {
+  const { redirectToGroup } = useAppSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (redirectToGroup) {
+      navigation.navigate("Groups");
+    }
+  }, []);
+
   return (
     <HomeStack.Navigator
       screenOptions={{

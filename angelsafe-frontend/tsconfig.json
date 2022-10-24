@@ -7,5 +7,6 @@
       "@/*": ["*"]
     }
   },
-  "include": ["./modules"]
+  "include": ["./modules"],
+  "exclude": ["./node_modules"]
 }

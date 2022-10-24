@@ -26,7 +26,7 @@ const NumberInput = ({ control }: NumberInputProps) => {
           <>
             <PhoneInput
               {...field}
-              defaultCode="IN"
+              defaultCode="US"
               onChangeFormattedText={field.onChange}
               containerStyle={[styles.inputContainer, hasErrors]}
               textContainerStyle={styles.inputTextContainer}

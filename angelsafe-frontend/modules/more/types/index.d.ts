@@ -3,6 +3,14 @@ import { type ScreenProps } from "@/shared/types";
 
 export type MoreParamsList = {
   Entry: undefined;
+  Chat: undefined;
+};
+
+export type ChatParamsList = {
+  ChatList: undefined;
+  ChatInterface: {
+    id: string;
+  };
 };
 
 export type MoreScreenProps<T, A extends keyof T> = ScreenProps<T, A>;
