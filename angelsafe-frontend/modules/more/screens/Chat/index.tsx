@@ -34,6 +34,7 @@ const ChatScreen = ({
         component={ChatInterface}
         options={{
           presentation: "modal",
+          cardOverlayEnabled: false,
           header: ({ navigation }) => (
             <HeaderChatInterface onBack={navigation.goBack} />
           ),

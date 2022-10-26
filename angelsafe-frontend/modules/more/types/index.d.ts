@@ -4,6 +4,7 @@ import { type ScreenProps } from "@/shared/types";
 export type MoreParamsList = {
   Entry: undefined;
   Chat: undefined;
+  "Account Security": undefined;
 };
 
 export type ChatParamsList = {
@@ -13,11 +14,12 @@ export type ChatParamsList = {
   };
 };
 
-export type MoreScreenProps<T, A extends keyof T> = ScreenProps<T, A>;
-
-interface IMoreData {
+interface CardProps {
   label: string;
-  icon: any;
+  icon: {
+    name: string;
+    type: string;
+  };
   onPress?: (e?: any) => void;
 }
 

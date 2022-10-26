@@ -6,6 +6,7 @@ export const _API = {
     OTP: "/auth/otp",
     REGISTER: "/auth/register",
     REGISTER_EMAIL: "/auth/register-email",
+    REFRESH: "/refresh-token",
   },
   PROFILE: {
     REGISTER: "/profile/register",

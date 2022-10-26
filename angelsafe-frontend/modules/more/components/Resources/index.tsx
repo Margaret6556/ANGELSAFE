@@ -15,13 +15,17 @@ const ResourcesComponent = () => {
     <>
       <View style={styles.container}>
         <Card
-          icon={{}}
           label="Emotional Help Hotline"
           onPress={handleEmotionalHelp}
+          icon={{ name: "phone", type: "material-community" }}
         />
       </View>
       <View style={styles.container}>
-        <Card icon={{}} label="Overdose Hotline" onPress={handleOverdose} />
+        <Card
+          icon={{ name: "phone", type: "material-community" }}
+          label="Overdose Hotline"
+          onPress={handleOverdose}
+        />
       </View>
     </>
   );

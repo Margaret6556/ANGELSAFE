@@ -3,6 +3,6 @@ import { type ScreenProps } from "@/shared/types";
 
 export type ProfileParamsList = {
   Entry: undefined;
+  "Edit Profile": undefined;
+  // "Update Photo": undefined;
 };
-
-export type ProfileScreenProps<T, A extends keyof T> = ScreenProps<T, A>;

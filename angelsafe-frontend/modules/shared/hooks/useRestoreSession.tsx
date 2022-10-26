@@ -19,18 +19,9 @@ const useRestoreSession = () => {
       try {
         const token = await getItemAsync(Auth.KEY);
         if (token) {
-          const {
-            data: { username },
-            status,
-          } = await getProfile(`Bearer ${token}`).unwrap();
-
+          const { data, status } = await getProfile(`Bearer ${token}`).unwrap();
           if (status === 200) {
-            dispatch(
-              setUser({
-                username,
-                token,
-              })
-            );
+            dispatch(setUser({ ...data, token }));
             dispatch(setLoggedIn(true));
           }
         }

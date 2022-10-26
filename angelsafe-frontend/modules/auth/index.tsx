@@ -7,6 +7,7 @@ const AuthStack = createStackNavigator<AuthParamList>();
 
 const AuthScreens = () => (
   <AuthStack.Navigator
+    initialRouteName="Entry"
     screenOptions={{
       headerStyle: {
         backgroundColor: "transparent",

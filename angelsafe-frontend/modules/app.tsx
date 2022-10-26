@@ -42,10 +42,13 @@ const App = () => {
     return (
       <RootStack.Navigator
         screenOptions={{
+          // detachPreviousScreen: false,
+          // presentation: "transparentModal",
           header: () => null,
           ...TransitionScreen,
         }}
       >
+        {/* <RootStack.Screen name="App" component={TabNavigator} /> */}
         {isLoggedIn ? (
           <RootStack.Screen name="App" component={TabNavigator} />
         ) : (

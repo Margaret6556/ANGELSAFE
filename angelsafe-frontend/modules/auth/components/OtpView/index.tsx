@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   StyleSheet,
@@ -15,6 +15,8 @@ import { useLoginMutation, useResendOtpMutation } from "@/shared/api/auth";
 import { setItemAsync } from "expo-secure-store";
 import OtpInputField from "@/shared/components/OtpInput";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import { useLazyGetProfileQuery } from "@/shared/api/profile";
+import CountdownTimer from "../Countdown";
 
 interface IOtpViewProps {
   mobile: string;
@@ -25,10 +27,12 @@ interface IOtpViewProps {
 const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
   const [otpCode, setOtpCode] = useState("");
   const [otpResent, setOtpResent] = useState(false);
+  const [otpExpired, setOtpExpired] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
   const [login, loginRes] = useLoginMutation();
   const [resendOtp, otpResponse] = useResendOtpMutation();
+  const [getProfile, getProfileResponse] = useLazyGetProfileQuery();
   const dispatch = useDispatch();
 
   const handleVerify = async () => {
@@ -42,7 +46,9 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
       }).unwrap();
 
       if (status === 200) {
-        dispatch(setUser({ mobile, token }));
+        const { data } = await getProfile(`Bearer ${token}`).unwrap();
+
+        dispatch(setUser({ ...data, token }));
         await setItemAsync(Auth.KEY, token);
         if (isLoginScreen) {
           dispatch(setLoggedIn(true));
@@ -62,20 +68,23 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
   };
 
   const handleResetOtp = async () => {
-    try {
-      const { status } = await resendOtp({ mobileNumber: mobile }).unwrap();
+    if (!errorMessage || !otpResponse.isLoading) {
+      try {
+        const { status } = await resendOtp({ mobileNumber: mobile }).unwrap();
 
-      if (status === 200) {
-        setTimeout(() => {
-          setOtpResent(false);
-        }, 4000);
-
-        setOtpResent(true);
+        if (status === 200) {
+          setTimeout(() => {
+            setOtpResent(false);
+            setOtpExpired(false);
+          }, 4000);
+          setOtpExpired(true);
+          setOtpResent(true);
+        }
+      } catch (e) {
+        const err = e as BackendResponse<BackendErrorResponse>;
+        handleShowError(err.data.message);
+        console.log({ e });
       }
-    } catch (e) {
-      const err = e as BackendResponse<BackendErrorResponse>;
-      handleShowError(err.data.message);
-      console.log({ e });
     }
   };
 
@@ -86,6 +95,10 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
     setErrorMessage(e);
     setOtpCode("");
   };
+
+  const handleCountdownComplete = useCallback((completed: boolean) => {
+    setOtpExpired(completed);
+  }, []);
 
   return (
     <KeyboardAwareScrollView
@@ -121,15 +134,19 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
             <View style={{ marginVertical: 12 }}>
               <OtpInputField
                 onComplete={handleOtpComplete}
-                isError={loginRes.isError || otpResponse.isError}
+                isError={!!errorMessage}
               />
             </View>
             {!otpResent ? (
               <Text style={{ textAlign: "center" }}>
                 Didn't receive OTP?{" "}
-                <Text style={{ color: "blue" }} onPress={handleResetOtp}>
-                  Resend OTP
-                </Text>
+                {otpResponse.isLoading ? (
+                  <ActivityIndicator />
+                ) : (
+                  <Text style={{ color: "blue" }} onPress={handleResetOtp}>
+                    Resend OTP
+                  </Text>
+                )}
               </Text>
             ) : (
               <>
@@ -147,12 +164,30 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
       <View style={[styles.button]}>
         <Button
           title="Verify"
-          disabled={!otpCode}
+          disabled={!otpCode || otpExpired}
           onPress={handleVerify}
           loading={loginRes.isLoading}
         />
-        <Text style={[styles.subtitle, { textAlign: "center" }]}>
-          One time password will expire in 10 mins.
+        <Text
+          style={[
+            styles.subtitle,
+            {
+              textAlign: "center",
+              minHeight: 32,
+              paddingTop: 8,
+              alignItems: "center",
+              justifyContent: "center",
+            },
+          ]}
+        >
+          {otpExpired ? (
+            <>OTP Expired</>
+          ) : (
+            <>
+              One time password will expire in{" "}
+              <CountdownTimer onComplete={handleCountdownComplete} />
+            </>
+          )}
         </Text>
       </View>
     </KeyboardAwareScrollView>

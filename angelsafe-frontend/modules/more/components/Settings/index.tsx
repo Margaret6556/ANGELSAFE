@@ -1,3 +1,4 @@
+import { MoreParamsList } from "@/more/types";
 import { useLazyLogoutQuery } from "@/shared/api/auth";
 import { useAppDispatch } from "@/shared/hooks";
 import { logout } from "@/shared/state/reducers/auth/actions";
@@ -10,12 +11,15 @@ import Card from "../List/Card";
 const SettingsComponent = () => {
   const dispatch = useAppDispatch();
   const [_logout, logoutRes] = useLazyLogoutQuery();
-  const navigation = useNavigation<NavigationProp<AppTabParamList>>();
+  const navigation =
+    useNavigation<NavigationProp<AppTabParamList & MoreParamsList>>();
 
   const handleAccountPress = () => {
     navigation.navigate("Profile");
   };
-  const handleAccountSecurity = () => {};
+  const handleAccountSecurity = () => {
+    navigation.navigate("Account Security");
+  };
   const handleAccessibility = () => {};
 
   const handleLogout = async () => {
@@ -52,27 +56,46 @@ const SettingsComponent = () => {
   return (
     <>
       <View style={styles.container}>
-        <Card icon={{}} label="Your Account" onPress={handleAccountPress} />
+        <Card
+          icon={{ name: "person-circle", type: "ionicon" }}
+          label="Your Account"
+          onPress={handleAccountPress}
+        />
       </View>
       <View style={styles.container}>
         <Card
-          icon={{}}
+          icon={{ name: "lock", type: "material-community" }}
           label="Account Security"
           onPress={handleAccountSecurity}
         />
       </View>
       <View style={styles.container}>
         <Card
-          icon={{}}
+          icon={{ name: "notifications-on", type: "material" }}
           label="Notifications"
           onPress={handleNotificationPress}
         />
       </View>
       <View style={styles.container}>
-        <Card icon={{}} label="Accessiblity" onPress={handleAccessibility} />
+        <Card
+          icon={{ name: "accessibility", type: "material" }}
+          label="Accessiblity"
+          onPress={handleAccessibility}
+        />
       </View>
       <View style={styles.container}>
-        <Card icon={{}} label="Logout" onPress={showAlert} />
+        <Card
+          icon={{ name: "wrench", type: "material-community" }}
+          label="Test API"
+          onPress={handleAccessibility}
+        />
+      </View>
+      <View style={styles.container}>
+        <Card
+          icon={{ name: "logout", type: "material" }}
+          label="Logout"
+          onPress={showAlert}
+        />
       </View>
     </>
   );

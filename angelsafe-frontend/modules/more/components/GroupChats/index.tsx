@@ -19,7 +19,11 @@ const GroupChatComponent = () => {
 
   return (
     <View style={styles.container}>
-      <Card icon={{}} label="Messages" onPress={handleMessagesPress} />
+      <Card
+        icon={{ name: "message-text", type: "material-community" }}
+        label="Messages"
+        onPress={handleMessagesPress}
+      />
     </View>
   );
 };

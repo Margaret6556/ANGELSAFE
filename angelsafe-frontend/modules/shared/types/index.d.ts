@@ -18,7 +18,6 @@ export type BackendErrorResponse = {
 
 export type AppTabParamList = {
   Alerts: undefined;
-  Chat: undefined;
   Home: undefined;
   Groups: undefined;
   More: undefined;
@@ -28,4 +27,21 @@ export type AppTabParamList = {
 export type RootStackParamList = {
   Auth: undefined;
   App: undefined;
+};
+
+export type UserType = {
+  id: string;
+  username: string;
+  email: string;
+  mobile: string;
+  token: string;
+  year: string;
+  gender: "Male" | "Female";
+  country: string;
+  member: string;
+  bio: string;
+  profilePic: string;
+  hobbies: string[];
+  music: string[];
+  movies: string[];
 };

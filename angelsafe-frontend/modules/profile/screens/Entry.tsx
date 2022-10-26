@@ -5,43 +5,34 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   Dimensions,
+  TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import { Button, Divider, Text } from "@rneui/themed";
+import { Button, Divider, Text, useTheme } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
-import { ProfileParamsList, ProfileScreenProps } from "../types";
-import { Avatar, Bio, Trend } from "../components";
-import { useAppDispatch } from "@/shared/hooks";
-import { setSolidBackground } from "@/shared/state/reducers/theme";
-import { useIsFocused } from "@react-navigation/native";
+import { ProfileParamsList } from "../types";
+import { Avatar, Biography } from "../components";
+import { StackScreenProps } from "@react-navigation/stack";
+import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
+import AboutMeTab from "../components/AboutMe";
+import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 
-const hobbies = [
-  "Cooking",
-  "Yoga",
-  "Hiking",
-  "Biking",
-  "Dancing",
-  "Reading",
-  "Singing",
-  "Fishing",
-];
-
-const artists = ["Dojo Cat", "Mac Miller", "Muse", "The Strokes"];
 const deviceHeight = Dimensions.get("window").height;
+
+enum ProfileView {
+  ABOUT_ME,
+  POST,
+}
 
 const EntryScreen = ({
   navigation,
-}: ProfileScreenProps<ProfileParamsList, "Entry">) => {
-  const dispatch = useAppDispatch();
+}: StackScreenProps<ProfileParamsList, "Entry">) => {
   const [bounces, setBounces] = useState(false);
+  const [view, setView] = useState(ProfileView.ABOUT_ME);
+  const { theme } = useTheme();
 
-  const isFocused = useIsFocused();
-
-  if (isFocused) {
-    dispatch(setSolidBackground(true));
-  } else {
-    dispatch(setSolidBackground(false));
-  }
+  useSetSolidBackground();
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const y = e.nativeEvent.contentOffset.y;
@@ -50,6 +41,32 @@ const EntryScreen = ({
       setBounces(true);
     } else {
       setBounces(false);
+    }
+  };
+
+  const handleSelection = (selection: ProfileView) => () => {
+    setView(selection);
+  };
+
+  const renderView = () => {
+    switch (view) {
+      case ProfileView.ABOUT_ME: {
+        return (
+          <View style={styles.contentWrapper}>
+            <AboutMeTab />
+          </View>
+        );
+      }
+      case ProfileView.POST: {
+        return (
+          <View style={styles.contentWrapper}>
+            <Text>klsjadf</Text>
+          </View>
+        );
+      }
+      default: {
+        return null;
+      }
     }
   };
 
@@ -77,40 +94,45 @@ const EntryScreen = ({
               marginVertical: 24,
             }}
           />
-          <Bio />
+          <Biography />
         </View>
 
         <View style={styles.containerBottom}>
           <View style={styles.tab}>
-            <Text>About Me</Text>
-            <Text>Analytics</Text>
-            <Text>Post</Text>
-          </View>
-          <Divider />
-          <View style={styles.content}>
-            <Text h4>Hobbies</Text>
-            <View style={styles.hobbyContainer}>
-              {hobbies.map((i) => (
-                <View key={`${i}-${Math.random()}`} style={styles.hobby}>
-                  <Text style={{ textAlign: "center" }}>{i}</Text>
-                </View>
-              ))}
-            </View>
+            <TouchableOpacity
+              style={[
+                styles.tabLabelContainer,
+                {
+                  borderBottomColor:
+                    view === ProfileView.ABOUT_ME
+                      ? theme.colors.primary
+                      : "transparent",
+                },
+              ]}
+              onPress={handleSelection(ProfileView.ABOUT_ME)}
+            >
+              <Text style={styles.tabLabel}>About Me</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.tabLabelContainer,
+                {
+                  borderBottomColor:
+                    view === ProfileView.POST
+                      ? theme.colors.primary
+                      : "transparent",
+                },
+              ]}
+              onPress={handleSelection(ProfileView.POST)}
+            >
+              <Text style={styles.tabLabel}>Post</Text>
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.content}>
-            <Text h4>Favorite Artists</Text>
-            <View style={styles.hobbyContainer}>
-              {artists.map((i) => (
-                <View key={`${i}-${Math.random()}`} style={styles.hobby}>
-                  <Text style={{ textAlign: "center" }}>{i}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
+          <Divider style={styles.divider} />
+
+          {renderView()}
         </View>
-
-        <Button title="Edit Profile" containerStyle={styles.button} />
       </Container>
     </Container>
   );
@@ -126,7 +148,7 @@ const styles = StyleSheet.create({
   },
   containerTop: {
     backgroundColor: "#fff",
-    width: "100%",
+    minWidth: "100%",
     borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
     borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
@@ -137,31 +159,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
     width: "100%",
   },
+  divider: { top: -14 },
   tab: {
     flexDirection: "row",
-    justifyContent: "space-between",
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
   },
-  content: {
+  tabLabelContainer: {
+    borderBottomWidth: 4,
+    borderBottomColor: "transparent",
+    minWidth: 100,
+    paddingBottom: 8,
+    marginVertical: 12,
+    marginRight: 12,
+  },
+  tabLabel: {
+    fontFamily: "nunitoBold",
+    textAlign: "center",
+    fontSize: 18,
+  },
+  contentWrapper: {
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
     paddingVertical: 12,
-  },
-  hobbyContainer: {
-    flexWrap: "wrap",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-  },
-  hobby: {
-    padding: 10,
-    backgroundColor: "#fff",
-    margin: 10,
-    marginLeft: 0,
-    marginBottom: 0,
-    minWidth: 100,
-  },
-  button: {
-    width: "100%",
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingBottom: StyleConstants.PADDING_HORIZONTAL,
+    flex: 1,
   },
 });

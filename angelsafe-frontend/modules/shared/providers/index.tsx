@@ -5,23 +5,35 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { ChildrenProps } from "../types";
 import { Layout } from "../components";
 import ThemeProvider from "./theme";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import ImageBackgroundContainer from "../components/Layout/ImageBackground";
 
-const Providers = ({ children }: ChildrenProps) => (
-  <Provider store={store}>
-    <NavigationContainer
-      theme={{
-        ...DefaultTheme,
-        colors: {
-          ...DefaultTheme.colors,
-          background: "transparent",
-        },
-      }}
-    >
-      <Layout>
-        <ThemeProvider>{children}</ThemeProvider>
-      </Layout>
-    </NavigationContainer>
-  </Provider>
-);
+interface ProviderProps extends ChildrenProps {
+  onLayoutView: () => Promise<void>;
+}
+
+const Providers = ({ children, onLayoutView }: ProviderProps) => {
+  return (
+    <Provider store={store}>
+      <ThemeProvider>
+        <ImageBackgroundContainer>
+          <NavigationContainer
+            theme={{
+              ...DefaultTheme,
+              colors: {
+                ...DefaultTheme.colors,
+                background: "transparent",
+              },
+            }}
+          >
+            <SafeAreaProvider>
+              <Layout onLayout={onLayoutView}>{children}</Layout>
+            </SafeAreaProvider>
+          </NavigationContainer>
+        </ImageBackgroundContainer>
+      </ThemeProvider>
+    </Provider>
+  );
+};
 
 export default Providers;

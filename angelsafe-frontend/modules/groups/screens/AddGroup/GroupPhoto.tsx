@@ -10,7 +10,6 @@ import {
   SaveFormat,
 } from "expo-image-manipulator";
 import { StyleConstants } from "@/shared/styles";
-import axios from "axios";
 import { _API } from "@/shared/config";
 import { useUpdateGroupPhotoMutation } from "@/shared/api/groups";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";

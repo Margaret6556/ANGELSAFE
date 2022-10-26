@@ -46,6 +46,8 @@ const styles = StyleSheet.create({
     width: "100%",
     borderRadius: 10,
     padding: 0,
+    borderWidth: 1,
+    borderColor: "#fff",
   },
   inputTextContainer: {
     borderTopRightRadius: 10,

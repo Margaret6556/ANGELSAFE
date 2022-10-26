@@ -10,12 +10,10 @@ import {
   Nunito_600SemiBold,
 } from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { StatusBar } from "expo-status-bar";
 import { Loading } from "./modules/shared/components";
 
 const App = () => {
-  const [fontsLoaded, error] = useFonts({
+  const [fontsLoaded] = useFonts({
     nunitoLight: Nunito_300Light,
     nunitoRegular: Nunito_400Regular,
     nunitoMedium: Nunito_500Medium,
@@ -40,25 +38,10 @@ const App = () => {
   }
 
   return (
-    <Provider>
-      <SafeAreaProvider>
-        <SafeAreaView
-          style={styles.wrapper}
-          onLayout={onLayoutRootView}
-          edges={["right", "left", "top"]}
-        >
-          <StatusBar style="auto" />
-          <Main />
-        </SafeAreaView>
-      </SafeAreaProvider>
+    <Provider onLayoutView={onLayoutRootView}>
+      <Main />
     </Provider>
   );
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-});

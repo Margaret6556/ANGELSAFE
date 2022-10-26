@@ -44,11 +44,11 @@ const OtpInputField = ({ isError, onComplete }: IOtpInputFieldProps) => {
   }, [code.length]);
 
   useEffect(() => {
-    if (isError) {
-      setTimeout(() => {
+    return () => {
+      if (isError) {
         setCode("");
-      }, 3000);
-    }
+      }
+    };
   }, [isError]);
 
   const toCodeDigitInput = (_value: string, index: number) => {

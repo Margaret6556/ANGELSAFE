@@ -22,12 +22,8 @@ import {
   useJoinGroupMutation,
   useUnjoinGroupMutation,
 } from "@/shared/api/groups";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-import {
-  setBackgroundColor,
-  setSolidBackground,
-} from "@/shared/state/reducers/theme";
-import { useIsFocused } from "@react-navigation/native";
+import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
+import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 
 const deviceHeight = Dimensions.get("screen").height;
 
@@ -42,18 +38,10 @@ const GroupDetailsScreen = ({
   const [unjoinGroup, unjoinGroupResponse] = useUnjoinGroupMutation();
   const { data: membersData } = useGetGroupMembersQuery({ groupId: id });
   const [bounces, setBounces] = useState(false);
-  const dispatch = useAppDispatch();
-  const isFocused = useIsFocused();
 
   const { theme } = useTheme();
 
-  // if (!isFocused) {
-  //   dispatch(setSolidBackground(false));
-  // }
-
-  // useEffect(() => {
-  //   dispatch(setSolidBackground(true));
-  // }, []);
+  useSetSolidBackground();
 
   const styles = useMemo(() => makeStyles(theme.colors), []);
 
@@ -164,7 +152,7 @@ const makeStyles = (color: { primary: string }) =>
       paddingVertical: 0,
     },
     container: {
-      width: "100%",
+      minWidth: "100%",
     },
     containerTop: {
       backgroundColor: "#fff",
@@ -194,7 +182,7 @@ const makeStyles = (color: { primary: string }) =>
       justifyContent: "space-between",
     },
     containerBottom: {
-      padding: StyleConstants.PADDING_HORIZONTAL,
+      padding: StyleConstants.PADDING_HORIZONTAL / 2,
     },
     inputContainer: {
       backgroundColor: "#fff",

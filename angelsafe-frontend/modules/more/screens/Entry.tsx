@@ -1,20 +1,16 @@
 import React from "react";
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-import { MoreParamsList, MoreScreenProps } from "../types";
-import { ListComponent } from "../components";
-import { resources, groupChats, settings } from "../data";
-import { useLazyLogoutQuery } from "@/shared/api/auth";
-import { logout } from "@/shared/state/reducers/auth/actions";
+import { MoreParamsList } from "../types";
 import SettingsComponent from "../components/Settings";
 import GroupChatComponent from "../components/GroupChats";
 import ResourcesComponent from "../components/Resources";
+import { StackScreenProps } from "@react-navigation/stack";
 
 const EntryScreen = ({
   navigation,
-}: MoreScreenProps<MoreParamsList, "Entry">) => {
+}: StackScreenProps<MoreParamsList, "Entry">) => {
   return (
     <Container
       type="scroll"

@@ -8,6 +8,7 @@ import { Stepper } from "../../components";
 // import { NullHeader } from "@/shared/components";
 import InputNumber from "./InputNumber";
 import VerifyNumber from "./VerifyNumber";
+import LoginEmail from "./LoginEmail";
 
 const AuthLoginStack = createStackNavigator<AuthLoginParamsList>();
 
@@ -19,10 +20,12 @@ const LoginScreens = ({}: StackScreenProps<AuthParamList, "Login">) => {
         animationEnabled: false,
         cardOverlayEnabled: false,
         headerBackTitle: "",
+        headerBackTitleVisible: false,
       }}
     >
       <AuthLoginStack.Screen name="Input Number" component={InputNumber} />
       <AuthLoginStack.Screen name="Verify Number" component={VerifyNumber} />
+      <AuthLoginStack.Screen name="Email Login" component={LoginEmail} />
     </AuthLoginStack.Navigator>
   );
 };

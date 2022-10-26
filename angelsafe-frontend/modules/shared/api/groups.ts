@@ -1,7 +1,6 @@
 import { apiSlice } from ".";
 import { _API } from "../config";
-import { BackendResponse } from "../types";
-import { ProfileRegisterType } from "./profile";
+import { BackendResponse, UserType } from "../types";
 
 export type GroupsType = {
   description: string;
@@ -70,9 +69,7 @@ const groupsApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ["GROUPS"],
     }),
     getGroupMembers: builder.query<
-      BackendResponse<
-        Array<ProfileRegisterType & { profilePic: string; id: string }>
-      >,
+      BackendResponse<Array<UserType>>,
       { groupId: string }
     >({
       query: (body) => ({

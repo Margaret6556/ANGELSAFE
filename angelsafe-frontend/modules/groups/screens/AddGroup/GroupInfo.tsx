@@ -4,7 +4,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { AddGroupParamList } from "../../types";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
-import { Input, Button, Text } from "@rneui/themed";
+import { Input, Button, Text, useTheme } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
 import { useAppDispatch, useKeyboardShowing } from "@/shared/hooks";
 // import { BackendErrorResponse, BackendResponse } from "@/shared/types";
@@ -21,11 +21,15 @@ const AddGroup = ({
   const [multilineHeight, setMultiLineHeight] = useState(0);
   const { keyboardIsShowing } = useKeyboardShowing();
   const [addGroup, addGroupResponse] = useAddGroupMutation();
+  const { theme } = useTheme();
+
+  const styles = makeStyles({ primary: theme.colors.primary });
 
   const {
     handleSubmit,
     control,
     formState: { errors },
+    watch,
   } = useForm({
     defaultValues: { groupname: "", description: "" },
   });
@@ -46,6 +50,9 @@ const AddGroup = ({
       console.log({ e });
     }
   };
+
+  const gname = watch("groupname");
+  const gdescription = watch("description");
 
   return (
     <KeyboardAwareScrollView
@@ -70,12 +77,27 @@ const AddGroup = ({
             max: 21,
           }}
           render={({ field }) => (
-            <Input
-              label="Enter Group Name"
-              {...field}
-              onChangeText={field.onChange}
-              labelStyle={{ fontSize: 16 }}
-            />
+            <View>
+              <Input
+                label={
+                  <View style={styles.inputLabelContainer}>
+                    <Text style={styles.inputLabel}>Enter Group Name</Text>
+                    <Text
+                      style={[
+                        styles.inputLabel,
+                        { fontSize: 14, color: "#666" },
+                      ]}
+                    >
+                      {gname.length}/21
+                    </Text>
+                  </View>
+                }
+                maxLength={21}
+                {...field}
+                onChangeText={field.onChange}
+                labelStyle={{ fontSize: 16 }}
+              />
+            </View>
           )}
         />
         <Controller
@@ -83,7 +105,17 @@ const AddGroup = ({
           control={control}
           render={({ field }) => (
             <Input
-              label="Enter Group Description"
+              maxLength={100}
+              label={
+                <View style={styles.inputLabelContainer}>
+                  <Text style={styles.inputLabel}>Enter Group Description</Text>
+                  <Text
+                    style={[styles.inputLabel, { fontSize: 14, color: "#666" }]}
+                  >
+                    {gdescription.length}/100
+                  </Text>
+                </View>
+              }
               multiline
               inputStyle={{
                 height: Math.max(100, multilineHeight),
@@ -109,11 +141,21 @@ const AddGroup = ({
 
 export default AddGroup;
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    padding: StyleConstants.PADDING_HORIZONTAL,
-    justifyContent: "space-between",
-  },
-  inputs: {},
-});
+const makeStyles = (args: any) =>
+  StyleSheet.create({
+    wrapper: {
+      flex: 1,
+      padding: StyleConstants.PADDING_HORIZONTAL,
+      justifyContent: "space-between",
+    },
+    inputs: {},
+    inputLabelContainer: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    inputLabel: {
+      color: args.primary,
+    },
+  });

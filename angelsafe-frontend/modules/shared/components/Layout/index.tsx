@@ -1,24 +1,24 @@
 import React from "react";
-import { View, StyleSheet, ScrollView, ImageBackground } from "react-native";
+import { StyleSheet, ImageBackground } from "react-native";
 import { ChildrenProps } from "@/shared/types";
-import { useAppSelector } from "@/shared/hooks";
+import { SafeAreaView } from "react-native-safe-area-context";
+import MainStatusBar from "../MainStatusBar";
 
-const Layout = ({ children }: ChildrenProps) => {
-  const { backgroundColor, solidBackground } = useAppSelector(
-    (state) => state.theme
-  );
-
+interface LayoutProps extends ChildrenProps {
+  onLayout: () => Promise<void>;
+}
+const Layout = ({ children, onLayout }: LayoutProps) => {
   return (
-    <ImageBackground
-      source={require("../../../../assets/bg.png")}
-      style={[styles.container, { backgroundColor }]}
-      resizeMode="cover"
-      imageStyle={{
-        opacity: solidBackground ? 0 : 1,
-      }}
-    >
-      {children}
-    </ImageBackground>
+    <>
+      <MainStatusBar />
+      <SafeAreaView
+        style={styles.container}
+        onLayout={onLayout}
+        edges={["right", "left", "top"]}
+      >
+        {children}
+      </SafeAreaView>
+    </>
   );
 };
 
@@ -27,5 +27,6 @@ export default Layout;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    zIndex: 2,
   },
 });

@@ -13,6 +13,7 @@ export type AuthLoginParamsList = {
   "Verify Number": {
     mobileNumber: string;
   };
+  "Email Login": undefined;
 };
 
 export type AuthRegisterParamList = {

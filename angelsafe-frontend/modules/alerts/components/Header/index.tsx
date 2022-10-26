@@ -12,11 +12,11 @@ const Header = (props: Props) => {
     <View style={styles.wrapper}>
       <View style={styles.container}>
         <Text h3>Alerts</Text>
-        <View style={styles.icons}>
+        {/* <View style={styles.icons}>
           <TouchableOpacity activeOpacity={0.5}>
             <SearchIcon />
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
       <Divider style={{ marginTop: 12 }} />
     </View>

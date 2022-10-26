@@ -1,21 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { ListItem } from "@rneui/themed";
+import { ListItem, Text, useTheme } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
-import { IMoreData } from "@/more/types";
+import { CardProps } from "@/more/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { Icon } from "@rneui/themed";
 
-const MoreCard = ({ label, onPress }: IMoreData) => {
+const MoreCard = ({ label, onPress, icon }: CardProps) => {
   const handlePress = () => {
     onPress && onPress();
   };
+  const { theme } = useTheme();
 
   return (
     <TouchableOpacity activeOpacity={0.5} onPress={handlePress}>
       <ListItem containerStyle={styles.container}>
         <ListItem.Content style={styles.content}>
           <ListItem.Title style={styles.title}>{label}</ListItem.Title>
-          <ListItem.Chevron />
+          <Icon size={20} color={theme.colors.grey0} {...icon} />
         </ListItem.Content>
       </ListItem>
     </TouchableOpacity>
@@ -34,19 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  checkbox: {
-    marginRight: StyleConstants.PADDING_HORIZONTAL,
-  },
   title: {
     color: "#333",
   },
 });
-
-// const initialSymptoms = [
-//   "Tiredness",
-//   "Morning sickness",
-//   "Headache",
-//   "Bleeding",
-//   "Changes on your skin",
-//   "Swelling",
-// ];

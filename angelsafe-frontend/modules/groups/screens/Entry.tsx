@@ -5,9 +5,8 @@ import { GroupParamsList } from "../types";
 import Groups from "../components/Groups";
 import { StackScreenProps } from "@react-navigation/stack";
 import { _API } from "@/shared/config";
-import axios from "axios";
-import { useIsFocused } from "@react-navigation/native";
 import { useGetGroupsQuery } from "@/shared/api/groups";
+import { Text } from "@rneui/themed";
 
 const EntryScreen = ({
   navigation,
@@ -37,7 +36,11 @@ const EntryScreen = ({
     );
   }
 
-  return null;
+  return (
+    <Container>
+      <Text style={{ color: "red" }}>Error</Text>
+    </Container>
+  );
 };
 
 export default EntryScreen;

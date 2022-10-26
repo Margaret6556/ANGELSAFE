@@ -1,14 +1,16 @@
 import base64 from "react-native-base64";
 import { apiSlice } from ".";
 import { _API } from "../config";
-import { BackendResponse } from "../types";
+import type { BackendResponse, UserType } from "../types";
 
-export type ProfileRegisterType = {
-  username: string;
-  year: string;
-  country: string;
-  gender: string;
-};
+type ProfileRegisterType = Pick<
+  UserType,
+  "username" | "year" | "country" | "gender"
+>;
+
+type UpdateProfileType = Partial<
+  Omit<UserType, "id" | "token" | "username" | "photo">
+>;
 
 const profileApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -22,18 +24,32 @@ const profileApiSlice = apiSlice.injectEndpoints({
         invalidatesTags: ["PROFILE"],
       }
     ),
-    getProfile: builder.query<
-      BackendResponse<ProfileRegisterType & { profilePic: string }>,
-      string
-    >({
+    getProfile: builder.query<BackendResponse<UserType>, string | undefined>({
       query: (token) => ({
         url: _API.PROFILE.INFO,
-        headers: {
-          Authorization: token,
-        },
+        headers: { Authorization: token },
       }),
 
       providesTags: ["PROFILE"],
+    }),
+    updateProfile: builder.mutation<BackendResponse<{}>, UpdateProfileType>({
+      query: (body) => ({
+        url: _API.PROFILE.UPDATE,
+        body,
+        method: "POST",
+      }),
+      invalidatesTags: ["PROFILE"],
+    }),
+    updateProfilePicture: builder.mutation<
+      BackendResponse<{}>,
+      Pick<UserType, "profilePic">
+    >({
+      query: (body) => ({
+        url: _API.PROFILE.UPDATE_PIC,
+        body,
+        method: "POST",
+      }),
+      invalidatesTags: ["PROFILE"],
     }),
   }),
   overrideExisting: true,
@@ -43,4 +59,6 @@ export const {
   useRegisterProfileMutation,
   useGetProfileQuery,
   useLazyGetProfileQuery,
+  useUpdateProfileMutation,
+  useUpdateProfilePictureMutation,
 } = profileApiSlice;
