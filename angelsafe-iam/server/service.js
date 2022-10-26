@@ -580,8 +580,6 @@ module.exports = (config) => {
         result.message = 'Getting Profile Successful';
         result.data = {
           mobileNumber: findResult.mobileNumber,
-          userName: findResult.username,
-          profilePic: findResult.profilePic,
           email: findResult.email
         };
       }

@@ -63,6 +63,18 @@ class IAMService {
     });
   }
 
+  async getProfile(req) {
+    const { ip, port } = await this.getService('angelsafe-iam');
+    return IAMService.callService({
+      method: 'get',
+      url: `http://${ip}:${port}/profile`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   async verifyEmail(data) {
     const { ip, port } = await this.getService('angelsafe-iam');
     return IAMService.callService({

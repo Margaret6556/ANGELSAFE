@@ -200,6 +200,8 @@ async function processData(req, res) {
             switch (req.method) {
               case 'GET':
                 result = await ProfileService.getInfo(req);
+                let iam = await IAMService.getProfile(req);
+                result.data = {...result.data, ...iam.data};
                 res.status(result.status).json(result);
                 break;
               default:
