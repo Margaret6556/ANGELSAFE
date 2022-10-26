@@ -582,6 +582,7 @@ module.exports = (config) => {
           mobileNumber: findResult.mobileNumber,
           userName: findResult.username,
           profilePic: findResult.profilePic,
+          email: findResult.email
         };
       }
       return res.status(result.status).json(result);
