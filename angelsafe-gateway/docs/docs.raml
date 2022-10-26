@@ -114,8 +114,14 @@ version: v0.1.0
             application/json:
                 example: |
                     {
-                        "country": "Canada",
-                        "gender": "Female"
+                        "username":"testuser",
+                        "year": "1994",
+                        "country": "United States of America",
+                        "gender": "Male",
+                        "bio": "This is my personal bio",
+                        "hobbies": ["Cooking"],
+                        "music": ["Gothic Metal"],
+                        "movies": ["American Pie"]
                     }
         responses:
             200:
@@ -136,11 +142,15 @@ version: v0.1.0
                     application/json:
                         example: |
                             {
-                                "username": "johnytest",
-                                "profilePic": "data:image/png;base64,iVY...",
+                                "id": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                                "username":"testuser",
                                 "year": "1994",
-                                "gender": "Female",
-                                "country": "North Korea"
+                                "country": "United States of America",
+                                "gender": "Male",
+                                "bio": "This is my personal bio",
+                                "hobbies": ["Cooking"],
+                                "music": ["Gothic Metal"],
+                                "movies": ["American Pie"]
                             }
 /api/profile/update-pic:
     post:
@@ -418,7 +428,8 @@ version: v0.1.0
             application/json:
                 example: |
                     {
-                        "stat": "2"
+                        "stat": "2",
+                        "experience": ["Tired"]
                     }
         responses:
             200:
@@ -441,6 +452,7 @@ version: v0.1.0
                             {
                                 "id": "635429a9756d27bdb4...",
                                 "stat": 2,
+                                "experience": ["Tired"]
                             }
 /api/post/create:
     post:

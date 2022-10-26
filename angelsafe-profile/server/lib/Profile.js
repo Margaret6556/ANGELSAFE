@@ -271,7 +271,7 @@ class ProfileService {
   }
 
   static isRequestUpdateValid(data) {
-    return TypeCheck('{username: Maybe String, year: Maybe String, country: Maybe String, gender: Maybe String, ip: String}', data);
+    return TypeCheck('{username: Maybe String, year: Maybe String, country: Maybe String, gender: Maybe String, bio: Maybe String, hobbies: Maybe Array, music: Maybe Array, movies: Maybe Array, ip: String}', data);
   }
 
   static isRequestUpdatePicValid(data) {
@@ -308,6 +308,44 @@ class ProfileService {
 
   static async isProfilePicValid(data){
     return IsBase64(data, { mime: true });
+  }
+  
+  static getRandomNumber(length){
+    return Math.floor(Math.pow(10, length-1) + Math.random() * 9 * Math.pow(10, length-1));
+  }
+
+  static getRelevantTime(current, previous){
+    let msPerMinute = 60 * 1000;
+    let msPerHour = msPerMinute * 60;
+    let msPerDay = msPerHour * 24;
+    let msPerMonth = msPerDay * 30;
+    let msPerYear = msPerDay * 365;
+
+    let elapsed = current - previous;
+
+    if (elapsed < msPerMinute) {
+          return Math.round(elapsed/1000) + ' seconds ago';   
+    }
+
+    else if (elapsed < msPerHour) {
+          return Math.round(elapsed/msPerMinute) + ' minutes ago';   
+    }
+
+    else if (elapsed < msPerDay ) {
+          return Math.round(elapsed/msPerHour ) + ' hours ago';   
+    }
+
+    else if (elapsed < msPerMonth) {
+        return 'approximately ' + Math.round(elapsed/msPerDay) + ' days ago';   
+    }
+
+    else if (elapsed < msPerYear) {
+        return 'approximately ' + Math.round(elapsed/msPerMonth) + ' months ago';   
+    }
+
+    else {
+        return 'approximately ' + Math.round(elapsed/msPerYear ) + ' years ago';   
+    }
   }
 
 }

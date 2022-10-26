@@ -5,7 +5,7 @@ class FeedService {
   }
 
   static isRequestValid(data) {
-    return TypeCheck('{ stat: String , ip: String}', data);
+    return TypeCheck('{ stat: String, experience: Array, ip: String}', data);
   }
 
   static isRequestPostValid(data) {

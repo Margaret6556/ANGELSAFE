@@ -67,7 +67,8 @@ module.exports = (config) => {
         $set: {
           ownerId: DB.getObjectId(decodedAuth.data.id),
           timestamp: new Date().valueOf(),
-          stat: data.stat
+          stat: data.stat,
+          experience: data.experience
         }
       },
       {
@@ -133,7 +134,8 @@ module.exports = (config) => {
       if(findResult)
         result.data = {
           id: findResult._id.toString(),
-          stat: findResult.stat
+          stat: findResult.stat,
+          experience: findResult.experience
         };
       return res.status(result.status).json(result);
     } catch (err) {
