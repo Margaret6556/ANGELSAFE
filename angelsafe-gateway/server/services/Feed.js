@@ -38,6 +38,18 @@ class FeedService {
     });
   }
 
+  async getWins(req) {
+    const { ip, port } = await this.getService('angelsafe-feed');
+    return FeedService.callService({
+      method: 'get',
+      url: `http://${ip}:${port}/wins`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   async createPost(req, data) {
     const { ip, port } = await this.getService('angelsafe-feed');
     return FeedService.callService({
@@ -56,6 +68,19 @@ class FeedService {
     return FeedService.callService({
       method: 'get',
       url: `http://${ip}:${port}/view-post`,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
+  async listPost(req, data) {
+    const { ip, port } = await this.getService('angelsafe-feed');
+    return FeedService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/list-post`,
+      data,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': req.headers.authorization

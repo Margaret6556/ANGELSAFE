@@ -144,7 +144,8 @@ async function processData(req, res) {
             break;
           case 'refresh-token':
             switch (req.method) {
-              case 'POST':
+              case 'GET':
+                result = await IAMService.refreshToken(req);
                 res.status(result.status).json(result);
                 break;
               default:
@@ -201,7 +202,8 @@ async function processData(req, res) {
               case 'GET':
                 result = await ProfileService.getInfo(req);
                 let iam = await IAMService.getProfile(req);
-                result.data = {...result.data, ...iam.data};
+                let feed = await FeedService.getWins(req);
+                result.data = {...result.data, ...iam.data, ...feed.data};
                 res.status(result.status).json(result);
                 break;
               default:
@@ -449,6 +451,16 @@ async function processData(req, res) {
             switch (req.method) {
               case 'GET':
                 result = await FeedService.getPost(req);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'list':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.listPost(req, data);
                 res.status(result.status).json(result);
                 break;
               default:

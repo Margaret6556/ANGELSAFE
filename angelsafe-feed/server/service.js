@@ -125,6 +125,7 @@ module.exports = (config) => {
       let end = new Date();
       end.setHours(23,59,59,999);
       const findResult = await DBHelper.getCollection(config.statCollection).findOne({
+        ownerId: DB.getObjectId(decodedAuth.data.id),
         timestamp: {$gte: start.valueOf(), $lt: end.valueOf()}
       });
       log.debug(result);
@@ -137,6 +138,59 @@ module.exports = (config) => {
           stat: findResult.stat,
           experience: findResult.experience
         };
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  service.get('/wins', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      let start = new Date();
+      start.setHours(0,0,0,0);
+      let end = new Date();
+      end.setHours(23,59,59,999);
+      const winCount = await DBHelper.getCollection(config.statCollection).count({
+        ownerId: DB.getObjectId(decodedAuth.data.id),
+        $or: [{ stat: "1"}, { stat: "1"}]
+      });
+      const painCount = await DBHelper.getCollection(config.statCollection).count({
+        ownerId: DB.getObjectId(decodedAuth.data.id),
+        $or: [{ stat: "2"}, { stat: "3"}, { stat: "4"}, { stat: "5"}]
+      });
+      log.debug(result);
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Wins Successful';
+      result.data = {
+        winCount: winCount?winCount:0,
+        painCount: painCount?painCount:0,
+      };
       return res.status(result.status).json(result);
     } catch (err) {
       return next(err);
@@ -176,8 +230,17 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
+      try{
+        DB.getObjectId(data.groupId);
+      } catch(err){
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
       const insertResult = await DBHelper.getCollection(config.postCollection).insertOne({
         ownerId: DB.getObjectId(decodedAuth.data.id),
+        groupId: DB.getObjectId(data.groupId),
         timestamp: new Date().valueOf(),
         message: data.message,
         comments: [],
@@ -225,13 +288,8 @@ module.exports = (config) => {
         result.message = 'Invalid Login Credentials';
         throw result;
       }
-      let start = new Date();
-      start.setHours(0,0,0,0);
-      let end = new Date();
-      end.setHours(23,59,59,999);
       const findResult = await DBHelper.getCollection(config.postCollection).find({
-        ownerId: DB.getObjectId(decodedAuth.data.id),
-        timestamp: {$gte: start.valueOf(), $lt: end.valueOf()}
+        ownerId: DB.getObjectId(decodedAuth.data.id)
       }).toArray();
       log.debug(result);
       result.status = 200;
@@ -241,6 +299,70 @@ module.exports = (config) => {
       findResult.forEach((post)=>{
         result.data.push({
           id: post._id.toString(),
+          ownerId: post.ownerId.toString(),
+          groupId: post.groupId.toString(),
+          message: post.message,
+          timestamp: post.timestamp,
+          comments: post.comments.length,
+          hearts: post.hearts.length,
+          likes: post.likes.length
+        });
+      });
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  service.post('/list-post', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Feed.isRequestGroupPostValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      let skip = 0;
+      if(data.skip)
+        skip = parseInt(skip);
+      const findResult = await DBHelper.getCollection(config.postCollection).find({
+        groupId: DB.getObjectId(data.groupId)
+      }).skip(skip).limit(30).toArray();
+      log.debug(result);
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Group Post Successful';
+      result.data = [];
+      findResult.forEach((post)=>{
+        result.data.push({
+          id: post._id.toString(),
+          ownerId: post.ownerId.toString(),
+          groupId: post.groupId.toString(),
           message: post.message,
           timestamp: post.timestamp,
           comments: post.comments.length,

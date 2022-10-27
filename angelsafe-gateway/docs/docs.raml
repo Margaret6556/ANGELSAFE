@@ -78,7 +78,23 @@ version: v0.1.0
                     application/json:
                         example: |
                             {
-                                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+                                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MD...",
+                            }
+/api/auth/refresh-token:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "token": "eyJhbtYroiEkdATI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MD..."
                             }
 /api/profile/register:
     post:
@@ -152,7 +168,9 @@ version: v0.1.0
                                 "music": ["Gothic Metal"],
                                 "movies": ["American Pie"],
                                 "mobileNumber": "+639452224444",
-                                "email": "test@email.com"
+                                "email": "test@email.com",
+                                "winCount": 1,
+                                "painCount": 0
                             }
 /api/profile/update-pic:
     post:
@@ -468,7 +486,8 @@ version: v0.1.0
             application/json:
                 example: |
                     {
-                        "message": "This is a sample Post"
+                        "message": "This is a sample Post",
+                        "groupId": "635429a9756d27bdb4...",
                     }
         responses:
             200:
@@ -488,14 +507,45 @@ version: v0.1.0
                 body:
                     application/json:
                         example: |
-                            {
+                            [{
                                 "id": "635429a9756d27bdb4...",
+                                "ownerId": "635429a9756d346fs3...",
+                                "groupId": "635429a97234tdsg45...",
                                 "message": "This is a sample Post",
                                 "timestamp" 12355476565,
                                 "comments": 12,
                                 "hearts": 3,
                                 "likes": 56
-                            }
+                            }]
+/api/post/list:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupId": "635429a97234tdsg45...",
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [{
+                                "id": "635429a9756d27bdb4...",
+                                "ownerId": "635429a9756d346fs3...",
+                                "groupId": "635429a97234tdsg45...",
+                                "message": "This is a sample Post",
+                                "timestamp" 12355476565,
+                                "comments": 12,
+                                "hearts": 3,
+                                "likes": 56
+                            }]
 /api/post/heart:
     post:
         headers: 

@@ -463,7 +463,7 @@ module.exports = (config) => {
     }
   });
 
-  service.post('/refresh-token', async (req, res, next) => {
+  service.get('/refresh-token', async (req, res, next) => {
     const result = {
       status: 400,
       error: 'Invalid API',
@@ -474,12 +474,6 @@ module.exports = (config) => {
       ...req.body,
     };
     try {
-      if (!Users.isRequestTokenValid(data)) {
-        result.status = 400;
-        result.error = 'Bad Request';
-        result.message = 'Invalid Data';
-        throw result;
-      }
       let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
       if (!token) {
         result.status = 401;

@@ -9,7 +9,11 @@ class FeedService {
   }
 
   static isRequestPostValid(data) {
-    return TypeCheck('{ message: String , ip: String}', data);
+    return TypeCheck('{ message: String, groupId: String, ip: String}', data);
+  }
+
+  static isRequestGroupPostValid(data) {
+    return TypeCheck('{ skip: Maybe String, groupId: String, ip: String}', data);
   }
 
   static isRequestReactValid(data) {

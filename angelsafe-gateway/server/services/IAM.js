@@ -87,12 +87,11 @@ class IAMService {
     });
   }
 
-  async refreshToken(data, req) {
+  async refreshToken(req) {
     const { ip, port } = await this.getService('angelsafe-iam');
     return IAMService.callService({
-      method: 'post',
+      method: 'get',
       url: `http://${ip}:${port}/refresh-token`,
-      data,
       headers: {
         'Content-Type': 'application/json',
         Authorization: req.headers.authorization ? req.headers.authorization : '',
