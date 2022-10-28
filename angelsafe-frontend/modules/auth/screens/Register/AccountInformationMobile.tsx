@@ -5,7 +5,6 @@ import { Text, Button } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useForm } from "react-hook-form";
 import { _API } from "@/shared/config";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import NumberInput from "@/shared/components/NumberInput";
 import { StackScreenProps } from "@react-navigation/stack";
 import { useRegisterMutation } from "@/shared/api/auth";
@@ -56,33 +55,26 @@ const RegisterScreen = ({
 
   return (
     <Container
+      type="pressable"
       containerProps={{
         style: styles.wrapper,
+        onPress: Keyboard.dismiss,
       }}
     >
       <View style={{}}>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>
-              Create an Account to connect with those who share the same health
-              struggles as you and gain support through groups, symptom
-              tracking, and by sharing your wins and losses.
-            </Text>
-            {regResponse.error && "status" in regResponse.error && (
-              <Text>{regResponse.error.data.message}</Text>
-            )}
-          </View>
-        </TouchableWithoutFeedback>
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>
+            Create an Account to connect with those who share the same health
+            struggles as you and gain support through groups, symptom tracking,
+            and by sharing your wins and losses.
+          </Text>
+          {regResponse.error && "status" in regResponse.error && (
+            <Text>{regResponse.error.data.message}</Text>
+          )}
+        </View>
         <NumberInput control={control} />
       </View>
 
-      <TouchableWithoutFeedback
-        onPress={Keyboard.dismiss}
-        containerStyle={{
-          minHeight: "35%",
-          width: "100%",
-        }}
-      />
       <Button
         title="Complete Account Setup"
         containerStyle={{
@@ -142,6 +134,3 @@ const styles = StyleSheet.create({
     color: "#333",
   },
 });
-
-const emailRegex =
-  /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;

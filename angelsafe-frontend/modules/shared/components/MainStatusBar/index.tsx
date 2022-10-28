@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { useAppSelector } from "@/shared/hooks";
@@ -8,7 +8,7 @@ const MainStatusBar = () => {
 
   return (
     <View style={[styles.container, { backgroundColor }]}>
-      <StatusBar style="dark" backgroundColor={backgroundColor} />
+      <StatusBar style="auto" backgroundColor={backgroundColor} />
     </View>
   );
 };

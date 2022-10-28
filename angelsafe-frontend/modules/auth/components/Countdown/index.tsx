@@ -10,7 +10,7 @@ interface CountdownProps {
   onComplete: (completed: boolean) => void;
 }
 
-const TEN_MINUTES = 0.2 * 60 * 1000;
+const TEN_MINUTES = 10 * 60 * 1000;
 const CountdownTimer = ({ onComplete }: CountdownProps) => {
   const renderer = ({ formatted }: CountdownRenderProps) => (
     <Text>

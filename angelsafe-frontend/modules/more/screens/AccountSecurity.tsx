@@ -94,7 +94,7 @@ const AccountSecurity = ({
                   autoCapitalize="none"
                   returnKeyType="next"
                   disabled={!!user?.email}
-                  placeholder={"test@email.com"}
+                  placeholder={user?.email}
                   {...field}
                   onChangeText={field.onChange}
                 />

@@ -4,7 +4,7 @@ import { EntryScreen } from "./screens";
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppTabParamList } from "@/shared/types";
 import EditProfile from "./screens/EditProfile";
-import { TransitionScreen } from "@/shared/components";
+import { TransitionSlide } from "@/shared/components";
 
 const ProfileStack = createStackNavigator<ProfileParamsList>();
 
@@ -18,7 +18,7 @@ const GroupScreen = ({
         headerStyle: {
           backgroundColor: "transparent",
         },
-        ...TransitionScreen,
+        ...TransitionSlide,
       }}
     >
       <ProfileStack.Screen

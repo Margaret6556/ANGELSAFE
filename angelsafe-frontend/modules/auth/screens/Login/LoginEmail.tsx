@@ -2,7 +2,7 @@ import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { AuthLoginParamsList, AuthParamList } from "@/auth/types";
-import { Button, Input } from "@rneui/themed";
+import { Button, Image, Input } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
 import { Container } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
@@ -13,6 +13,7 @@ import { setLoggedIn, setUser } from "@/shared/state/reducers/auth";
 import { useLazyGetProfileQuery } from "@/shared/api/profile";
 import { Auth } from "@/shared/config";
 import { setItemAsync } from "expo-secure-store";
+import emailRegex from "@/shared/utils/emailRegex";
 
 type Props = {};
 
@@ -34,12 +35,17 @@ const LoginEmail = ({}: StackScreenProps<
     control,
     formState: { errors },
     handleSubmit,
+    watch,
+    setValue,
   } = useForm({
     defaultValues: {
       email: "",
       password: "",
     },
   });
+
+  const email = watch("email");
+  const password = watch("password");
 
   const handleSetSecureText = () => {
     setSecureTextEntry(!secureTextEntry);
@@ -54,7 +60,7 @@ const LoginEmail = ({}: StackScreenProps<
 
       if (status === 200) {
         const { data } = await getProfile(`Bearer ${token}`).unwrap();
-
+        console.log({ token });
         dispatch(setUser({ ...data, token }));
         await setItemAsync(Auth.KEY, token);
         dispatch(setLoggedIn(true));
@@ -64,12 +70,35 @@ const LoginEmail = ({}: StackScreenProps<
       console.log({ err });
       setTimeout(() => {
         setError("");
-      }, 6000);
+      }, 8000);
       setError(err.data.message);
+      setValue("password", "");
     }
   };
   return (
     <Pressable style={styles.container} onPress={Keyboard.dismiss}>
+      <View
+        style={{
+          width: "100%",
+          height: 200,
+          alignItems: "flex-end",
+        }}
+      >
+        <Image
+          source={require("../../../../assets/auth/Saly-2.png")}
+          style={{
+            // backgroundColor: "blue",
+            width: 200,
+            height: 200,
+          }}
+          containerStyle={{
+            aspectRatio: 1,
+            flex: 1,
+          }}
+          // resizeMethod="auto"
+          resizeMode="contain"
+        />
+      </View>
       <View style={styles.inputs}>
         <Text style={{ color: "red", opacity: error ? 1 : 0, minHeight: 24 }}>
           {error}
@@ -79,6 +108,10 @@ const LoginEmail = ({}: StackScreenProps<
           name="email"
           rules={{
             required: "Invalid email",
+            pattern: {
+              value: emailRegex,
+              message: "Please enter a valid email",
+            },
           }}
           render={({ field }) => (
             <Input
@@ -124,6 +157,7 @@ const LoginEmail = ({}: StackScreenProps<
         containerStyle={{ width: "100%", marginBottom: 24 }}
         onPress={handleSubmit(handleLogin)}
         loading={loginResponse.isLoading || getProfileResponse.isLoading}
+        disabled={!email || !password || !!Object.keys(errors).length}
       />
     </Pressable>
   );
@@ -140,5 +174,6 @@ const styles = StyleSheet.create({
   },
   inputs: {
     width: "100%",
+    top: -200,
   },
 });

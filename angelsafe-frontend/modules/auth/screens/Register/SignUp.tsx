@@ -1,22 +1,27 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AuthRegisterParamList } from "@/auth/types";
-import { View, Image, StyleSheet, Keyboard, Animated } from "react-native";
-import { useAppDispatch, useKeyboardShowing } from "@/shared/hooks";
-import { Text, Button, Input } from "@rneui/themed";
+import { View, StyleSheet, Keyboard, Animated, Dimensions } from "react-native";
+import { useKeyboardShowing } from "@/shared/hooks";
+import { Text, Button, Input, makeStyles, useTheme, Icon } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { Stepper } from "@/auth/components";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
-import { setLoggedIn, setUser } from "@/shared/state/reducers/auth";
+import { setUser } from "@/shared/state/reducers/auth";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Controller, useForm } from "react-hook-form";
-import axios from "axios";
 import { useDispatch } from "react-redux";
 import {
-  ProfileRegisterType,
   useRegisterProfileMutation,
+  ProfileRegisterType,
 } from "@/shared/api/profile";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
-// import { useRegisterMutation } from "@/shared/api/auth";
+import DropDownInput from "@/shared/components/DropDownInput";
+import _countries from "@/shared/config/countries";
+
+const mappedCountries = _countries.map((c) => ({
+  label: c,
+  value: c,
+}));
 
 type FormFields = ProfileRegisterType;
 
@@ -28,8 +33,17 @@ const SignUp = ({
   const value = useRef(new Animated.Value(0)).current;
   const [registerProfile, profileResponse] = useRegisterProfileMutation();
   const dispatch = useDispatch();
+  const styles = useStyles();
 
-  // const [register, registerResponse] = useRegisterMutation();
+  const [genderListOpen, setGenderListOpen] = useState(false);
+  const [genderValue, setGenderValue] = useState(null);
+  const [genders] = useState([
+    { label: "Male", value: "Male" },
+    { label: "Female", value: "Female" },
+  ]);
+  const [countriesListOpen, setCountriesListOpen] = useState(false);
+  const [countryValue, setCountryValue] = useState(null);
+  const [countries] = useState(mappedCountries);
 
   const {
     control,
@@ -38,9 +52,9 @@ const SignUp = ({
   } = useForm<FormFields>({
     defaultValues: {
       username: "",
-      year: "2004",
+      year: "",
       gender: "Male",
-      country: "India",
+      country: "",
     },
     reValidateMode: "onChange",
   });
@@ -84,6 +98,9 @@ const SignUp = ({
         dispatch(
           setUser({
             username: val.username,
+            country: val.country,
+            gender: val.gender,
+            year: val.year,
           })
         );
         navigation.navigate("Account Created");
@@ -108,7 +125,12 @@ const SignUp = ({
     >
       <KeyboardAwareScrollView
         showsVerticalScrollIndicator={false}
-        scrollEnabled={keyboardIsShowing}
+        // scrollEnabled={keyboardIsShowing}
+        contentContainerStyle={{
+          justifyContent: "space-between",
+          flex: 1,
+          alignItems: "flex-start",
+        }}
       >
         <View style={styles.text}>
           <Text h4 h4Style={[styles.subtitle, styles.subtitleh4]}>
@@ -153,6 +175,21 @@ const SignUp = ({
           <Controller
             control={control}
             name="year"
+            rules={{
+              required: "Please enter birth year",
+              minLength: {
+                message: "Invalid input",
+                value: 4,
+              },
+              min: {
+                value: 1900,
+                message: "Invalid input",
+              },
+              pattern: {
+                value: /[0-9]+/,
+                message: "Only numbers allowed",
+              },
+            }}
             render={({ field }) => (
               <Input
                 leftIcon={{
@@ -164,6 +201,7 @@ const SignUp = ({
                 label="What year were you born?"
                 inputStyle={styles.input}
                 maxLength={4}
+                errorMessage={errors.year?.message}
                 {...field}
                 onChangeText={field.onChange}
               />
@@ -172,48 +210,62 @@ const SignUp = ({
           <Controller
             control={control}
             name="country"
+            rules={{
+              required: "Please select a country",
+            }}
             render={({ field }) => (
-              <Input
-                leftIcon={{
+              <DropDownInput
+                errorMessage={errors.country?.message}
+                listMode="MODAL"
+                modalTitle="Select a country"
+                open={countriesListOpen}
+                value={countryValue}
+                items={countries}
+                setOpen={setCountriesListOpen}
+                setValue={setCountryValue}
+                onChangeValue={field.onChange}
+                searchable
+                iconProps={{
                   name: "location-pin",
                   type: "entypo",
-                  color: "#546AF1",
                 }}
-                label="What country are you from?"
-                inputStyle={styles.input}
-                autoCapitalize="none"
-                {...field}
-                onChangeText={field.onChange}
+                title="What country are you from?"
+                placeholder="Select a country"
               />
             )}
           />
           <Controller
             control={control}
             name="gender"
+            rules={{
+              required: "Please choose a gender",
+            }}
             render={({ field }) => (
-              <Input
-                leftIcon={{
+              <DropDownInput
+                errorMessage={errors.gender?.message}
+                open={genderListOpen}
+                value={genderValue}
+                items={genders}
+                setOpen={setGenderListOpen}
+                setValue={setGenderValue}
+                onChangeValue={field.onChange}
+                iconProps={{
                   name: "male-female",
                   type: "foundation",
-                  color: "#546AF1",
                 }}
-                label="What is your gender?"
-                inputStyle={styles.input}
-                {...field}
-                onChangeText={field.onChange}
+                title="What is your gender?"
+                placeholder="Choose a gender"
               />
             )}
           />
         </View>
-        <View></View>
-        <View style={styles.button}>
-          <Button
-            title="Sign Up"
-            onPress={handleSubmit(handleSignUp)}
-            disabled={!!Object.keys(errors).length}
-            loading={profileResponse.isLoading}
-          />
-        </View>
+        <Button
+          title="Sign Up"
+          onPress={handleSubmit(handleSignUp)}
+          disabled={!!Object.keys(errors).length}
+          loading={profileResponse.isLoading}
+          containerStyle={{ width: "100%" }}
+        />
       </KeyboardAwareScrollView>
     </Animated.View>
   );
@@ -221,17 +273,13 @@ const SignUp = ({
 
 export default SignUp;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-  },
-  button: {
-    width: "100%",
-    height: 100,
-    justifyContent: "center",
+    paddingVertical: StyleConstants.PADDING_VERTICAL,
   },
   image: {
     width: 180,
@@ -244,9 +292,9 @@ const styles = StyleSheet.create({
   text: {
     // marginBottom: StyleConstants.PADDING_VERTICAL,
   },
-  subtitleh4: { color: "#00116A", marginBottom: 12 },
+  subtitleh4: { color: theme.colors.primary, marginBottom: 12 },
   subtitle: {
     fontSize: 18,
     color: "#333",
   },
-});
+}));

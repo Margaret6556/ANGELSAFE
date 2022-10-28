@@ -3,7 +3,7 @@ import { AddGroupParamList, GroupParamsList } from "../../types";
 import GroupInfo from "./GroupInfo";
 import GroupPhoto from "./GroupPhoto";
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TransitionScreen } from "@/shared/components";
+import { TransitionSlide } from "@/shared/components";
 
 const GroupStack = createStackNavigator<AddGroupParamList>();
 
@@ -14,7 +14,7 @@ const GroupScreen = ({
     <GroupStack.Navigator
       initialRouteName="GroupInfo"
       screenOptions={{
-        ...TransitionScreen,
+        ...TransitionSlide,
         header: () => null,
       }}
     >

@@ -4,7 +4,7 @@ import { EntryScreen } from "./screens";
 import { AppTabParamList } from "@/shared/types";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import ChatScreen from "./screens/Chat";
-import { TransitionScreen } from "@/shared/components";
+import { TransitionSlide } from "@/shared/components";
 import AccountSecurity from "./screens/AccountSecurity";
 
 const MoreStack = createStackNavigator<MoreParamsList>();
@@ -18,7 +18,7 @@ const GroupScreen = ({
         headerStyle: {
           backgroundColor: "transparent",
         },
-        ...TransitionScreen,
+        ...TransitionSlide,
       }}
     >
       <MoreStack.Screen name="Entry" component={EntryScreen} />

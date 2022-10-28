@@ -38,7 +38,7 @@ const Groups = ({ data }: GroupProps) => {
                 size={76}
               />
             </TouchableOpacity>
-            <Text>{item.groupname}</Text>
+            <Text style={styles.textGroupName}>{item.groupname}</Text>
           </View>
         )}
       />
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     justifyContent: "flex-start",
+    // marginTop: 48,
   },
   container: {},
   avatar: {
@@ -60,9 +61,13 @@ const styles = StyleSheet.create({
   },
   avatarContainer: {
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     flex: 1,
-    marginVertical: 24,
-    marginHorizontal: 1,
+    margin: 1,
+    minHeight: 150,
+    paddingTop: 36,
+  },
+  textGroupName: {
+    fontSize: 14,
   },
 });

@@ -1,7 +1,13 @@
-import React from "react";
-import { StyleSheet, ImageBackground } from "react-native";
+import React, { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  ImageBackground,
+  useColorScheme,
+  View,
+} from "react-native";
 import { ChildrenProps } from "@/shared/types";
-import { useAppSelector } from "@/shared/hooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks";
+import { setBackgroundColor } from "@/shared/state/reducers/theme";
 
 interface LayoutProps extends ChildrenProps {}
 const ImageBackgroundContainer = ({ children }: LayoutProps) => {
@@ -14,7 +20,9 @@ const ImageBackgroundContainer = ({ children }: LayoutProps) => {
       source={require("../../../../assets/bg.png")}
       style={[styles.container, { backgroundColor }]}
       resizeMode="cover"
-      imageStyle={{ opacity: solidBackground ? 0 : 1 }}
+      imageStyle={{
+        opacity: solidBackground ? 0 : 1,
+      }}
     >
       {children}
     </ImageBackground>

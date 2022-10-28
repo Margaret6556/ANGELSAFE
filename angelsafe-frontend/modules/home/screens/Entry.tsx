@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { HomeParamsList, HomeScreenProps } from "@/home/types";
 import { View, StyleSheet } from "react-native";
-import { Button, Text } from "@rneui/themed";
+import { Button, makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 // import { logout } from "@/shared/state/reducers/auth";
@@ -23,6 +23,7 @@ const EntryScreen = ({}: StackScreenProps<HomeParamsList, "Entry">) => {
   const { user } = useAppSelector((state) => state.auth);
   const { navigate } = useNavigation<NavigationProp<AppTabParamList>>();
   const { redirectToGroup } = useAppSelector(({ auth }) => auth);
+  const styles = useStyles();
 
   useEffect(() => {
     if (redirectToGroup) {
@@ -75,7 +76,7 @@ const EntryScreen = ({}: StackScreenProps<HomeParamsList, "Entry">) => {
 
 export default EntryScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     paddingTop: 40,
     paddingHorizontal: 0,
@@ -99,4 +100,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL / 2,
     paddingVertical: StyleConstants.PADDING_VERTICAL / 2,
   },
-});
+}));

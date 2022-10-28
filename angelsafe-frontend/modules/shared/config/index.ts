@@ -6,7 +6,7 @@ export const _API = {
     OTP: "/auth/otp",
     REGISTER: "/auth/register",
     REGISTER_EMAIL: "/auth/register-email",
-    REFRESH: "/refresh-token",
+    REFRESH: "/auth/refresh-token",
   },
   PROFILE: {
     REGISTER: "/profile/register",
@@ -24,6 +24,15 @@ export const _API = {
     MEMBERS: "/group/members",
     LIST: "/group/list", // GET
     BAN: "/group/ban",
+  },
+  POST: {
+    LIST: "/post/list",
+    VIEW: "/post/view",
+    CREATE: "/post/create",
+    HEART: "/post/heart",
+    LIKE: "/post/like",
+    UNHEART: "/post/unheart",
+    UNLIKE: "/post/unlike",
   },
   CHAT: {
     LIST: "/api/chat/list",

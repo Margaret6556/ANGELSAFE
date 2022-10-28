@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from "react";
 import Provider from "./modules/shared/providers";
 import Main from "./modules/app";
-import { StyleSheet } from "react-native";
 import {
   useFonts,
   Nunito_400Regular,

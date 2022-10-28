@@ -44,4 +44,6 @@ export type UserType = {
   hobbies: string[];
   music: string[];
   movies: string[];
+  winCount: number;
+  painCount: number;
 };

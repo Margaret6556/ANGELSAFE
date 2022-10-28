@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
-import { Avatar, Icon, Text, useTheme } from "@rneui/themed";
+import { Avatar, Icon, makeStyles, Text, useTheme } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface HeaderChatInterfaceProps {
@@ -11,6 +11,7 @@ const HeaderChatInterface = ({ onBack }: HeaderChatInterfaceProps) => {
   const handleBack = () => {
     onBack();
   };
+  const styles = useStyles();
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
@@ -46,9 +47,9 @@ const HeaderChatInterface = ({ onBack }: HeaderChatInterfaceProps) => {
 
 export default HeaderChatInterface;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background,
     paddingVertical: 12,
     borderBottomColor: "#dedede",
     // borderBottomWidth: 1,
@@ -62,4 +63,4 @@ const styles = StyleSheet.create({
   avatarContainer: {
     alignItems: "center",
   },
-});
+}));

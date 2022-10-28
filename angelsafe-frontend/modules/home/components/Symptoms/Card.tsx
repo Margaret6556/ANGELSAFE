@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ListItem } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
+import { makeStyles } from "@rneui/base";
 
 interface ISymptomsCard {
   title: string;
@@ -9,6 +10,7 @@ interface ISymptomsCard {
 
 const SymptomsCard = ({ title }: ISymptomsCard) => {
   const [isChecked, setChecked] = useState(false);
+  const styles = useStyles();
 
   const handleCheck = () => {
     setChecked(!isChecked);
@@ -29,7 +31,7 @@ const SymptomsCard = ({ title }: ISymptomsCard) => {
 
 export default SymptomsCard;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     borderRadius: 12,
   },
@@ -42,15 +44,6 @@ const styles = StyleSheet.create({
     marginRight: StyleConstants.PADDING_HORIZONTAL,
   },
   title: {
-    color: "#333",
+    // color: "#333",
   },
-});
-
-// const initialSymptoms = [
-//   "Tiredness",
-//   "Morning sickness",
-//   "Headache",
-//   "Bleeding",
-//   "Changes on your skin",
-//   "Swelling",
-// ];
+}));

@@ -46,13 +46,13 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
       }).unwrap();
 
       if (status === 200) {
-        const { data } = await getProfile(`Bearer ${token}`).unwrap();
-
-        dispatch(setUser({ ...data, token }));
         await setItemAsync(Auth.KEY, token);
         if (isLoginScreen) {
+          const { data } = await getProfile(`Bearer ${token}`).unwrap();
+          dispatch(setUser({ ...data, token }));
           dispatch(setLoggedIn(true));
         } else {
+          dispatch(setUser({ token }));
           navigate && navigate();
         }
       }

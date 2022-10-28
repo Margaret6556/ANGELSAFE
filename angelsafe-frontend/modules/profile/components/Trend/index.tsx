@@ -1,12 +1,15 @@
 import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import React from "react";
 import { Icon, Text } from "@rneui/themed";
+import { useAppSelector } from "@/shared/hooks";
 
 interface ITrendComponentProps {
   style?: StyleProp<ViewStyle>;
 }
 
 const TrendComponent = (props: ITrendComponentProps) => {
+  const { user } = useAppSelector((state) => state.auth);
+
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.iconContainer}>
@@ -17,7 +20,7 @@ const TrendComponent = (props: ITrendComponentProps) => {
           style={{ marginRight: 12 }}
           size={32}
         />
-        <Text>74 Wins</Text>
+        <Text>{user?.winCount} Wins</Text>
       </View>
       <View style={styles.iconContainer}>
         <Icon
@@ -27,7 +30,7 @@ const TrendComponent = (props: ITrendComponentProps) => {
           style={{ marginRight: 12 }}
           size={32}
         />
-        <Text>29 Pains</Text>
+        <Text>{user?.painCount} Pains</Text>
       </View>
     </View>
   );

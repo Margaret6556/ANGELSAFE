@@ -24,7 +24,7 @@ const authApiSlice = apiSlice.injectEndpoints({
         const headers = {
           Authorization: `Basic ${
             mobile && otp
-              ? base64.encode(mobile)
+              ? base64.encode(`${mobile}:`)
               : email && password
               ? base64.encode(`${email}:${password}`)
               : ""

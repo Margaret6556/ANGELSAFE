@@ -13,7 +13,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { AppTabParamList, RootStackParamList } from "./shared/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ActivityIndicator } from "react-native";
-import { TransitionScreen } from "./shared/components";
+import { TransitionSlide } from "./shared/components";
 import useThemeMode from "./shared/hooks/useThemeMode";
 
 // import ChatStack from "./chat";
@@ -45,7 +45,7 @@ const App = () => {
           // detachPreviousScreen: false,
           // presentation: "transparentModal",
           header: () => null,
-          ...TransitionScreen,
+          ...TransitionSlide,
         }}
       >
         {/* <RootStack.Screen name="App" component={TabNavigator} /> */}

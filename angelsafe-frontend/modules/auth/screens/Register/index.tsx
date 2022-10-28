@@ -10,7 +10,7 @@ import VerifyNumber from "./VerifyNumber";
 import SignUp from "./SignUp";
 import AccountCreated from "./AccountCreated";
 import { Stepper } from "../../components/";
-import { NullHeader } from "@/shared/components";
+import { NullHeader, TransitionOpacity } from "@/shared/components";
 
 const AuthRegisterStack = createStackNavigator<AuthRegisterParamList>();
 
@@ -19,7 +19,7 @@ const RegisterScreens = ({}: StackScreenProps<AuthParamList, "Register">) => {
     <AuthRegisterStack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: "transparent" },
-        animationEnabled: false,
+        ...TransitionOpacity,
         cardOverlayEnabled: false,
         header: ({ navigation, route }) => {
           const { index } = navigation.getState();

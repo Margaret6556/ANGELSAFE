@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
   ImageSourcePropType,
+  Modal,
   StyleProp,
   StyleSheet,
   View,
   ViewStyle,
 } from "react-native";
 import { Avatar, Icon, Text } from "@rneui/themed";
-import { useAppSelector } from "@/shared/hooks";
+import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BackendResponse, BackendErrorResponse } from "@/shared/types";
 import {
@@ -18,6 +19,9 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import { useUpdateProfilePictureMutation } from "@/shared/api/profile";
+import { Loading } from "@/shared/components";
+import { BlurView } from "expo-blur";
+import { setUser } from "@/shared/state/reducers/auth";
 
 interface IAvatarProps {
   source?: ImageSourcePropType;
@@ -33,6 +37,7 @@ const AvatarComponent = (props: IAvatarProps) => {
   const { user } = useAppSelector((state) => state.auth);
   const [image, setImage] = useState<ImageResult>();
   const [updatePhoto, updatePhotoResponse] = useUpdateProfilePictureMutation();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const upload = async () => {
@@ -84,12 +89,18 @@ const AvatarComponent = (props: IAvatarProps) => {
 
   const handleUploadImage = async () => {
     try {
+      const profilePic = `data:image/png;base64,${image?.base64}`;
       const { data, status } = await updatePhoto({
-        profilePic: `data:image/png;base64,${image?.base64}`,
+        profilePic,
       }).unwrap();
 
-      console.log({ data });
 
+
+      dispatch(
+        setUser({
+          profilePic,
+        })
+      );
       // if (status === 200) {
       //   navigation.navigate("Entry" as any);
       // }
@@ -100,38 +111,56 @@ const AvatarComponent = (props: IAvatarProps) => {
   };
 
   return (
-    <View style={[styles.container, props.containerStyle]}>
-      <TouchableOpacity
-        style={styles.avatarWithUpload}
-        activeOpacity={0.4}
-        onPress={handleSelectImage}
-      >
-        <Avatar
-          size={64}
-          rounded
-          source={{
-            uri: user?.profilePic,
-          }}
-          containerStyle={{ backgroundColor: "blue", zIndex: 1 }}
-        />
-        <Icon
-          type="material"
-          name="add-a-photo"
-          size={18}
-          containerStyle={{
-            top: -20,
-            zIndex: 10,
-            backgroundColor: "hsla(0, 100%, 10%, 0.3)",
-            height: 30,
-          }}
-        />
-      </TouchableOpacity>
-      <View style={styles.text}>
-        <Text h4>{user?.username}</Text>
-        <Text>{user?.member}</Text>
-        <Text>{user?.gender && Identification[user.gender]}</Text>
+    <>
+      <View style={[styles.container, props.containerStyle]}>
+        <TouchableOpacity
+          style={styles.avatarWithUpload}
+          activeOpacity={0.4}
+          onPress={handleSelectImage}
+        >
+          <Avatar
+            size={64}
+            rounded
+            source={{
+              uri: user?.profilePic,
+            }}
+            containerStyle={{ backgroundColor: "blue", zIndex: 1 }}
+          />
+          <Icon
+            type="material"
+            name="add-a-photo"
+            size={18}
+            containerStyle={{
+              top: -20,
+              zIndex: 10,
+              backgroundColor: "hsla(0, 100%, 10%, 0.3)",
+              height: 30,
+            }}
+          />
+        </TouchableOpacity>
+        <View style={styles.text}>
+          <Text h4>{user?.username}</Text>
+          <Text>{user?.member}</Text>
+          <Text>{user?.gender && Identification[user.gender]}</Text>
+        </View>
       </View>
-    </View>
+      <Modal
+        visible={updatePhotoResponse.isLoading}
+        presentationStyle="overFullScreen"
+        transparent
+      >
+        <BlurView
+          intensity={12}
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Loading />
+        </BlurView>
+      </Modal>
+    </>
   );
 };
 

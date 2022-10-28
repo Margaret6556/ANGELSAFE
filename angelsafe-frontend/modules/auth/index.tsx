@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { LoginScreen, RegisterScreen, EntryScreen } from "./screens";
 import { AuthParamList } from "./types";
-import { TransitionScreen } from "@/shared/components";
+import { TransitionSlide } from "@/shared/components";
 
 const AuthStack = createStackNavigator<AuthParamList>();
 
@@ -25,7 +25,7 @@ const AuthScreens = () => (
       name="Login"
       component={LoginScreen}
       options={{
-        ...TransitionScreen,
+        ...TransitionSlide,
         header: () => null,
       }}
     />
@@ -34,7 +34,7 @@ const AuthScreens = () => (
       component={RegisterScreen}
       options={{
         headerShown: false,
-        ...TransitionScreen,
+        ...TransitionSlide,
       }}
     />
   </AuthStack.Navigator>

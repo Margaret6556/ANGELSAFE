@@ -5,7 +5,7 @@ import {
 import { ChatParamsList, MoreParamsList } from "@/more/types";
 import ChatList from "./ChatList";
 import ChatInterface from "./ChatInterface";
-import { TransitionScreen } from "@/shared/components";
+import { TransitionSlide } from "@/shared/components";
 import { useTheme, Avatar } from "@rneui/themed";
 import HeaderChatInterface from "@/more/components/Chat/Header";
 
@@ -19,7 +19,7 @@ const ChatScreen = ({
     <MoreStack.Navigator
       initialRouteName="ChatList"
       // screenOptions={{
-      //   ...TransitionScreen,
+      //   ...TransitionSlide,
       // }}
     >
       <MoreStack.Screen

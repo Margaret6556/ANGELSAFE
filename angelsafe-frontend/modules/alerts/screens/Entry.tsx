@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Text } from "@rneui/themed";
+import { makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { StyleConstants } from "@/shared/styles";
@@ -12,6 +12,7 @@ import { FlatList } from "react-native-gesture-handler";
 const EntryScreen = ({
   navigation,
 }: StackScreenProps<AlertParamsList, "Entry">) => {
+  const styles = useStyles();
   return (
     <Container
       containerProps={{
@@ -47,7 +48,7 @@ const EntryScreen = ({
 
 export default EntryScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     paddingHorizontal: 0,
     justifyContent: "flex-start",
@@ -57,11 +58,10 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
     paddingBottom: StyleConstants.PADDING_VERTICAL,
-    // flex: 1,
   },
   container: {
     width: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background,
     borderTopLeftRadius: StyleConstants.PADDING_HORIZONTAL * 2,
     borderTopRightRadius: StyleConstants.PADDING_HORIZONTAL * 2,
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     width: "90%",
     paddingLeft: 12,
   },
-});
+}));
 
 const alerts = [
   {

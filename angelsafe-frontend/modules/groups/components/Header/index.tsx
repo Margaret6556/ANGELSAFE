@@ -1,6 +1,6 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
-import { Divider, Icon, Text } from "@rneui/themed";
+import { Divider, Icon, makeStyles, Text, useTheme } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Modal } from "@/home/components";
@@ -14,6 +14,8 @@ type Props = {};
 
 const Header = (props: Props) => {
   const navigation = useNavigation<StackNavigationProp<GroupParamsList>>();
+  const styles = useStyles();
+  const { theme } = useTheme();
 
   const handleAddGroup = async () => {
     navigation.push("Add Group");
@@ -45,7 +47,7 @@ const Header = (props: Props) => {
 
 export default Header;
 
-export const styles = StyleSheet.create({
+export const useStyles = makeStyles((theme) => ({
   wrapper: {},
   container: {
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
@@ -60,11 +62,11 @@ export const styles = StyleSheet.create({
   },
   iconContainer: {
     marginLeft: 20,
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background,
     borderRadius: 50,
     height: 45,
     width: 45,
     justifyContent: "center",
     alignItems: "center",
   },
-});
+}));

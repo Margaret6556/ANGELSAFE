@@ -3,7 +3,7 @@ import { apiSlice } from ".";
 import { _API } from "../config";
 import type { BackendResponse, UserType } from "../types";
 
-type ProfileRegisterType = Pick<
+export type ProfileRegisterType = Pick<
   UserType,
   "username" | "year" | "country" | "gender"
 >;

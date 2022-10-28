@@ -5,12 +5,14 @@ import { StyleConstants } from "@/shared/styles";
 import { CardProps } from "@/more/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "@rneui/themed";
+import { makeStyles } from "@rneui/base";
 
 const MoreCard = ({ label, onPress, icon }: CardProps) => {
   const handlePress = () => {
     onPress && onPress();
   };
   const { theme } = useTheme();
+  const styles = useStyles();
 
   return (
     <TouchableOpacity activeOpacity={0.5} onPress={handlePress}>
@@ -26,7 +28,7 @@ const MoreCard = ({ label, onPress, icon }: CardProps) => {
 
 export default MoreCard;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     borderRadius: 12,
     minHeight: 50,
@@ -36,7 +38,5 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  title: {
-    color: "#333",
-  },
-});
+  title: {},
+}));

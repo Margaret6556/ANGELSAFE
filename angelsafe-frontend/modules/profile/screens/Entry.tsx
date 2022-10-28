@@ -7,8 +7,9 @@ import {
   Dimensions,
   TouchableOpacity,
   ScrollView,
+  useColorScheme,
 } from "react-native";
-import { Button, Divider, Text, useTheme } from "@rneui/themed";
+import { Button, Divider, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import { ProfileParamsList } from "../types";
@@ -17,6 +18,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
 import AboutMeTab from "../components/AboutMe";
 import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
+import useDarkMode from "@/shared/hooks/useDarkMode";
 
 const deviceHeight = Dimensions.get("window").height;
 
@@ -31,6 +33,9 @@ const EntryScreen = ({
   const [bounces, setBounces] = useState(false);
   const [view, setView] = useState(ProfileView.ABOUT_ME);
   const { theme } = useTheme();
+  const isDark = useDarkMode();
+
+  const styles = useStyles({ isDark });
 
   useSetSolidBackground();
 
@@ -75,6 +80,9 @@ const EntryScreen = ({
       type="image"
       containerProps={{
         style: styles.wrapper,
+        imageStyle: {
+          opacity: isDark ? 0 : 1,
+        },
       }}
     >
       <Container
@@ -140,14 +148,15 @@ const EntryScreen = ({
 
 export default EntryScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   wrapper: {
     paddingHorizontal: 0,
     paddingVertical: 0,
     justifyContent: "flex-start",
+    backgroundColor: props.isDark ? theme.colors.grey1 : "transparent",
   },
   containerTop: {
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background,
     minWidth: "100%",
     borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
     borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
@@ -182,4 +191,4 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     flex: 1,
   },
-});
+}));

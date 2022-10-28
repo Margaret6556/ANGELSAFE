@@ -8,7 +8,7 @@ import {
   NativeSyntheticEvent,
   Dimensions,
 } from "react-native";
-import { Button, lightColors, Text, useTheme } from "@rneui/themed";
+import { Button, lightColors, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Container, Loading } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import { GroupParamsList } from "../types";
@@ -24,8 +24,15 @@ import {
 } from "@/shared/api/groups";
 import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
 import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import GroupFeed from "../components/Feed";
 
 const deviceHeight = Dimensions.get("screen").height;
+
+enum RenderView {
+  FEED = 1,
+  SYMPTOM_CHART,
+}
 
 const GroupDetailsScreen = ({
   navigation,
@@ -37,13 +44,14 @@ const GroupDetailsScreen = ({
   const [joinGroup, joinGroupResponse] = useJoinGroupMutation();
   const [unjoinGroup, unjoinGroupResponse] = useUnjoinGroupMutation();
   const { data: membersData } = useGetGroupMembersQuery({ groupId: id });
+  const [view, setView] = useState(RenderView.FEED);
   const [bounces, setBounces] = useState(false);
 
   const { theme } = useTheme();
 
   useSetSolidBackground();
 
-  const styles = useMemo(() => makeStyles(theme.colors), []);
+  const styles = useStyles();
 
   const handleNewPost = () => {
     setModalVisible(!modalVisible);
@@ -60,6 +68,23 @@ const GroupDetailsScreen = ({
       setBounces(true);
     } else {
       setBounces(false);
+    }
+  };
+
+  const handleSetView = (viewTab: RenderView) => () => {
+    setView(viewTab);
+  };
+
+  const renderView = () => {
+    switch (view) {
+      case RenderView.FEED: {
+        return <GroupFeed groupId={id} />;
+      }
+      case RenderView.SYMPTOM_CHART: {
+        return <Text>whay</Text>;
+      }
+      default:
+        return null;
     }
   };
 
@@ -114,26 +139,46 @@ const GroupDetailsScreen = ({
                 <Text>{group.description}</Text>
               </View>
               <View style={styles.tab}>
-                <Text>Feed</Text>
-                <Text>Symptom Chart</Text>
+                <TouchableOpacity
+                  onPress={handleSetView(RenderView.FEED)}
+                  containerStyle={styles.tabButton}
+                >
+                  <Text
+                    style={[
+                      styles.tabText,
+                      {
+                        color:
+                          view === RenderView.FEED
+                            ? theme.colors.primary
+                            : theme.colors.grey1,
+                      },
+                    ]}
+                  >
+                    Feed
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleSetView(RenderView.SYMPTOM_CHART)}
+                  containerStyle={styles.tabButton}
+                >
+                  <Text
+                    style={[
+                      styles.tabText,
+                      {
+                        color:
+                          view === RenderView.SYMPTOM_CHART
+                            ? theme.colors.primary
+                            : theme.colors.grey1,
+                      },
+                    ]}
+                  >
+                    Symptom Chart
+                  </Text>
+                </TouchableOpacity>
               </View>
             </View>
 
-            <View style={styles.containerBottom}>
-              <Button title="Type your thoughts..." onPress={handleNewPost} />
-              <Card description="Stay strong everyone. It’s tough but we have a 29% chance of surviving this! Somehow I have managed to live a year after the doctors told me I had less than 4 months to go." />
-              <Card description="Finally reached stage 4. I am still processing all my emotions and haven’t told my family yet. Does anyone have any tips on how to inform family members and deal with what the future " />
-              <Card description="Stay strong everyone. It’s tough but we have a 29% chance of surviving this! Somehow I have managed to live a year after the doctors told me I had less than 4 months to go." />
-            </View>
-            <Modal
-              isVisible={modalVisible}
-              style={styles.modalContainer}
-              onBackdropPress={handleNewPost}
-            >
-              <View style={styles.modalWrapper}>
-                <Text>hello</Text>
-              </View>
-            </Modal>
+            <View style={styles.containerBottom}>{renderView()}</View>
           </View>
         </Container>
       </Container>
@@ -144,104 +189,94 @@ const GroupDetailsScreen = ({
 
 export default GroupDetailsScreen;
 
-const makeStyles = (color: { primary: string }) =>
-  StyleSheet.create({
-    wrapper: {
-      justifyContent: "flex-start",
-      paddingHorizontal: 0,
-      paddingVertical: 0,
-    },
-    container: {
-      minWidth: "100%",
-    },
-    containerTop: {
-      backgroundColor: "#fff",
-      paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-      paddingVertical: StyleConstants.PADDING_VERTICAL,
-      borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
-      borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
-    },
-    title: {
-      marginBottom: 12,
-      color: color.primary,
-    },
-    stats: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-    },
-    statsLabel: {
-      color: color.primary,
-      fontWeight: "300",
-    },
-    description: {
-      marginVertical: 24,
-    },
-    tab: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-    },
-    containerBottom: {
-      padding: StyleConstants.PADDING_HORIZONTAL / 2,
-    },
-    inputContainer: {
-      backgroundColor: "#fff",
-      paddingHorizontal: 12,
-      alignItems: "center",
-      justifyContent: "center",
-      height: 65,
-      borderRadius: 10,
-    },
-    input: {
-      height: 32,
-      borderColor: "#A0A0A0",
-      borderWidth: 1,
-    },
-    cardWrapper: {
-      backgroundColor: "red",
-      minHeight: 265,
-    },
-    cardContainer: {
-      backgroundColor: "yellow",
-      borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-      marginHorizontal: 0,
-    },
-    modalContainer: {
-      margin: 0,
-      width: "100%",
-    },
-    modalWrapper: {
-      width: "100%",
-      marginTop: "auto",
-      height: "80%",
-      backgroundColor: "#dedede",
-      justifyContent: "space-between",
-      borderTopLeftRadius: 12,
-      borderTopRightRadius: 12,
-      paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-      paddingVertical: StyleConstants.PADDING_VERTICAL,
-    },
-    joinButtonContainerStyle: {
-      paddingHorizontal: 0,
-      margin: 0,
-    },
-    joinButtonStyle: {
-      backgroundColor: "transparent",
-      paddingHorizontal: 0,
-      height: 28,
-      minWidth: 82,
-      borderRadius: 50,
-      borderWidth: 2,
-      borderColor: color.primary,
-      padding: 0,
-      margin: 0,
-    },
-    joinButtonTitleStyle: {
-      color: color.primary,
-      fontSize: 16,
-      fontWeight: "600",
-    },
-  });
+const useStyles = makeStyles((theme) => ({
+  wrapper: {
+    justifyContent: "flex-start",
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+  },
+  container: {
+    minWidth: "100%",
+  },
+  containerTop: {
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
+    paddingTop: StyleConstants.PADDING_VERTICAL,
+    paddingBottom: StyleConstants.PADDING_VERTICAL / 2,
+    borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
+    borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
+  },
+  title: {
+    marginBottom: 12,
+    color: theme.colors.primary,
+  },
+  stats: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  statsLabel: {
+    color: theme.colors.primary,
+    fontWeight: "300",
+  },
+  description: {
+    marginVertical: 24,
+  },
+  tab: {
+    flexDirection: "row",
+  },
+  tabButton: {
+    flex: 1,
+  },
+  tabText: {
+    textAlign: "center",
+    fontFamily: "nunitoBold",
+  },
+  containerBottom: {
+    padding: StyleConstants.PADDING_HORIZONTAL / 2,
+  },
+  inputContainer: {
+    backgroundColor: theme.colors.background,
+    paddingHorizontal: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    height: 65,
+    borderRadius: 10,
+  },
+  input: {
+    height: 32,
+    borderColor: "#A0A0A0",
+    borderWidth: 1,
+  },
+  cardWrapper: {
+    backgroundColor: "red",
+    minHeight: 265,
+  },
+  cardContainer: {
+    borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
+    marginHorizontal: 0,
+  },
+  joinButtonContainerStyle: {
+    paddingHorizontal: 0,
+    margin: 0,
+  },
+  joinButtonStyle: {
+    backgroundColor: "transparent",
+    paddingHorizontal: 0,
+    height: 28,
+    minWidth: 82,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: theme.colors.primary,
+    padding: 0,
+    margin: 0,
+  },
+  joinButtonTitleStyle: {
+    color: theme.colors.primary,
+    fontSize: 16,
+    fontWeight: "600",
+  },
+}));
 
 const STATUSBAR_HEIGHT = StatusBar.currentHeight;
 const APPBAR_HEIGHT = Platform.OS === "ios" ? 44 : 56;

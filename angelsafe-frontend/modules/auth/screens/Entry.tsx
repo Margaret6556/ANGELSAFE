@@ -10,9 +10,9 @@ const LoginScreen = ({
 }: StackScreenProps<AuthParamList, "Entry">) => {
   const [isChecked, setIsChecked] = useState(false);
 
-  const handleCheckBoxPress = () => {
-    setIsChecked(!isChecked);
-  };
+  // const handleCheckBoxPress = () => {
+  //   setIsChecked(!isChecked);
+  // };
 
   return (
     <Container>

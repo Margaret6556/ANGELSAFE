@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { AuthRegisterParamList, AuthScreenProps } from "@/auth/types";
-import { View, Image, StyleSheet } from "react-native";
-import { useAppDispatch } from "@/shared/hooks";
-import { login } from "@/shared/state/reducers/auth/actions";
+import { AuthRegisterParamList } from "@/auth/types";
+import { View, StyleSheet } from "react-native";
 import { Text, Button, Input } from "@rneui/themed";
-import { buttomBottomPosition, StyleConstants } from "@/shared/styles";
 import { Container } from "@/shared/components";
 import { Controller, useForm } from "react-hook-form";
 import { _API } from "@/shared/config";
+import { StackScreenProps } from "@react-navigation/stack";
 
 type FieldsType = {
   username: string;
@@ -16,12 +14,12 @@ type FieldsType = {
 
 const RegisterScreen = ({
   navigation,
-}: AuthScreenProps<AuthRegisterParamList, "Account Information">) => {
+}: StackScreenProps<AuthRegisterParamList, "Account Information">) => {
   const [passIsVisible, setPassIsVisible] = useState(false);
 
   const {
     control,
-    formState: { errors, isSubmitting, touchedFields },
+    formState: { errors },
     handleSubmit,
   } = useForm<FieldsType>({
     defaultValues: {

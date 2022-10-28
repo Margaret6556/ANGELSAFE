@@ -1,33 +1,87 @@
 import { Alert, Keyboard, Pressable, StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ProfileParamsList } from "../types";
 import { Container } from "@/shared/components";
-import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
-import { Button, Divider, Input, Text } from "@rneui/themed";
-import { Controller, useForm } from "react-hook-form";
-import DropDownPicker from "react-native-dropdown-picker";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks";
+import {
+  Button,
+  Divider,
+  Input,
+  makeStyles,
+  Text,
+  useTheme,
+} from "@rneui/themed";
+import { Controller, useFieldArray, useForm } from "react-hook-form";
+import {
+  useAppDispatch,
+  useAppSelector,
+  useKeyboardShowing,
+} from "@/shared/hooks";
 import { useUpdateProfileMutation } from "@/shared/api/profile";
-import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import {
+  BackendErrorResponse,
+  BackendResponse,
+  UserType,
+} from "@/shared/types";
 import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 import { setUser } from "@/shared/state/reducers/auth";
+import CustomMultiSelect from "@/shared/components/MultiSelect";
+import {
+  hobbies,
+  movieGenres,
+  musicGenres,
+} from "@/shared/config/profileStaticData";
+import { FlatList, ScrollView } from "react-native-gesture-handler";
+import { StyleConstants } from "@/shared/styles";
 
-type FieldsType = {
-  bio: string;
-};
+const mappedHobbies = hobbies.map((hobby) => ({
+  id: hobby,
+  name: hobby,
+}));
+
+const mappedMovieGenres = movieGenres.map((movie) => ({
+  id: movie,
+  name: movie,
+}));
+
+const mappedMusicGenres = musicGenres.map((music) => ({
+  id: music,
+  name: music,
+}));
 
 const bioMaxLength = 150;
 
-const EditProfile = ({}: StackScreenProps<
-  ProfileParamsList,
-  "Edit Profile"
->) => {
+type FieldsType = {
+  bio: string;
+  hobbies: typeof mappedHobbies;
+  movies: typeof mappedMovieGenres;
+  music: typeof mappedMusicGenres;
+};
+
+const EditProfile = ({
+  navigation,
+}: StackScreenProps<ProfileParamsList, "Edit Profile">) => {
   useSetSolidBackground();
-  const [multilineHeight, setMultiLineHeight] = useState(0);
-  const [updateProfile, updateProfileResponse] = useUpdateProfileMutation();
   const { user } = useAppSelector((state) => state.auth);
+  const [updateProfile, updateProfileResponse] = useUpdateProfileMutation();
+  const [multilineHeight, setMultiLineHeight] = useState(0);
+  const [buttonMargin, setButtonMargin] = useState(20);
+  const { keyboardIsShowing } = useKeyboardShowing();
+
   const dispatch = useAppDispatch();
+  const styles = useStyles({
+    buttonMargin,
+  });
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    if (keyboardIsShowing) {
+      setButtonMargin(100);
+    } else {
+      setButtonMargin(20);
+    }
+  }, [keyboardIsShowing]);
+
   const {
     handleSubmit,
     formState: { errors },
@@ -37,25 +91,53 @@ const EditProfile = ({}: StackScreenProps<
   } = useForm({
     defaultValues: {
       bio: "",
+      hobbies: [] as { id: ""; name: "" }[],
+      movies: [] as { id: ""; name: "" }[],
+      music: [] as { id: ""; name: "" }[],
     },
   });
 
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState([
-    { label: "Apple", value: "apple" },
-    { label: "Banana", value: "banana" },
-  ]);
+  const { replace: replaceHobbies } = useFieldArray({
+    name: "hobbies",
+    control,
+  });
+  const { replace: replaceMovies } = useFieldArray({
+    name: "movies",
+    control,
+  });
+  const { replace: replaceMusic } = useFieldArray({
+    name: "music",
+    control,
+  });
+
+  const hobbies = watch("hobbies");
+  const movies = watch("movies");
+  const music = watch("music");
 
   const biography = watch("bio");
   const handleEditProfile = async (val: FieldsType) => {
     try {
-      console.log({ val });
-      const { data, status } = await updateProfile(val).unwrap();
+      let body = val as unknown as Partial<
+        Pick<UserType, "bio" | "hobbies" | "movies" | "music">
+      >;
 
+      if (!!!body.bio) {
+        delete body.bio;
+      }
+      if (!!!body?.hobbies?.length) {
+        delete body.hobbies;
+      }
+      if (!!!body?.movies?.length) {
+        delete body.movies;
+      }
+      if (!!!body?.music?.length) {
+        delete body.music;
+      }
+
+      const { status } = await updateProfile(body).unwrap();
       if (status === 200) {
         showAlert();
-        dispatch(setUser({ bio: biography }));
+        dispatch(setUser(body));
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
@@ -70,7 +152,9 @@ const EditProfile = ({}: StackScreenProps<
   const showAlert = () => {
     Alert.alert("Success", undefined, [
       {
-        onPress: () => console.log(123),
+        onPress: () => {
+          navigation.goBack();
+        },
       },
     ]);
   };
@@ -83,57 +167,118 @@ const EditProfile = ({}: StackScreenProps<
           style: styles.container,
         }}
       >
-        <Controller
-          name="bio"
-          control={control}
-          rules={{
-            minLength: {
-              value: 2,
-              message: "Minimum of 2 characters",
-            },
-          }}
-          render={({ field }) => (
-            <View style={{ width: "100%" }}>
-              <Input
-                label="Enter Biography"
-                multiline
-                inputStyle={{
-                  height: Math.max(100, multilineHeight),
-                }}
-                errorStyle={{ textAlign: "right" }}
-                errorMessage={errors.bio?.message}
-                {...field}
-                onContentSizeChange={(event) => {
-                  setMultiLineHeight(event.nativeEvent.contentSize.height);
-                }}
-                onChangeText={field.onChange}
-                labelStyle={{ fontSize: 16 }}
-                maxLength={bioMaxLength}
-                placeholder={user?.bio}
+        <FlatList
+          data={[{ id: "" }]}
+          style={{ minWidth: "100%" }}
+          showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            <Controller
+              name="bio"
+              control={control}
+              rules={{
+                minLength: {
+                  value: 2,
+                  message: "Minimum of 2 characters",
+                },
+              }}
+              render={({ field }) => (
+                <Input
+                  label={
+                    <View style={styles.inputLabelContainer}>
+                      <Text
+                        style={{
+                          color: theme.colors.primary,
+                          fontSize: 16,
+                        }}
+                      >
+                        Enter Biography
+                      </Text>
+                      <Text style={styles.bioLength}>
+                        {biography.length}/{bioMaxLength}
+                      </Text>
+                    </View>
+                  }
+                  multiline
+                  inputStyle={{
+                    height: Math.max(100, multilineHeight),
+                  }}
+                  errorStyle={{ textAlign: "right" }}
+                  errorMessage={errors.bio?.message}
+                  {...field}
+                  onContentSizeChange={(event) => {
+                    setMultiLineHeight(event.nativeEvent.contentSize.height);
+                  }}
+                  onChangeText={field.onChange}
+                  labelStyle={{ fontSize: 16 }}
+                  maxLength={bioMaxLength}
+                  placeholder={user?.bio}
+                />
+              )}
+            />
+          }
+          renderItem={() => (
+            <View>
+              <Controller
+                control={control}
+                name="hobbies"
+                render={() => (
+                  <CustomMultiSelect
+                    items={mappedHobbies}
+                    selectedItems={hobbies}
+                    onSelectedItemsChange={(item) => {
+                      replaceHobbies(item);
+                    }}
+                    selectText="Select Multiple Hobbies"
+                    uniqueKey="id"
+                    searchInputPlaceholderText="Search Hobbies..."
+                    label="Add Hobbies"
+                  />
+                )}
               />
-              <View>
-                <Text style={styles.bioLength}>
-                  {biography.length}/{bioMaxLength}
-                </Text>
-              </View>
+              <Controller
+                control={control}
+                name="movies"
+                render={() => (
+                  <CustomMultiSelect
+                    items={mappedMovieGenres}
+                    selectedItems={movies}
+                    onSelectedItemsChange={(item) => {
+                      replaceMovies(item);
+                    }}
+                    selectText="Select Multiple Movie Genres"
+                    uniqueKey="id"
+                    searchInputPlaceholderText="Search Movie Genres..."
+                    label="Add Favorite Movie Genres"
+                  />
+                )}
+              />
+              <Controller
+                control={control}
+                name="music"
+                render={() => (
+                  <CustomMultiSelect
+                    items={mappedMusicGenres}
+                    selectedItems={music}
+                    onSelectedItemsChange={(item) => {
+                      replaceMusic(item);
+                    }}
+                    selectText="Select Multiple Music Genres"
+                    uniqueKey="id"
+                    searchInputPlaceholderText="Search Music Genres..."
+                    label="Add Favorite Music Genres"
+                  />
+                )}
+              />
             </View>
           )}
-        />
-
-        <DropDownPicker
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          listMode="SCROLLVIEW"
-        />
-        <Button
-          containerStyle={styles.button}
-          title="Submit"
-          onPress={handleSubmit(handleEditProfile)}
-          loading={updateProfileResponse.isLoading}
+          ListFooterComponent={
+            <Button
+              containerStyle={styles.button}
+              title="Submit"
+              onPress={handleSubmit(handleEditProfile)}
+              loading={updateProfileResponse.isLoading}
+            />
+          }
         />
       </Container>
     </Pressable>
@@ -142,17 +287,29 @@ const EditProfile = ({}: StackScreenProps<
 
 export default EditProfile;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme, props: { buttonMargin: number }) => ({
   container: {
     justifyContent: "space-between",
     flex: 1,
+    paddingVertical: 0,
   },
   bioLength: {
     textAlign: "right",
     fontSize: 12,
     color: "#666",
   },
+  inputLabelContainer: {
+    marginTop: StyleConstants.PADDING_VERTICAL,
+    marginBottom: 8,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   button: {
     width: "100%",
+    marginVertical: props.buttonMargin,
   },
-});
+  inputFieldsWrapper: {
+    width: "100%",
+  },
+}));

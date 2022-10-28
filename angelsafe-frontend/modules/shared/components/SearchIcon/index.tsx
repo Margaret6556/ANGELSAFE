@@ -1,6 +1,6 @@
 import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
 import React from "react";
-import { Icon } from "@rneui/themed";
+import { Icon, makeStyles } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface SearchIconProps {
@@ -12,6 +12,7 @@ const SearchIcon = ({ style, onPress }: SearchIconProps) => {
   const handlePress = () => {
     onPress && onPress();
   };
+  const styles = useStyles();
   return (
     <TouchableOpacity onPress={handlePress} activeOpacity={0.5}>
       <Icon
@@ -29,13 +30,13 @@ const SearchIcon = ({ style, onPress }: SearchIconProps) => {
 
 export default SearchIcon;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   containerStyle: {
     // marginRight: 20,
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.background,
     height: 45,
     borderRadius: 50,
     width: 45,
     justifyContent: "center",
   },
-});
+}));

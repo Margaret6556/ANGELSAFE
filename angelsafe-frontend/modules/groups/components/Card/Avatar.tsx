@@ -3,9 +3,15 @@ import React from "react";
 import { Avatar, Text } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-type Props = {};
+interface AvatarCardProps {
+  userId: string;
+  onViewProfile: () => void;
+}
 
-const AvatarCard = (props: Props) => {
+const AvatarCard = (props: AvatarCardProps) => {
+  const handleOnViewProfile = () => {
+    props.onViewProfile();
+  };
   return (
     <View style={styles.container}>
       <Avatar
@@ -20,7 +26,7 @@ const AvatarCard = (props: Props) => {
           <Text style={styles.textMemberPrimary}>2659.aqua.pear (Aaron)</Text>
           <Text style={styles.textMemberSecondary}>8 hours ago</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={handleOnViewProfile}>
           <Text style={{ color: "#898989", fontSize: 14 }}>View Profile</Text>
         </TouchableOpacity>
       </View>

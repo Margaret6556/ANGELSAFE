@@ -6,19 +6,22 @@ import ViewContainer from "./ViewContainer";
 import {
   ImageBackgroundProps,
   KeyboardAvoidingViewProps,
+  PressableProps,
   ScrollViewProps,
   ViewProps,
 } from "react-native";
 import React from "react";
 import { ChildrenProps } from "@/shared/types";
+import PressableContainer from "./PressableContainer";
 
 interface IContainerProps extends ChildrenProps {
   containerProps?:
     | ScrollViewProps
     | ViewProps
     | ImageBackgroundProps
-    | KeyboardAvoidingViewProps;
-  type?: "scroll" | "image" | "keyboard";
+    | KeyboardAvoidingViewProps
+    | PressableProps;
+  type?: "scroll" | "image" | "keyboard" | "pressable";
 }
 
 const Container = ({ type, containerProps, children }: IContainerProps) => {
@@ -44,8 +47,17 @@ const Container = ({ type, containerProps, children }: IContainerProps) => {
           children={children}
         />
       );
+    case "pressable":
+      return (
+        <PressableContainer
+          {...(containerProps as PressableProps)}
+          children={children}
+        />
+      );
     default:
-      return <ViewContainer {...containerProps} children={children} />;
+      return (
+        <ViewContainer {...(containerProps as ViewProps)} children={children} />
+      );
   }
 };
 

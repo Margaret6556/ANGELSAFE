@@ -9,6 +9,7 @@ import { Stepper } from "../../components";
 import InputNumber from "./InputNumber";
 import VerifyNumber from "./VerifyNumber";
 import LoginEmail from "./LoginEmail";
+import { TransitionOpacity } from "@/shared/components";
 
 const AuthLoginStack = createStackNavigator<AuthLoginParamsList>();
 
@@ -17,7 +18,7 @@ const LoginScreens = ({}: StackScreenProps<AuthParamList, "Login">) => {
     <AuthLoginStack.Navigator
       screenOptions={{
         headerStyle: { backgroundColor: "transparent" },
-        animationEnabled: false,
+        ...TransitionOpacity,
         cardOverlayEnabled: false,
         headerBackTitle: "",
         headerBackTitleVisible: false,

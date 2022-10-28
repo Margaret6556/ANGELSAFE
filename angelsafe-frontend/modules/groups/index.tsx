@@ -3,7 +3,7 @@ import { GroupParamsList } from "./types";
 import { AddGroupScreen, EntryScreen, GroupDetailsScreen } from "./screens";
 import { AppTabParamList } from "@/shared/types";
 import { Header } from "./components";
-import { SearchIcon, TransitionScreen } from "@/shared/components";
+import { SearchIcon, TransitionSlide } from "@/shared/components";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { Icon } from "@rneui/themed";
 
@@ -16,7 +16,7 @@ const GroupScreen = ({
     <GroupStack.Navigator
       screenOptions={
         {
-          // ...TransitionScreen,
+          // ...TransitionSlide,
         }
       }
     >
@@ -29,13 +29,9 @@ const GroupScreen = ({
         name="GroupDetails"
         component={GroupDetailsScreen}
         options={{
-          ...TransitionScreen,
+          ...TransitionSlide,
           headerTitle: "",
           headerBackTitleVisible: false,
-
-          headerRight(props) {
-            return <SearchIcon />;
-          },
         }}
       />
       <GroupStack.Screen
