@@ -172,6 +172,35 @@ version: v0.1.0
                                 "winCount": 1,
                                 "painCount": 0
                             }
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "ids": ["635400ee05aa48461a..."]
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [{
+                                "id": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                                "username":"testuser",
+                                "year": "1994",
+                                "country": "United States of America",
+                                "gender": "Male",
+                                "bio": "This is my personal bio",
+                                "hobbies": ["Cooking"],
+                                "music": ["Gothic Metal"],
+                                "movies": ["American Pie"]
+                            }]
 /api/profile/update-pic:
     post:
         headers: 
@@ -273,7 +302,10 @@ version: v0.1.0
                             "id": "Y3ODkwIiwibmFtZSI6Ikpva...",
                             "groupname": "angelsafev2",
                             "description": "sample group",
-                            "profilePic": "data:image/png;base64,iVY..."
+                            "profilePic": "data:image/png;base64,iVY...",
+                            "members": 3,
+                            "joined": 1,
+                            "online": 2
                         }
 /api/group/join:
     post:
@@ -456,6 +488,32 @@ version: v0.1.0
                 body:
                     application/json:
                         example: null
+/api/stat/chart:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "groupId": "6354e7cda1076d0dfc..."
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "1": 30,
+                                "2": 50,
+                                "3": 10,
+                                "4": 5,
+                                "5": 5
+                            }
 /api/stat/view:
     get:
         headers: 
@@ -530,6 +588,7 @@ version: v0.1.0
                 example: |
                     {
                         "groupId": "635429a97234tdsg45...",
+                        "skip": 0
                     }
         responses:
             200:

@@ -769,18 +769,18 @@ module.exports = (config) => {
         .getCollection(config.groupCollection)
         .findOne({
           _id: DB.getObjectId(data.groupId),
-          members: {  $in: [decodedAuth.data.id]}
+          members: {  $in: [DB.getObjectId(decodedAuth.data.id)]}
         });
-      if (!isExisting) {
-        result.status = 200;
-        result.error = null;
-        result.message = 'Verifying Member Successful';
-        result.data = false;
-      } else {
+      if (isExisting) {
         result.status = 200;
         result.error = null;
         result.message = 'Verifying Member Successful';
         result.data = true;
+      } else {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'User is not verified member of the group';
+        throw result;
       }
       return res.status(result.status).json(result);
     } catch (err) {

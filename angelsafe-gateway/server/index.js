@@ -208,6 +208,8 @@ async function processData(req, res) {
                 break;
               case 'POST':
                 result = await ProfileService.getProfiles(req, data);
+                res.status(result.status).json(result);
+                break;
               default:
                 res.status(result.status).json(result);
             }
@@ -453,7 +455,7 @@ async function processData(req, res) {
           case 'create':
             switch (req.method) {
               case 'POST':
-                result = await GroupService.verify(req, {groupId : data.groupId});
+                result = await GroupService.verify(req, {groupId : data.groupId, ip: data.ip});
                 result = await FeedService.createPost(req, data);
                 res.status(result.status).json(result);
                 break;
