@@ -38,6 +38,19 @@ class FeedService {
     });
   }
 
+  async getChart(req, data) {
+    const { ip, port } = await this.getService('angelsafe-feed');
+    return FeedService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/chart`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   async getWins(req) {
     const { ip, port } = await this.getService('angelsafe-feed');
     return FeedService.callService({

@@ -400,6 +400,11 @@ module.exports = (config) => {
           profilePic: profile.profilePic,
           username: `${profile.random}.${profile.username}`,
           year: profile.year,
+          member: Profile.getRelevantTime(new Date(), new Date(profile.lastUpdateTimestamp)),
+          bio: profile.bio,
+          hobbies: profile.hobbies,
+          music: profile.music,
+          movies: profile.movies
         });
       });
       result.status = 200;

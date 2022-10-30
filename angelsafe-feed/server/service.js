@@ -608,6 +608,83 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/chart', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      let start = new Date();
+      start.setHours(0,0,0,0);
+      let end = new Date();
+      end.setHours(23,59,59,999);
+      let objectIDs = [];
+      data.ids.forEach((id)=>{
+        objectIDs.push(DB.getObjectId(id));
+      });
+      const stat1 = await DBHelper.getCollection(config.statCollection).count({
+        ownerId: {$in: objectIDs},
+        timestamp: {$gte: start.valueOf(), $lt: end.valueOf()},
+        stat: "1"
+      });
+      const stat2 = await DBHelper.getCollection(config.statCollection).count({
+        ownerId: {$in: objectIDs},
+        timestamp: {$gte: start.valueOf(), $lt: end.valueOf()},
+        stat: "2"
+      });
+      const stat3 = await DBHelper.getCollection(config.statCollection).count({
+        ownerId: {$in: objectIDs},
+        timestamp: {$gte: start.valueOf(), $lt: end.valueOf()},
+        stat: "3"
+      });
+      const stat4 = await DBHelper.getCollection(config.statCollection).count({
+        ownerId: {$in: objectIDs},
+        timestamp: {$gte: start.valueOf(), $lt: end.valueOf()},
+        stat: "4"
+      });
+      const stat5 = await DBHelper.getCollection(config.statCollection).count({
+        ownerId: {$in: objectIDs},
+        timestamp: {$gte: start.valueOf(), $lt: end.valueOf()},
+        stat: "5"
+      });
+      let total = stat1 + stat2 + stat3 + stat4 + stat5;
+      log.debug(result);
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Chart Successful';
+      result.data = { 
+        "1": ((stat1/total)*100),
+        "2": ((stat2/total)*100), 
+        "3": ((stat3/total)*100), 
+        "4": ((stat4/total)*100),
+         "5": ((stat5/total)*100) };
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   // eslint-disable-next-line no-unused-vars
   service.use((error, req, res, next) => {
     res.status(error.status || 500);

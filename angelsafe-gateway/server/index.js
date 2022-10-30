@@ -206,6 +206,8 @@ async function processData(req, res) {
                 result.data = {...result.data, ...iam.data, ...feed.data};
                 res.status(result.status).json(result);
                 break;
+              case 'POST':
+                result = await ProfileService.getProfiles(req, data);
               default:
                 res.status(result.status).json(result);
             }
@@ -431,6 +433,17 @@ async function processData(req, res) {
                 res.status(result.status).json(result);
             }
             break;
+          case 'chart':
+            switch (req.method) {
+              case 'POST':
+                result = await GroupService.getAllMembers(req, data);
+                result = await FeedService.getChart(req, { ids: result.data, ip: data.ip});
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
           default:
             res.status(result.status).json(result);
         }
@@ -440,6 +453,7 @@ async function processData(req, res) {
           case 'create':
             switch (req.method) {
               case 'POST':
+                result = await GroupService.verify(req, {groupId : data.groupId});
                 result = await FeedService.createPost(req, data);
                 res.status(result.status).json(result);
                 break;

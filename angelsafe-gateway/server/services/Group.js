@@ -104,12 +104,25 @@ class GroupService {
     });
   }
 
-  // TODO add skip(offset).limit(limit)
   async getMembers(req, data) {
     const { ip, port } = await this.getService('angelsafe-group');
     return GroupService.callService({
       method: 'post',
       url: `http://${ip}:${port}/members`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+      params: req.query
+    });
+  }
+
+  async getAllMembers(req, data) {
+    const { ip, port } = await this.getService('angelsafe-group');
+    return GroupService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/all-members`,
       data,
       headers: {
         'Content-Type': 'application/json',
@@ -130,6 +143,19 @@ class GroupService {
         'Authorization': req.headers.authorization
       },
       params: req.query
+    });
+  }
+
+  async verify(req, data) {
+    const { ip, port } = await this.getService('angelsafe-group');
+    return GroupService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/verify`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
     });
   }
 

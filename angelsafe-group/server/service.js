@@ -82,7 +82,7 @@ module.exports = (config) => {
           lastUpdateTimestamp: new Date().valueOf(),
           groupname: data.groupname,
           description: data.description,
-          profilePic: 'data:image/png;base64,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',
+          profilePic: 'data:image/png;base64,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',
           members: [DB.getObjectId(decodedAuth.data.id)],
           banned: []
         }
@@ -315,6 +315,7 @@ module.exports = (config) => {
         profilePic: isExisting.profilePic,
         description: isExisting.description,
         members: isExisting.members.length,
+        joined:  isExisting.members.indexOf(decodedAuth.data.id) > -1? 1:0,
         online
       };
       return res.status(result.status).json(result);
@@ -531,6 +532,58 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/all-members', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Group.isRequestJoinValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      const isExisting = await DBHelper
+        .getCollection(config.groupCollection)
+        .findOne({ _id: DB.getObjectId(data.groupId) });
+      if (!isExisting) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Group not existing';
+        throw result;
+      }
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Group Members Successful';
+      result.data = isExisting.members;
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   service.get('/list', async (req, res, next) => {
     const result = {
       status: 400,
@@ -672,6 +725,62 @@ module.exports = (config) => {
           id: data.id,
           message: `You are now banned from the ${isExisting.groupname} group.`
         };
+      }
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  service.post('/verify', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Group.isRequestJoinValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      const isExisting = await DBHelper
+        .getCollection(config.groupCollection)
+        .findOne({
+          _id: DB.getObjectId(data.groupId),
+          members: {  $in: [decodedAuth.data.id]}
+        });
+      if (!isExisting) {
+        result.status = 200;
+        result.error = null;
+        result.message = 'Verifying Member Successful';
+        result.data = false;
+      } else {
+        result.status = 200;
+        result.error = null;
+        result.message = 'Verifying Member Successful';
+        result.data = true;
       }
       return res.status(result.status).json(result);
     } catch (err) {

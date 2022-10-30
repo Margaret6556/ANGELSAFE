@@ -63,7 +63,7 @@ class ProfileService {
       },
     });
   }
-
+  
   async getProfiles(req, data) {
     const { ip, port } = await this.getService('angelsafe-profile');
     return ProfileService.callService({

@@ -32,7 +32,7 @@ class GroupService {
   
 
   static isGroupnameValid(data){
-    return data.length > 6 && data.length < 14;
+    return data.length > 6 && data.length < 21;
   }
 
   static isDescriptionValid(data){
