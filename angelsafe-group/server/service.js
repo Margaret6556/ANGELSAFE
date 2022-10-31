@@ -76,6 +76,7 @@ module.exports = (config) => {
         result.message = 'Existing Groupname';
         throw result;
       }
+      data.description = data.description.toString().substring(0, 200);
       const insertedResult = await DBHelper.getCollection(config.groupCollection).insertOne(
         {
           ownerId: DB.getObjectId(decodedAuth.data.id),
@@ -142,13 +143,15 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
-      if(data.description)
+      if(data.description){
         if (!Group.isDescriptionValid(data.description)) {
           result.status = 400;
           result.error = 'Bad Request';
           result.message = 'Invalid Description';
           throw result;
         }
+        data.description = data.description.toString().substring(0, 200);
+      }
       if(data.groupname){
         if (!Group.isGroupnameValid(data.groupname)) {
           result.status = 400;

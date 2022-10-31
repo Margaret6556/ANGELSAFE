@@ -403,6 +403,27 @@ version: v0.1.0
                 body:
                     application/json:
                         example: null
+/api/notif/list:
+    get:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            [{
+                                "timestamp": 1667177573287,
+                                "message": "You have created the AngelSafe group.",
+                                "read": 1,
+                                "profilePic": "data:image/png;base64,iVBORw0KGgoAAAANSUh...",
+                                "groupname": "AngelSafe",
+                                "groupId": "635400ee05aa48461..."
+                            }]
 /api/chat/create:
     post:
         headers: 
@@ -465,8 +486,10 @@ version: v0.1.0
                             {
                                 "id": "6354e7cda1076d0dfc...",
                                 "receiver": <profile>,
-                                "read": 1,
-                                "lastMessage": "Test Message 1..."
+                                "635688a18c45f900...": 3, // # of unread messages
+                                "635400ee05aa4846...": 0, //read
+                                "lastMessage": "Test Message 1...",
+                                "lastMessageTimestamp": 1666460073913
                             }
 /api/stat/create:
     post:

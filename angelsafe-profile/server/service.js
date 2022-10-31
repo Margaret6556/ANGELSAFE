@@ -183,6 +183,8 @@ module.exports = (config) => {
           result.message = 'Invalid Gender';
           throw result;
         }
+      if(data.bio)
+        data.bio = data.bio.toString().substring(0, 200);
       if(data.username){
         if (!Profile.isUsernameValid(data.username)) {
           result.status = 400;

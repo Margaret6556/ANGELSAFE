@@ -65,12 +65,13 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
+      let timestamp = new Date().valueOf();
       const insertResult = await DBHelper.getCollection(config.chatCollection).insertOne(
         {
           participants: [DB.getObjectId(decodedAuth.data.id), DB.getObjectId(data.receiverId)],
           sender: DB.getObjectId(decodedAuth.data.id),
           receiver: DB.getObjectId(data.receiverId),
-          timestamp: new Date().valueOf(),
+          timestamp,
           message: data.message
         }
       );
@@ -96,7 +97,10 @@ module.exports = (config) => {
         {
           $set: {
             lastMessage: data.message,
-            read: 0
+            lastMessageTimestamp: timestamp,
+          },
+          $inc: {
+            [data.receiverId]: 1,
           }
         });
         log.debug(updateResult);
@@ -109,12 +113,16 @@ module.exports = (config) => {
           result.status = 200;
           result.error = null;
           result.message = 'Creating Message Successful';
-          result.data = null;
+          result.data = {
+            receiverId: data.receiverId
+          };
         }
       } else {
         const insertResult = await DBHelper.getCollection(config.conversationCollection).insertOne({
           lastMessage: data.message,
-          read: 0,
+          lastMessageTimestamp: timestamp,
+          [decodedAuth.data.id]: 0,
+          [data.receiverId]: 1,
           participants: [DB.getObjectId(decodedAuth.data.id), DB.getObjectId(data.receiverId)],
         });
         log.debug(insertResult);
@@ -127,7 +135,9 @@ module.exports = (config) => {
           result.status = 200;
           result.error = null;
           result.message = 'Creating Message Successful';
-          result.data = null;
+          result.data = {
+            receiverId: data.receiverId
+          };
         }
       }
       return res.status(result.status).json(result);
@@ -182,23 +192,23 @@ module.exports = (config) => {
         newMessages.push({
           id: message._id.toString(),
           timestamp: message.timestamp,
-          message: message.message,
+          message: message.message, 
           sender: message.sender,
           receiver: message.receiver
         });
       });
       DBHelper
-        .getCollection(config.conversationCollection)
-        .updateOne({ 
-          $and: [
-            { participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }},
-            { participants: { $in: [DB.getObjectId(data.receiverId)] }}
-          ]
-        }, {
-          $set: {
-            read: 1
-          }
-        });
+      .getCollection(config.conversationCollection)
+      .updateOne({ 
+        $and: [
+          { participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }},
+          { participants: { $in: [DB.getObjectId(data.receiverId)] }}
+        ]
+      }, {
+        $set: {
+          [decodedAuth.data.id]: 0
+        }
+      });
       result.status = 200;
       result.error = null;
       result.message = 'Getting Messages Successful';
@@ -240,14 +250,15 @@ module.exports = (config) => {
         .getCollection(config.conversationCollection)
         .find({
           participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }
-        }).sort({ read: -1 }).toArray();
+        }).sort({ [decodedAuth.data.id]: -1 }).toArray();
       let newList = [];
       list.forEach((item)=>{
         newList.push({
           id: item._id.toString(),
           receiver: item.participants[0].toString() == decodedAuth.data.id? item.participants[1].toString():item.participants[0].toString(),
-          read: item.read,
-          lastMessage: item.lastMessage.toString().substring(0, 18) + '...',
+          unread: item[decodedAuth.data.id],
+          lastMessage: item.lastMessage.toString().length>17?item.lastMessage.toString().substring(0, 18) + '...':item.lastMessage.toString(),
+          lastMessageTimestamp: item.lastMessageTimestamp,
         });
       });
       result.status = 200;

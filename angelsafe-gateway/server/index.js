@@ -46,6 +46,7 @@ app.use(express.json());
 app.use(limiter);
 
 let clients = [];
+let clientSockets = [];
 
 async function processData(req, res) {
   let result = {
@@ -87,6 +88,19 @@ async function processData(req, res) {
                 res.status(result.status).json(result);
             }
             break;
+          case 'hotline':
+            switch (req.method) {
+              case 'GET':
+                result.status = 200;
+                result.error = null;
+                result.message = 'Getting Hotline Successful';
+                result.data = { emergency: "911",  }; // TODO create version on config and create entry on API docu
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+          break;
           default:
             res.status(result.status).json(result);
         }
@@ -224,11 +238,16 @@ async function processData(req, res) {
             switch (req.method) {
               case 'POST':
                 result = await GroupService.register(req, data);
-                if(result.status == 200)
+                if(result.status == 200){
+                  let groupObj = await GroupService.getInfo(req, { groupId: result.data.groupId, ip: data.ip, clients: [] });
                   NotifService.create({
                     id: result.data.id,
+                    profilePic: groupObj.data.profilePic,
+                    groupname: groupObj.data.groupname,
+                    groupId: groupObj.data.id,
                     message: result.data.message
                   });
+                }
                 result.data = { groupId: result.data.groupId };
                 res.status(result.status).json(result);
                 break;
@@ -350,6 +369,11 @@ async function processData(req, res) {
             switch (req.method) {
               case 'POST':
                 result = await ChatService.create(req, data);
+                if(result.status == 200){
+                  const clientIndex = clients.indexOf(result.data.receiverId);
+                  if(clientIndex > -1)
+                    clientSockets[clientIndex].emit('new-message');
+                }
                 res.status(result.status).json(result);
                 break;
               default:
@@ -371,16 +395,16 @@ async function processData(req, res) {
                           id: message.id,
                           timestamp: message.timestamp,
                           message: message.message,
-                          sender: senderProfile.data[0],
-                          receiver: receiverProfile.data[0],
+                          sender: receiverProfile.data[0],
+                          receiver: senderProfile.data[0],
                         });
                       } else {
                         newMessages.push({
                           id: message.id,
                           timestamp: message.timestamp,
                           message: message.message,
-                          receiver: senderProfile.data[0],
-                          sender: receiverProfile.data[0],
+                          receiver: receiverProfile.data[0],
+                          sender: senderProfile.data[0],
                         });
                       }
                     });
@@ -604,8 +628,10 @@ io.on('connection', client => {
   clients.push(client.userId);
   client.on('event', data => { /* … */ });
   client.on('disconnect', () => { 
+    clientSockets = clientSockets.filter(e => e !== clientSockets[clients.indexOf(client.userId)]);
     clients = clients.filter(e => e !== client.userId);
   });
+  clientSockets.push(client);
 });
 server.listen(config.serverPort);
 module.export = app;

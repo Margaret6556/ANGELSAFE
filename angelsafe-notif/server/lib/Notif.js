@@ -5,7 +5,7 @@ class NotifService {
   }
 
   static isRequestValid(data) {
-    return TypeCheck('{ id: String, message: String }', data);
+    return TypeCheck('{ id: String, message: String, profilePic: String, groupname: String, groupId: String }', data);
   }
 
 }

@@ -45,6 +45,9 @@ module.exports = (config) => {
           ownerId: DB.getObjectId(data.id),
           timestamp: new Date().valueOf(),
           message: data.message,
+          profilePic: data.profilePic,
+          groupname: data.groupname,
+          groupId: data.id,
           read: 0
         }
       );
@@ -95,13 +98,16 @@ module.exports = (config) => {
       }
       const notifs = await DBHelper
         .getCollection(config.notifCollection)
-        .find({ 'ownerId': DB.getObjectId(decodedAuth.data.id) }).toArray();
+        .find({ 'ownerId': DB.getObjectId(decodedAuth.data.id) }).sort({ timestamp: -1 }).toArray();
       let newNotifs = [];
       notifs.forEach((notif)=>{
         newNotifs.push({
           timestamp: notif.timestamp,
           message: notif.message,
-          read: notif.read
+          read: notif.read,
+          profilePic: notif.profilePic,
+          groupname: notif.groupname,
+          groupId: notif.groupId,
         });
       });
       DBHelper
