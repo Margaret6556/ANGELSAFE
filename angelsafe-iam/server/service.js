@@ -297,11 +297,12 @@ module.exports = (config) => {
             .getCollection(config.usersCollection)
             .findOne({
               email: data.email,
+              emailVerified: 1
             });
           if (!isExisting) {
             result.status = 400;
             result.error = 'Bad Request';
-            result.message = 'Email Address and Password combination is not valid!';
+            result.message = 'Email Address is not verified or existing!';
             throw result;
           }
           if(!Users.validatePassword(isExisting.password, data.password)){
