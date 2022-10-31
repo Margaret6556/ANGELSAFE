@@ -1,5 +1,6 @@
 import { _API } from "@/shared/config";
 import { UserType } from "@/shared/types";
+import logger from "@/shared/utils/logger";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { logout } from "./actions";
 
@@ -40,13 +41,13 @@ const auth = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(logout.fulfilled, (state) => {
-        state.user = null;
-        state.isLoggedIn = false;
-        console.log("in logout: success");
+      .addCase(logout.fulfilled, () => {
+        /**
+         * let rootReducer handle clear state
+         */
       })
       .addCase(logout.rejected, () => {
-        console.log("in logout: fail");
+        logger("auth", "logout fail");
       });
   },
 });

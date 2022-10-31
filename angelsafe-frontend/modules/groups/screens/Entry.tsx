@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { StyleSheet } from "react-native";
 import { Container, Loading } from "@/shared/components";
 import { GroupParamsList } from "../types";
@@ -7,11 +7,11 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { _API } from "@/shared/config";
 import { useGetGroupsQuery } from "@/shared/api/groups";
 import { Text } from "@rneui/themed";
+import logger from "@/shared/utils/logger";
 
 const EntryScreen = ({
   navigation,
 }: StackScreenProps<GroupParamsList, "Entry">) => {
-  // const isFocused = useIsFocused();
   const { data, isLoading, isError, error } = useGetGroupsQuery();
 
   if (isLoading) {
@@ -20,7 +20,7 @@ const EntryScreen = ({
 
   if (isError) {
     if ("status" in error) {
-      console.log(error.data.message);
+      logger("groups", error.data.message);
     }
   }
 

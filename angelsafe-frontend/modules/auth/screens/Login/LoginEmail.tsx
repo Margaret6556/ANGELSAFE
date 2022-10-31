@@ -14,6 +14,7 @@ import { useLazyGetProfileQuery } from "@/shared/api/profile";
 import { Auth } from "@/shared/config";
 import { setItemAsync } from "expo-secure-store";
 import emailRegex from "@/shared/utils/emailRegex";
+import logger from "@/shared/utils/logger";
 
 type Props = {};
 
@@ -60,19 +61,18 @@ const LoginEmail = ({}: StackScreenProps<
 
       if (status === 200) {
         const { data } = await getProfile(`Bearer ${token}`).unwrap();
-        console.log({ token });
         dispatch(setUser({ ...data, token }));
         await setItemAsync(Auth.KEY, token);
         dispatch(setLoggedIn(true));
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
-      console.log({ err });
       setTimeout(() => {
         setError("");
       }, 8000);
       setError(err.data.message);
       setValue("password", "");
+      logger("auth", err);
     }
   };
   return (

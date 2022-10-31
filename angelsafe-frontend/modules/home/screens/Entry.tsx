@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { HomeParamsList, HomeScreenProps } from "@/home/types";
-import { View, StyleSheet } from "react-native";
-import { Button, makeStyles, Text } from "@rneui/themed";
+import { HomeParamsList } from "@/home/types";
+import { View } from "react-native";
+import { makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-// import { logout } from "@/shared/state/reducers/auth";
 import {
   Modal,
   MoodsComponent,
@@ -16,14 +15,37 @@ import { initialSymptoms, moods } from "../data";
 import { StackScreenProps } from "@react-navigation/stack";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AppTabParamList } from "@/shared/types";
+import store from "@/shared/state";
+import { useDebouncedCallback } from "use-debounce";
+import { useViewStatQuery } from "@/shared/api/stats";
+import {
+  setLastSubmitted,
+  setMood,
+  setSymptoms,
+} from "@/shared/state/reducers/experience";
 
-const EntryScreen = ({}: StackScreenProps<HomeParamsList, "Entry">) => {
-  const [symptoms, setSymptoms] = useState(initialSymptoms);
+const EntryScreen = ({
+  navigation,
+}: StackScreenProps<HomeParamsList, "Entry">) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const { user } = useAppSelector((state) => state.auth);
+  const {
+    auth: { user, redirectToGroup },
+    experience: { mood, symptoms, lastSubmitted },
+  } = useAppSelector((state) => state);
+  const dispatch = useAppDispatch();
   const { navigate } = useNavigation<NavigationProp<AppTabParamList>>();
-  const { redirectToGroup } = useAppSelector(({ auth }) => auth);
   const styles = useStyles();
+  const statQuery = useViewStatQuery();
+  const debouncedOpenModal = useDebouncedCallback(
+    () => handleToggleModalVisibility(true),
+    4500
+  );
+
+  /**
+   * After a successful user registration, if user presses on "GO TO GROUPS",
+   * this view will be mounted, this useEffect will navigate user to Groups Screen
+   * instead of home
+   * */
 
   useEffect(() => {
     if (redirectToGroup) {
@@ -31,46 +53,75 @@ const EntryScreen = ({}: StackScreenProps<HomeParamsList, "Entry">) => {
     }
   }, []);
 
-  const handleOpenModal = () => {
-    setModalVisible(!modalVisible);
-  };
-
-  const handleAddSymptom = (val: string) => {
-    if (val) {
-      const newSymptom = [...symptoms, val];
-      setSymptoms(newSymptom);
+  useEffect(() => {
+    if (statQuery.data?.data) {
+      const { experience, stat } = statQuery.data.data;
+      const found = moods.find((i) => i.id === stat);
+      if (found) {
+        dispatch(setMood(found.label));
+      }
+      experience.forEach((i) => {
+        dispatch(setSymptoms(i));
+      });
+      dispatch(setLastSubmitted(new Date().getTime()));
     }
-    handleOpenModal();
+  }, [statQuery]);
+
+  useEffect(() => {
+    const handleModal = () => {
+      const {
+        experience: { mood, symptoms, lastSubmitted },
+      } = store.getState();
+
+      if (mood && !!symptoms.length && !lastSubmitted) {
+        handleToggleModalVisibility();
+      }
+    };
+
+    const unsubscribe = navigation.addListener("blur", handleModal);
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    if (mood && !!symptoms.length && !lastSubmitted) {
+      debouncedOpenModal();
+    }
+  }, [mood, symptoms, lastSubmitted]);
+
+  const handleToggleModalVisibility = (bool?: boolean) => {
+    setModalVisible(bool || !modalVisible);
   };
 
   return (
-    <Container
-      type="scroll"
-      containerProps={{
-        contentContainerStyle: styles.wrapper,
-        showsVerticalScrollIndicator: false,
-      }}
-    >
-      <View style={styles.container}>
-        <View style={styles.title}>
-          <Text h4>
-            Welcome, {"\n"}
-            {user?.username}
-          </Text>
-          <Text h4>How are you feeling today?</Text>
+    <>
+      <Container
+        type="scroll"
+        containerProps={{
+          contentContainerStyle: styles.wrapper,
+          showsVerticalScrollIndicator: false,
+        }}
+      >
+        <View style={styles.container}>
+          <View style={styles.title}>
+            <Text h4>
+              Welcome, {"\n"}
+              {user?.username}
+            </Text>
+            <Text h4>How are you feeling today?</Text>
+          </View>
+          <MoodsComponent moods={moods} />
+          <View style={[styles.title, {}]}>
+            <Text>What are you experiencing?</Text>
+          </View>
+          <View style={styles.symptomsContainer}>
+            <SymptomsComponent symptoms={initialSymptoms} />
+            <AddNewSymptomButton onPress={handleToggleModalVisibility} />
+          </View>
         </View>
-        <MoodsComponent moods={moods} />
-        <View style={[styles.title, {}]}>
-          <Text>What are you experiencing?</Text>
-        </View>
-        <View style={styles.symptomsContainer}>
-          <SymptomsComponent symptoms={symptoms} />
-          <AddNewSymptomButton onPress={handleOpenModal} />
-        </View>
-
-        <Modal isVisible={modalVisible} onPress={handleAddSymptom} />
-      </View>
-    </Container>
+      </Container>
+      <Modal isVisible={modalVisible} onCancel={handleToggleModalVisibility} />
+    </>
   );
 };
 

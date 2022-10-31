@@ -12,4 +12,10 @@ export type AddGroupParamList = {
   GroupPhoto: { id: string };
 };
 
+export type GroupDetailsParamList = {
+  Details: { id: string };
+  Members: { groupId: string };
+  ViewProfile: { id: string };
+};
+
 export { GroupsType } from "@/shared/api/groups";

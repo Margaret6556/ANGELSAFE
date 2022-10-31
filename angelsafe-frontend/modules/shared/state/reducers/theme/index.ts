@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 const initialState = {
   backgroundColor: "transparent",
   solidBackground: false,
+  manualDarkMode: false,
 };
 
 const themeSlice = createSlice({
@@ -15,8 +16,12 @@ const themeSlice = createSlice({
     setSolidBackground: (state, action: PayloadAction<boolean>) => {
       state.solidBackground = action.payload;
     },
+    setManualDarkMode: (state, action: PayloadAction<boolean>) => {
+      state.manualDarkMode = action.payload;
+    },
   },
 });
 
 export default themeSlice.reducer;
-export const { setBackgroundColor, setSolidBackground } = themeSlice.actions;
+export const { setBackgroundColor, setSolidBackground, setManualDarkMode } =
+  themeSlice.actions;

@@ -1,11 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import {
-  View,
-  StyleSheet,
-  ActivityIndicator,
-  KeyboardAvoidingView,
-} from "react-native";
-import { Text, Button, Icon } from "@rneui/themed";
+import React, { useCallback, useState } from "react";
+import { View, ActivityIndicator } from "react-native";
+import { Text, Button, Icon, makeStyles } from "@rneui/themed";
 import { Auth, _API } from "@/shared/config";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
@@ -17,6 +12,7 @@ import OtpInputField from "@/shared/components/OtpInput";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useLazyGetProfileQuery } from "@/shared/api/profile";
 import CountdownTimer from "../Countdown";
+import logger from "@/shared/utils/logger";
 
 interface IOtpViewProps {
   mobile: string;
@@ -32,7 +28,8 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
 
   const [login, loginRes] = useLoginMutation();
   const [resendOtp, otpResponse] = useResendOtpMutation();
-  const [getProfile, getProfileResponse] = useLazyGetProfileQuery();
+  const [getProfile] = useLazyGetProfileQuery();
+  const styles = useStyles();
   const dispatch = useDispatch();
 
   const handleVerify = async () => {
@@ -57,9 +54,9 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
         }
       }
     } catch (e) {
-      console.log({ e });
       const err = e as BackendResponse<BackendErrorResponse>;
       handleShowError(err.data.message);
+      logger("auth", err);
     }
   };
 
@@ -83,7 +80,7 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
       } catch (e) {
         const err = e as BackendResponse<BackendErrorResponse>;
         handleShowError(err.data.message);
-        console.log({ e });
+        logger("auth", err);
       }
     }
   };
@@ -143,7 +140,7 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
                 {otpResponse.isLoading ? (
                   <ActivityIndicator />
                 ) : (
-                  <Text style={{ color: "blue" }} onPress={handleResetOtp}>
+                  <Text style={styles.textResendOtp} onPress={handleResetOtp}>
                     Resend OTP
                   </Text>
                 )}
@@ -196,7 +193,7 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
 
 export default OtpView;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     justifyContent: "space-between",
     padding: StyleConstants.PADDING_HORIZONTAL,
@@ -207,7 +204,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   lockContainer: {
-    backgroundColor: "#0B2853",
+    backgroundColor: theme.colors.primary,
     height: 100,
     width: 100,
     justifyContent: "center",
@@ -223,6 +220,7 @@ const styles = StyleSheet.create({
   textTitle: {
     textAlign: "center",
   },
+  textResendOtp: { color: theme.colors.primary },
   subtitle: {
     fontSize: 14,
     textAlign: "center",
@@ -231,4 +229,4 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     width: "100%",
   },
-});
+}));

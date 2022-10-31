@@ -2,7 +2,6 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { HomeParamsList } from "./types";
 import { EntryScreen, AddNewSymptom } from "./screens/";
 import { AppTabParamList } from "@/shared/types";
-import { View } from "react-native";
 import { useAppSelector } from "@/shared/hooks";
 import { useEffect } from "react";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -42,9 +41,6 @@ const HomeScreen = ({
           header: () => null,
           presentation: "modal",
           cardOverlayEnabled: false,
-          // cardOverlay: ({ style }) => {
-          //   return <View style={{ backgroundColor: "red" }}>{}</View>;
-          // },
         }}
       />
     </HomeStack.Navigator>

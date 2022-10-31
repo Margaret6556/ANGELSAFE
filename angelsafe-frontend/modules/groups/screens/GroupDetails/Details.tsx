@@ -1,7 +1,6 @@
-import React, { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
-  StyleSheet,
   StatusBar,
   Platform,
   NativeScrollEvent,
@@ -11,21 +10,19 @@ import {
 import { Button, lightColors, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Container, Loading } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
-import { GroupParamsList } from "../types";
+import { GroupDetailsParamList } from "../../types";
 import { StackScreenProps } from "@react-navigation/stack";
-import { Card } from "../components";
-import Modal from "react-native-modal";
 import { _API } from "@/shared/config";
 import {
-  useGetGroupMembersQuery,
   useGetSingleGroupQuery,
   useJoinGroupMutation,
   useUnjoinGroupMutation,
 } from "@/shared/api/groups";
-import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
 import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import GroupFeed from "../components/Feed";
+import GroupFeed from "../../components/Feed";
+import useDarkMode from "@/shared/hooks/useDarkMode";
+import logger from "@/shared/utils/logger";
 
 const deviceHeight = Dimensions.get("screen").height;
 
@@ -37,29 +34,35 @@ enum RenderView {
 const GroupDetailsScreen = ({
   navigation,
   route,
-}: StackScreenProps<GroupParamsList, "GroupDetails">) => {
+}: StackScreenProps<GroupDetailsParamList, "Details">) => {
   const { id } = route.params;
-  const [modalVisible, setModalVisible] = useState(false);
   const { data, isError, error, isLoading } = useGetSingleGroupQuery(id);
-  const [joinGroup, joinGroupResponse] = useJoinGroupMutation();
-  const [unjoinGroup, unjoinGroupResponse] = useUnjoinGroupMutation();
-  const { data: membersData } = useGetGroupMembersQuery({ groupId: id });
+  const [joinGroup] = useJoinGroupMutation();
+  const [unjoinGroup] = useUnjoinGroupMutation();
   const [view, setView] = useState(RenderView.FEED);
   const [bounces, setBounces] = useState(false);
-
   const { theme } = useTheme();
+  const isDark = useDarkMode();
+  const styles = useStyles({ isDark, isJoined: data?.data.joined || 0 });
 
   useSetSolidBackground();
 
-  const styles = useStyles();
-
-  const handleNewPost = () => {
-    setModalVisible(!modalVisible);
+  const handleGroupJoin = async () => {
+    try {
+      const { status } = await joinGroup({ groupId: id }).unwrap();
+      logger("groups", { status });
+    } catch (e) {
+      logger("groups", { e });
+    }
   };
 
-  const handleGroupJoin = (id: string) => async () => {
-    const { data, status } = await joinGroup({ groupId: id }).unwrap();
-    console.log({ status });
+  const handleGroupUnjoin = async () => {
+    try {
+      const { status } = await unjoinGroup({ groupId: id }).unwrap();
+      logger("groups", { status });
+    } catch (e) {
+      logger("groups", { e });
+    }
   };
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -75,27 +78,37 @@ const GroupDetailsScreen = ({
     setView(viewTab);
   };
 
+  const handleMembersPress = (id: string) => () => {
+    navigation.push("Members", {
+      groupId: id,
+    });
+  };
+
   const renderView = () => {
     switch (view) {
       case RenderView.FEED: {
-        return <GroupFeed groupId={id} />;
+        return <GroupFeed groupId={id} isJoined={!!data?.data.joined} />;
       }
       case RenderView.SYMPTOM_CHART: {
-        return <Text>whay</Text>;
+        return (
+          <View style={{ marginVertical: 12 }}>
+            <Text>Come back later, data not yet available.</Text>
+          </View>
+        );
       }
       default:
         return null;
     }
   };
 
-  if (isLoading) {
-    return <Loading />;
-  }
-
   if (isError) {
     if ("status" in error) {
-      console.log(error.data.message);
+      logger("groups", error.data.message);
     }
+  }
+
+  if (isLoading) {
+    return <Loading />;
   }
 
   if (data) {
@@ -106,6 +119,7 @@ const GroupDetailsScreen = ({
         type="image"
         containerProps={{
           style: styles.wrapper,
+          imageStyle: styles.imageContainer,
         }}
       >
         <Container
@@ -124,15 +138,21 @@ const GroupDetailsScreen = ({
                 {group.groupname}
               </Text>
               <View style={styles.stats}>
-                <Text style={styles.statsLabel}>{group.members} members</Text>
+                <TouchableOpacity
+                  onPress={handleMembersPress(id)}
+                  activeOpacity={0.5}
+                >
+                  <Text style={styles.statsLabel}>{group.members} members</Text>
+                </TouchableOpacity>
                 <Text style={styles.statsLabel}>{group.online} online</Text>
                 <Button
-                  title={`Joined`}
-                  size="sm"
+                  title={group.joined ? "Joined" : "Join"}
                   containerStyle={styles.joinButtonContainerStyle}
                   buttonStyle={styles.joinButtonStyle}
                   titleStyle={styles.joinButtonTitleStyle}
-                  onPress={handleGroupJoin("1")}
+                  onPress={group.joined ? handleGroupUnjoin : handleGroupJoin}
+                  // disabled
+                  activeOpacity={0.5}
                 />
               </View>
               <View style={styles.description}>
@@ -189,94 +209,103 @@ const GroupDetailsScreen = ({
 
 export default GroupDetailsScreen;
 
-const useStyles = makeStyles((theme) => ({
-  wrapper: {
-    justifyContent: "flex-start",
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-  },
-  container: {
-    minWidth: "100%",
-  },
-  containerTop: {
-    backgroundColor: theme.colors.background,
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingTop: StyleConstants.PADDING_VERTICAL,
-    paddingBottom: StyleConstants.PADDING_VERTICAL / 2,
-    borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
-    borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
-  },
-  title: {
-    marginBottom: 12,
-    color: theme.colors.primary,
-  },
-  stats: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  statsLabel: {
-    color: theme.colors.primary,
-    fontWeight: "300",
-  },
-  description: {
-    marginVertical: 24,
-  },
-  tab: {
-    flexDirection: "row",
-  },
-  tabButton: {
-    flex: 1,
-  },
-  tabText: {
-    textAlign: "center",
-    fontFamily: "nunitoBold",
-  },
-  containerBottom: {
-    padding: StyleConstants.PADDING_HORIZONTAL / 2,
-  },
-  inputContainer: {
-    backgroundColor: theme.colors.background,
-    paddingHorizontal: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    height: 65,
-    borderRadius: 10,
-  },
-  input: {
-    height: 32,
-    borderColor: "#A0A0A0",
-    borderWidth: 1,
-  },
-  cardWrapper: {
-    backgroundColor: "red",
-    minHeight: 265,
-  },
-  cardContainer: {
-    borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-    marginHorizontal: 0,
-  },
-  joinButtonContainerStyle: {
-    paddingHorizontal: 0,
-    margin: 0,
-  },
-  joinButtonStyle: {
-    backgroundColor: "transparent",
-    paddingHorizontal: 0,
-    height: 28,
-    minWidth: 82,
-    borderRadius: 50,
-    borderWidth: 2,
-    borderColor: theme.colors.primary,
-    padding: 0,
-    margin: 0,
-  },
-  joinButtonTitleStyle: {
-    color: theme.colors.primary,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-}));
+const useStyles = makeStyles(
+  (theme, props: { isDark: boolean; isJoined: 0 | 1 }) => ({
+    wrapper: {
+      justifyContent: "flex-start",
+      paddingHorizontal: 0,
+      paddingVertical: 0,
+      backgroundColor: props.isDark ? theme.colors.background : "transparent",
+    },
+    imageContainer: {
+      opacity: props.isDark ? 0 : 1,
+    },
+    container: {
+      minWidth: "100%",
+    },
+    containerTop: {
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
+      paddingTop: StyleConstants.PADDING_VERTICAL,
+      paddingBottom: StyleConstants.PADDING_VERTICAL / 2,
+      borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
+      borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
+    },
+    title: {
+      marginBottom: 12,
+      color: props.isDark ? theme.colors.black : theme.colors.primary,
+    },
+    stats: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+    },
+    statsLabel: {
+      color: props.isDark ? theme.colors.black : theme.colors.primary,
+      fontWeight: "300",
+    },
+    description: {
+      marginVertical: 24,
+    },
+    tab: {
+      flexDirection: "row",
+    },
+    tabButton: {
+      flex: 1,
+    },
+    tabText: {
+      textAlign: "center",
+      fontFamily: "nunitoBold",
+    },
+    containerBottom: {
+      padding: StyleConstants.PADDING_HORIZONTAL / 2,
+    },
+    inputContainer: {
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: 12,
+      alignItems: "center",
+      justifyContent: "center",
+      height: 65,
+      borderRadius: 10,
+    },
+    input: {
+      height: 32,
+      borderColor: "#A0A0A0",
+      borderWidth: 1,
+    },
+    cardWrapper: {
+      backgroundColor: "red",
+      minHeight: 265,
+    },
+    cardContainer: {
+      borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
+      marginHorizontal: 0,
+    },
+    joinButtonContainerStyle: {
+      paddingHorizontal: 0,
+      margin: 0,
+    },
+    joinButtonStyle: {
+      backgroundColor: !!props.isJoined
+        ? "transparent"
+        : theme.colors.secondary,
+      paddingHorizontal: 0,
+      height: 28,
+      minWidth: 82,
+      borderRadius: 50,
+      borderWidth: 2,
+      borderColor: !!props.isJoined
+        ? theme.colors.primary
+        : theme.colors.secondary,
+      padding: 0,
+      margin: 0,
+    },
+    joinButtonTitleStyle: {
+      color: !!props.isJoined ? theme.colors.primary : theme.colors.white,
+      fontSize: 16,
+    },
+  })
+);
 
 const STATUSBAR_HEIGHT = StatusBar.currentHeight;
 const APPBAR_HEIGHT = Platform.OS === "ios" ? 44 : 56;

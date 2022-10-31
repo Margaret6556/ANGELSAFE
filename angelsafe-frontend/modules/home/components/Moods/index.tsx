@@ -1,10 +1,11 @@
 import { StyleSheet, ImageSourcePropType } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import Buttons from "./Buttons";
 import { Container } from "@/shared/components";
+import { MoodsType } from "@/home/types";
 
 interface IMoodsComponent {
-  moods: { label: string; image: ImageSourcePropType }[];
+  moods: MoodsType[];
 }
 
 const MoodsComponent = ({ moods }: IMoodsComponent) => {

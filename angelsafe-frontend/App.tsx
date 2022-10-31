@@ -9,7 +9,7 @@ import {
   Nunito_600SemiBold,
 } from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
-import { Loading } from "./modules/shared/components";
+import { ActivityIndicator, View } from "react-native";
 
 const App = () => {
   const [fontsLoaded] = useFonts({
@@ -33,7 +33,11 @@ const App = () => {
   }, [fontsLoaded]);
 
   if (!fontsLoaded) {
-    return <Loading />;
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
   return (

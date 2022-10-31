@@ -3,12 +3,15 @@ import React, { useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { MoreParamsList } from "../types";
 import { Container } from "@/shared/components";
-import { Button, Input, Text } from "@rneui/themed";
+import { Button, Input, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useRegisterEmailMutation } from "@/shared/api/auth";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { setUser } from "@/shared/state/reducers/auth";
+import theme from "@/shared/state/reducers/theme";
+import useDarkMode from "@/shared/hooks/useDarkMode";
+import logger from "@/shared/utils/logger";
 
 type FormType = {
   email: string;
@@ -23,6 +26,9 @@ const AccountSecurity = ({
   const [secureTextEntry, setSecureTextEntry] = useState(false);
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const { theme } = useTheme();
+  const isDark = useDarkMode();
+  const styles = useStyles({ isDark });
 
   const {
     control,
@@ -40,14 +46,11 @@ const AccountSecurity = ({
   };
 
   const handleAddLoginMethod = async (val: FormType) => {
-    console.log({ val });
     try {
       const {
         data: { email },
         status,
       } = await registerEmail(val).unwrap();
-
-      console.log({ email });
 
       if (status === 200) {
         dispatch(setUser({ email }));
@@ -61,7 +64,7 @@ const AccountSecurity = ({
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
-      console.log({ err });
+      logger("more", err);
       setTimeout(() => {
         setError("");
       }, 5000);
@@ -95,6 +98,14 @@ const AccountSecurity = ({
                   returnKeyType="next"
                   disabled={!!user?.email}
                   placeholder={user?.email}
+                  labelStyle={styles.label}
+                  placeholderTextColor={
+                    isDark ? theme.colors.black : theme.colors.white
+                  }
+                  disabledInputStyle={{
+                    color: theme.colors.black,
+                    backgroundColor: theme.colors.grey4,
+                  }}
                   {...field}
                   onChangeText={field.onChange}
                 />
@@ -118,11 +129,12 @@ const AccountSecurity = ({
                     type: "ionicon",
                     name: secureTextEntry ? "eye-outline" : "eye-off-outline",
                     onPress: handleSetSecureText,
-                    color: "#333",
                   }}
+                  labelStyle={styles.label}
                   inputStyle={{
                     borderTopRightRadius: 0,
                     borderBottomRightRadius: 0,
+                    color: isDark ? theme.colors.white : theme.colors.black,
                   }}
                 />
               )}
@@ -144,11 +156,14 @@ const AccountSecurity = ({
 
 export default AccountSecurity;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   container: {
     justifyContent: "space-between",
+  },
+  label: {
+    color: props.isDark ? theme.colors.black : theme.colors.primary,
   },
   wrapper: {
     width: "100%",
   },
-});
+}));

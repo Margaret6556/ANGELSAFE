@@ -1,61 +1,86 @@
-import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
-import { Card, Icon, makeStyles, Text, useTheme } from "@rneui/themed";
+import { View } from "react-native";
+import { Card, makeStyles, Text, useTheme } from "@rneui/themed";
 import Avatar from "./Avatar";
 import { StyleConstants } from "@/shared/styles";
 import SocialIcon from "./SocialIcon";
+import {
+  useHeartPostMutation,
+  useLikePostMutation,
+  useUnHeartPostMutation,
+  useUnLikePostMutation,
+} from "@/shared/api/post";
+import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import logger from "@/shared/utils/logger";
+import { PostsType } from "@/shared/api/post";
 
-interface CardFeedProps {
-  description: string;
-  ownerId: string;
-  socials?: {
-    likes: number;
-    comments: number;
-    hearts: number;
-  };
-}
+const CardFeed = (props: PostsType) => {
+  const [comments] = useState(props.comments);
 
-const CardFeed = (props: CardFeedProps) => {
-  const [liked, setLiked] = useState({
-    liked: false,
-    label: 20,
-  });
-  const [hearted, setHearted] = useState({
-    hearted: false,
-    label: 20,
-  });
+  const [likePost] = useLikePostMutation();
+  const [unlikePost] = useUnLikePostMutation();
+  const [heartPost] = useHeartPostMutation();
+  const [unheartPost] = useUnHeartPostMutation();
 
   const styles = useStyles();
   const { theme } = useTheme();
 
-  const handleLike = () => {
-    setLiked((prev) => ({
-      ...prev,
-      liked: !prev.liked,
-      label: prev.label + 1,
-    }));
+  const handleToggleLike = (liking: boolean) => async () => {
+    try {
+      let data, status;
+      if (liking) {
+        const response = await likePost({
+          postId: props.id,
+        }).unwrap();
+        data = response.data;
+        status = response.status;
+      } else {
+        const response = await unlikePost({
+          postId: props.id,
+        }).unwrap();
+        data = response.data;
+        status = response.status;
+      }
+      if (status === 200) {
+        logger("post", { data, status });
+      }
+    } catch (e) {
+      const err = e as BackendResponse<BackendErrorResponse>;
+      logger("post", err);
+    }
   };
-  const handleHeart = () => {
-    setHearted((prev) => ({
-      ...prev,
-      hearted: !prev.hearted,
-      label: prev.label + 1,
-    }));
+
+  const handleToggleHeart = (hearting: boolean) => async () => {
+    try {
+      let data, status;
+      if (hearting) {
+        const response = await heartPost({
+          postId: props.id,
+        }).unwrap();
+        data = response.data;
+        status = response.status;
+      } else {
+        const response = await unheartPost({
+          postId: props.id,
+        }).unwrap();
+        data = response.data;
+        status = response.status;
+      }
+      if (status === 200) {
+        logger("post", { data, status });
+      }
+    } catch (e) {
+      const err = e as BackendResponse<BackendErrorResponse>;
+      logger("post", err);
+    }
   };
   const handleComment = () => {};
 
-  const handleViewProfile = () => {
-    console.log("view profile");
-  };
-
   return (
-    <Card
-      containerStyle={styles.cardContainer}
-      wrapperStyle={styles.cardWrapper}
-    >
-      <Avatar userId={props.ownerId} onViewProfile={handleViewProfile} />
+    <Card containerStyle={styles.cardContainer}>
+      <Avatar userId={props.ownerId} postTimeStamp={props.timestamp} />
       <View style={styles.cardDescription}>
-        <Text>{props.description}</Text>
+        <Text>{props.message}</Text>
       </View>
       <View style={styles.socialIcons}>
         <SocialIcon
@@ -67,10 +92,10 @@ const CardFeed = (props: CardFeedProps) => {
             name: "like1",
             type: "antdesign",
           }}
-          enabled={liked.liked}
+          enabled={!!props.liked}
           enabledColor={theme.colors.secondary}
-          label={liked.label}
-          onPress={handleLike}
+          label={props.likes}
+          onPress={handleToggleLike(!!!props.liked)}
         />
         <SocialIcon
           iconProps={{
@@ -81,10 +106,10 @@ const CardFeed = (props: CardFeedProps) => {
             name: "heart",
             type: "antdesign",
           }}
-          enabled={hearted.hearted}
+          enabled={!!props.hearted}
           enabledColor={theme.colors.error}
-          label={hearted.label}
-          onPress={handleHeart}
+          label={props.hearts}
+          onPress={handleToggleHeart(!!!props.hearted)}
         />
         <SocialIcon
           iconProps={{
@@ -95,7 +120,7 @@ const CardFeed = (props: CardFeedProps) => {
             name: "",
             type: "",
           }}
-          label={23}
+          label={comments}
           onPress={handleComment}
         />
       </View>
@@ -108,10 +133,10 @@ export default CardFeed;
 const useStyles = makeStyles({
   cardContainer: {
     marginHorizontal: 0,
+    marginBottom: StyleConstants.PADDING_VERTICAL,
+    margin: 0,
     borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
   },
-  cardWrapper: {},
-  cardAvatar: {},
   cardDescription: {
     marginVertical: 24,
   },

@@ -1,6 +1,6 @@
 import { apiSlice } from ".";
 import { _API } from "../config";
-import { BackendResponse, UserType } from "../types";
+import { BackendResponse } from "../types";
 
 export type PostsType = {
   id: string;
@@ -11,6 +11,8 @@ export type PostsType = {
   comments: number;
   hearts: number;
   likes: number;
+  liked: 0 | 1;
+  hearted: 0 | 1;
 };
 
 const postApiSlice = apiSlice.injectEndpoints({
@@ -24,11 +26,23 @@ const postApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      providesTags: ["POST"],
+      providesTags: (res) => {
+        const tag = { type: "POST" as const, id: "LIST" };
+        if (res?.data) {
+          return [...res.data.map(({ id }) => ({ type: tag.type, id })), tag];
+        }
+        return [tag];
+      },
     }),
-    getSinglePost: builder.query<BackendResponse<PostsType[]>, void>({
+    getMyPosts: builder.query<BackendResponse<PostsType[]>, void>({
       query: () => _API.POST.VIEW,
-      providesTags: ["POST"],
+      providesTags: (res) => {
+        const tag = { type: "POST" as const, id: "SINGLE" };
+        if (res?.data) {
+          return [...res.data.map(({ id }) => ({ type: tag.type, id })), tag];
+        }
+        return [tag];
+      },
     }),
     createPost: builder.mutation<
       BackendResponse<null>,
@@ -47,7 +61,12 @@ const postApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["POST"],
+      invalidatesTags: (_, __, arg) => [
+        {
+          type: "POST",
+          id: arg.postId,
+        },
+      ],
     }),
     unHeartPost: builder.mutation<BackendResponse<{}>, { postId: string }>({
       query: (body) => ({
@@ -55,23 +74,38 @@ const postApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: ["POST"],
+      invalidatesTags: (_, __, arg) => [
+        {
+          type: "POST",
+          id: arg.postId,
+        },
+      ],
     }),
     likePost: builder.mutation<BackendResponse<{}>, { postId: string }>({
       query: (body) => ({
-        url: _API.POST.HEART,
+        url: _API.POST.LIKE,
         method: "POST",
         body,
       }),
-      invalidatesTags: ["POST"],
+      invalidatesTags: (_, __, arg) => [
+        {
+          type: "POST",
+          id: arg.postId,
+        },
+      ],
     }),
     unLikePost: builder.mutation<BackendResponse<{}>, { postId: string }>({
       query: (body) => ({
-        url: _API.POST.UNHEART,
+        url: _API.POST.UNLIKE,
         method: "POST",
         body,
       }),
-      invalidatesTags: ["POST"],
+      invalidatesTags: (_, __, arg) => [
+        {
+          type: "POST",
+          id: arg.postId,
+        },
+      ],
     }),
   }),
   overrideExisting: true,
@@ -79,6 +113,10 @@ const postApiSlice = apiSlice.injectEndpoints({
 
 export const {
   useGetPostListQuery,
-  useGetSinglePostQuery,
+  useGetMyPostsQuery,
   useCreatePostMutation,
+  useLikePostMutation,
+  useHeartPostMutation,
+  useUnLikePostMutation,
+  useUnHeartPostMutation,
 } = postApiSlice;

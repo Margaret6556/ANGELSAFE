@@ -1,7 +1,6 @@
-import base64 from "react-native-base64";
 import { apiSlice } from ".";
 import { _API } from "../config";
-import { BackendResponse } from "../types";
+import { BackendResponse, UserType } from "../types";
 
 export type ProfileRegisterType = {
   username: string;
@@ -10,21 +9,66 @@ export type ProfileRegisterType = {
   gender: string;
 };
 
-type ChatListResponse = {
+export interface ChatListResponse {
   id: string;
-  receiver: { [key: string]: any };
+  receiver: UserType;
   read: number;
   lastMessage: string;
+}
+
+type CreateChatType = {
+  receiverId: string;
+  message: string;
+};
+
+type SingleChatResponse = {
+  id: string;
+  timestamp: string;
+  message: string;
+  sender: UserType;
+  receiver: UserType;
 };
 
 const chatApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getChatList: builder.query<BackendResponse<ChatListResponse>, void>({
+    getChatList: builder.query<BackendResponse<ChatListResponse[]>, void>({
       query: () => _API.CHAT.LIST,
-      providesTags: ["PROFILE"],
+      providesTags: (res) => {
+        const tag = { type: "CHAT" as const, id: "LIST" };
+        if (res?.data) {
+          return [
+            ...res.data.map(({ id }) => ({
+              type: "CHAT" as const,
+              id,
+            })),
+            tag,
+          ];
+        }
+        return [tag];
+      },
+    }),
+    viewChat: builder.query<
+      BackendResponse<SingleChatResponse[]>,
+      { receiverId: string }
+    >({
+      query: (body) => ({
+        url: _API.CHAT.VIEW,
+        method: "POST",
+        body,
+      }),
+      providesTags: [{ type: "CHAT" as const, id: "LIST" }],
+    }),
+    createChat: builder.mutation<BackendResponse<{}>, CreateChatType>({
+      query: (body) => ({
+        url: _API.CHAT.CREATE,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "CHAT", id: "LIST" }],
     }),
   }),
   overrideExisting: true,
 });
 
-export const { useGetChatListQuery } = chatApiSlice;
+export const { useGetChatListQuery, useCreateChatMutation, useViewChatQuery } =
+  chatApiSlice;

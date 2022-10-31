@@ -1,3 +1,6 @@
+import { Moods } from "@/shared/state/reducers/experience";
+import { MoodsType } from "../types";
+
 export const initialSymptoms = [
   "Tiredness",
   "Morning sickness",
@@ -8,31 +11,32 @@ export const initialSymptoms = [
   "Nausea",
   "Weightloss",
   "Diarrhea",
-  // "Headache",
-  // "Bleeding",
-  // "Changes on your skin",
-  // "Swelling",
 ];
 
-export const moods = [
+export const moods: MoodsType[] = [
   {
-    label: "Happy",
+    id: "0",
+    label: Moods.HAPPY,
     image: require("../../../assets/home/mood/happy.png"),
   },
   {
-    label: "Calm",
+    id: "1",
+    label: Moods.CALM,
     image: require("../../../assets/home/mood/calm.png"),
   },
   {
-    label: "Sad",
+    id: "2",
+    label: Moods.SAD,
     image: require("../../../assets/home/mood/sad.png"),
   },
   {
-    label: "Sick",
+    id: "3",
+    label: Moods.SICK,
     image: require("../../../assets/home/mood/annoyed.png"),
   },
   {
-    label: "Angry",
+    id: "4",
+    label: Moods.ANGRY,
     image: require("../../../assets/home/mood/angry.png"),
   },
 ];

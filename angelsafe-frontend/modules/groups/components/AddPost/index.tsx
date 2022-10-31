@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { Platform, Text, View } from "react-native";
 import React, { useState } from "react";
 import {
   Avatar,
@@ -13,6 +13,9 @@ import { Controller, useForm } from "react-hook-form";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useCreatePostMutation } from "@/shared/api/post";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import useDarkMode from "@/shared/hooks/useDarkMode";
+import { Container } from "@/shared/components";
+import logger from "@/shared/utils/logger";
 
 interface AddPostProps {
   onClose: () => void;
@@ -25,10 +28,11 @@ type FieldType = {
 
 const MAX_POST_LENGTH = 250;
 const AddPost = (props: AddPostProps) => {
-  const styles = useStyles();
   const [multilineHeight, setMultiLineHeight] = useState(0);
   const { theme } = useTheme();
   const [createPost, createPostResponse] = useCreatePostMutation();
+  const isDark = useDarkMode();
+  const styles = useStyles({ isDark });
   const {
     control,
     formState: { errors },
@@ -54,7 +58,6 @@ const AddPost = (props: AddPostProps) => {
       };
       const { status } = await createPost(body).unwrap();
       if (status === 200) {
-        console.log("Post Success");
         handleClose();
       }
     } catch (e) {
@@ -62,13 +65,21 @@ const AddPost = (props: AddPostProps) => {
       setError("message", {
         message: err.data.message,
       });
-      console.log({ e });
+      logger("post", err);
     }
   };
 
   return (
-    <View style={styles.container}>
-      <View>
+    <Container
+      type="keyboard"
+      containerProps={{
+        // style: styles.container,
+        behavior: "height",
+        style: styles.container,
+        keyboardVerticalOffset: Platform.OS === "ios" ? 300 : 0,
+      }}
+    >
+      <View style={styles.wrapper}>
         <View style={styles.header}>
           <TouchableOpacity onPress={handleClose}>
             <Icon
@@ -88,12 +99,7 @@ const AddPost = (props: AddPostProps) => {
               label={
                 <View style={styles.inputLabelContainer}>
                   <Text style={styles.inputLabel}>Enter your Post</Text>
-                  <Text
-                    style={[
-                      styles.inputLabel,
-                      { fontSize: 14, color: theme.colors.grey0 },
-                    ]}
-                  >
+                  <Text style={[styles.inputLabel, { fontSize: 12 }]}>
                     {message.length}/{MAX_POST_LENGTH}
                   </Text>
                 </View>
@@ -102,6 +108,8 @@ const AddPost = (props: AddPostProps) => {
               multiline
               inputStyle={{
                 height: Math.max(250, multilineHeight),
+                color: isDark ? theme.colors.white : theme.colors.black,
+                textAlignVertical: "top",
               }}
               {...field}
               onContentSizeChange={(event) => {
@@ -112,30 +120,34 @@ const AddPost = (props: AddPostProps) => {
             />
           )}
         />
+        <Button
+          title={createPostResponse.isSuccess ? "Success" : "Post"}
+          onPress={handleSubmit(handleAddPost)}
+          loading={createPostResponse.isLoading}
+          disabled={!!errors.message}
+        />
       </View>
-      <Button
-        title={createPostResponse.isSuccess ? "Success" : "Post"}
-        onPress={handleSubmit(handleAddPost)}
-        loading={createPostResponse.isLoading}
-        disabled={!!errors.message}
-      />
-    </View>
+    </Container>
   );
 };
 
 export default AddPost;
 
-const useStyles = makeStyles((theme) => ({
-  container: {
+const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
+  wrapper: {
     width: "100%",
     marginTop: "auto",
-    height: "65%",
-    backgroundColor: theme.colors.grey5,
+    // maxHeight: "65%",
+    backgroundColor: props.isDark ? theme.colors.white : theme.colors.grey5,
     justifyContent: "space-between",
+    alignItems: "stretch",
     borderTopLeftRadius: StyleConstants.PADDING_HORIZONTAL / 2,
     borderTopRightRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    padding: 24,
+  },
+  container: {
+    paddingHorizontal: 0,
+    paddingVertical: 0,
   },
   header: {
     width: "100%",
@@ -147,9 +159,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 12,
   },
   inputLabel: {
-    color: theme.colors.primary,
+    color: props.isDark ? theme.colors.black : theme.colors.primary,
   },
 }));

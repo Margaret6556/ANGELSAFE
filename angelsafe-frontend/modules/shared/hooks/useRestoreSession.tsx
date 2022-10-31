@@ -6,6 +6,7 @@ import { useGetProfileQuery, useLazyGetProfileQuery } from "../api/profile";
 import { Auth, _API } from "../config";
 import { setLoggedIn, setUser } from "../state/reducers/auth";
 import { BackendErrorResponse, BackendResponse } from "../types";
+import logger from "../utils/logger";
 
 type SessionStatus = "loading" | "done";
 
@@ -19,7 +20,7 @@ const useRestoreSession = () => {
       try {
         const token = await getItemAsync(Auth.KEY);
         if (token) {
-          console.log("from restore", token);
+          logger("auth", `from restore: ${token}`);
           const { data, status } = await getProfile(`Bearer ${token}`).unwrap();
           if (status === 200) {
             dispatch(setUser({ ...data, token }));
@@ -29,7 +30,7 @@ const useRestoreSession = () => {
       } catch (e) {
         const err = e as BackendResponse<BackendErrorResponse>;
         await deleteItemAsync(Auth.KEY);
-        console.log({ err });
+        logger("auth", err);
       }
       setStatus("done");
     };

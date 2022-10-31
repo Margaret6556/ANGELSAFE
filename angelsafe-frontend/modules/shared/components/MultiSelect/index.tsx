@@ -1,3 +1,4 @@
+import useDarkMode from "@/shared/hooks/useDarkMode";
 import { StyleConstants } from "@/shared/styles";
 import { useTheme, Text } from "@rneui/themed";
 import React from "react";
@@ -11,10 +12,15 @@ interface CustomMultiSelectProps extends MultiSelectProps {
 const CustomMultiSelect = React.forwardRef<MultiSelect, CustomMultiSelectProps>(
   (props, ref) => {
     const { theme } = useTheme();
+    const isDark = useDarkMode();
     return (
       <View>
         <Text
-          style={{ color: theme.colors.primary, fontSize: 16, marginBottom: 8 }}
+          style={{
+            color: isDark ? theme.colors.grey1 : theme.colors.primary,
+            fontSize: 16,
+            marginBottom: 8,
+          }}
         >
           {props.label}
         </Text>
@@ -50,8 +56,8 @@ const CustomMultiSelect = React.forwardRef<MultiSelect, CustomMultiSelectProps>(
           }}
           styleDropdownMenuSubsection={{
             borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-            backgroundColor: theme.colors.background,
-            borderColor: theme.colors.background,
+            backgroundColor: theme.colors.white,
+            borderColor: theme.colors.white,
           }}
           styleTextDropdownSelected={{
             paddingLeft: StyleConstants.PADDING_HORIZONTAL / 2,
@@ -59,13 +65,10 @@ const CustomMultiSelect = React.forwardRef<MultiSelect, CustomMultiSelectProps>(
           styleTextDropdown={{
             paddingLeft: StyleConstants.PADDING_HORIZONTAL / 2,
             fontFamily: "nunitoRegular",
+            color: theme.colors.grey0,
           }}
           styleListContainer={{}}
-          styleSelectorContainer={
-            {
-              //   borderRadius: 12,
-            }
-          }
+          styleSelectorContainer={{}}
           styleRowList={{
             paddingVertical: 4,
           }}
@@ -73,7 +76,7 @@ const CustomMultiSelect = React.forwardRef<MultiSelect, CustomMultiSelectProps>(
           styleItemsContainer={{
             borderBottomEndRadius: StyleConstants.PADDING_HORIZONTAL / 2,
             borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-            backgroundColor: theme.colors.background,
+            backgroundColor: theme.colors.white,
           }}
           itemFontFamily="nunitoRegular"
           submitButtonColor={theme.colors.primary}

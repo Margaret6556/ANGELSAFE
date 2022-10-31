@@ -62,7 +62,7 @@ export const useStyles = makeStyles((theme) => ({
   },
   iconContainer: {
     marginLeft: 20,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.white,
     borderRadius: 50,
     height: 45,
     width: 45,

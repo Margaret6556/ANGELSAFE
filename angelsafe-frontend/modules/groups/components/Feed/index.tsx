@@ -1,19 +1,19 @@
-import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
-import { Text, Button, makeStyles } from "@rneui/themed";
+import { View } from "react-native";
+import { Button, makeStyles, Text } from "@rneui/themed";
 import Card from "../Card";
 import { useGetPostListQuery } from "@/shared/api/post";
 import Modal from "react-native-modal";
-import { Loading } from "@/shared/components";
-import { StyleConstants } from "@/shared/styles";
 import AddPost from "../AddPost";
+import { StyleConstants } from "@/shared/styles";
 
 interface GroupFeedProps {
   groupId: string;
+  isJoined: boolean;
 }
 
-const GroupFeed = ({ groupId }: GroupFeedProps) => {
-  const { data, isError, isLoading, error } = useGetPostListQuery({ groupId });
+const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
+  const { data, isError } = useGetPostListQuery({ groupId });
   const [modalVisible, setModalVisible] = useState(false);
   const styles = useStyles();
   const handleNewPost = () => {
@@ -21,33 +21,26 @@ const GroupFeed = ({ groupId }: GroupFeedProps) => {
   };
 
   if (isError) {
-    console.log({ error });
     return null;
   }
 
   if (data) {
-    console.log(data.data[0]);
     const reversed = [...data.data].reverse();
     return (
       <>
         <View>
-          <Button
-            title="Type your thoughts..."
-            onPress={handleNewPost}
-            style={styles.thoughtsButton}
-          />
-
-          {reversed.map(({ id, message, comments, likes, hearts, ownerId }) => (
-            <Card
-              key={id}
-              description={message}
-              ownerId={ownerId}
-              socials={{
-                comments,
-                likes,
-                hearts,
-              }}
+          {isJoined ? (
+            <Button
+              title="Type your thoughts..."
+              onPress={handleNewPost}
+              style={styles.thoughtsButton}
             />
+          ) : (
+            <Text style={styles.joinText}>Join the group to add a post</Text>
+          )}
+
+          {reversed.map((args) => (
+            <Card key={args.id} {...args} />
           ))}
         </View>
         <Modal
@@ -66,12 +59,17 @@ const GroupFeed = ({ groupId }: GroupFeedProps) => {
 
 export default GroupFeed;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   thoughtsButton: {
-    marginVertical: 12,
+    marginVertical: StyleConstants.PADDING_VERTICAL,
   },
   modalContainer: {
     margin: 0,
     width: "100%",
   },
-});
+  joinText: {
+    textAlign: "center",
+    marginVertical: StyleConstants.PADDING_VERTICAL,
+    color: theme.colors.grey0,
+  },
+}));

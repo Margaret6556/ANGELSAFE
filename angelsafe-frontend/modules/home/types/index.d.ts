@@ -1,5 +1,6 @@
-import { type NativeStackScreenProps } from "@react-navigation/native-stack";
+import { ImageSourcePropType } from "react-native";
 import { CustomScreenProps, type ScreenProps } from "@/shared/types";
+import { Moods } from "@/shared/state/reducers/experience";
 
 export type HomeParamsList = {
   Entry: {
@@ -8,4 +9,8 @@ export type HomeParamsList = {
   "Add New Symptom": undefined;
 };
 
-export type HomeScreenProps<T, A extends keyof T> = ScreenProps<T, A>;
+export type MoodsType = {
+  id: string;
+  label: Moods;
+  image: ImageSourcePropType;
+};

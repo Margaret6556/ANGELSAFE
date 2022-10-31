@@ -10,13 +10,12 @@ import useDarkMode from "@/shared/hooks/useDarkMode";
 const AboutMeTab = () => {
   const navigation = useNavigation<NavigationProp<ProfileParamsList>>();
   const { user } = useAppSelector((state) => state.auth);
-  const isDark = useDarkMode();
 
   const handleEditProfile = () => {
     navigation.navigate("Edit Profile");
   };
 
-  const styles = useStyles({ isDark });
+  const styles = useStyles();
 
   if (!user) {
     return null;
@@ -35,9 +34,7 @@ const AboutMeTab = () => {
           <View style={styles.hobbyContainer}>
             {user.hobbies.map((hobby) => (
               <View key={hobby} style={styles.hobby}>
-                <Text style={[styles.text, { textAlign: "center" }]}>
-                  {hobby}
-                </Text>
+                <Text style={{ textAlign: "center" }}>{hobby}</Text>
               </View>
             ))}
           </View>
@@ -65,9 +62,7 @@ const AboutMeTab = () => {
           <View style={styles.hobbyContainer}>
             {user.music.map((music) => (
               <View key={music} style={styles.hobby}>
-                <Text style={[styles.text, { textAlign: "center" }]}>
-                  {music}
-                </Text>
+                <Text style={{ textAlign: "center" }}>{music}</Text>
               </View>
             ))}
           </View>
@@ -85,7 +80,7 @@ const AboutMeTab = () => {
 
 export default AboutMeTab;
 
-const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
+const useStyles = makeStyles((theme) => ({
   content: { marginBottom: StyleConstants.PADDING_VERTICAL * 1.5 },
   hobbyContainer: {
     flexWrap: "wrap",
@@ -93,7 +88,7 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
     justifyContent: "flex-start",
   },
   text: {
-    color: props.isDark ? theme.colors.white : theme.colors.black,
+    color: theme.colors.black,
   },
   hobby: {
     padding: 10,

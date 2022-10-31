@@ -16,12 +16,7 @@ const ChatScreen = ({
 }: StackScreenProps<MoreParamsList, "Chat">) => {
   const { theme } = useTheme();
   return (
-    <MoreStack.Navigator
-      initialRouteName="ChatList"
-      // screenOptions={{
-      //   ...TransitionSlide,
-      // }}
-    >
+    <MoreStack.Navigator initialRouteName="ChatList">
       <MoreStack.Screen
         name="ChatList"
         component={ChatList}

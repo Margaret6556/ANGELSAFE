@@ -2,36 +2,63 @@ import { StyleSheet, View } from "react-native";
 import React from "react";
 import { Avatar, Text } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { useAppSelector } from "@/shared/hooks";
+import timeSince from "@/shared/utils/timeSince";
+import { useGetProfileQuery } from "@/shared/api/profile";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { GroupDetailsParamList } from "@/groups/types";
 
 interface AvatarCardProps {
   userId: string;
-  onViewProfile: () => void;
+  postTimeStamp: number;
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
-  const handleOnViewProfile = () => {
-    props.onViewProfile();
+  const { user } = useAppSelector((state) => state.auth);
+  const { data, isError } = useGetProfileQuery(props.userId);
+  const navigation =
+    useNavigation<NavigationProp<GroupDetailsParamList, "ViewProfile">>();
+
+  const handleOnViewProfile = () => () => {
+    navigation.navigate("ViewProfile", {
+      id: props.userId,
+    });
   };
-  return (
-    <View style={styles.container}>
-      <Avatar
-        source={{
-          uri: "https://xsgames.co/randomusers/avatar.php?g=male",
-        }}
-        size={35}
-        rounded
-      />
-      <View style={styles.text}>
-        <View style={styles.textMember}>
-          <Text style={styles.textMemberPrimary}>2659.aqua.pear (Aaron)</Text>
-          <Text style={styles.textMemberSecondary}>8 hours ago</Text>
+
+  if (!user || isError) {
+    return null;
+  }
+
+  if (data) {
+    const { data: profile } = data;
+    return (
+      <View style={styles.container}>
+        <Avatar
+          source={{
+            uri: profile.profilePic,
+          }}
+          size={35}
+          rounded
+        />
+        <View style={styles.text}>
+          <View style={styles.textMember}>
+            <Text style={styles.textMemberPrimary}>{profile.username}</Text>
+            <Text style={styles.textMemberSecondary}>
+              {timeSince(props.postTimeStamp)} ago
+            </Text>
+          </View>
+          {props.userId !== user.id && (
+            <TouchableOpacity onPress={handleOnViewProfile}>
+              <Text style={{ color: "#898989", fontSize: 14 }}>
+                View Profile
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
-        <TouchableOpacity onPress={handleOnViewProfile}>
-          <Text style={{ color: "#898989", fontSize: 14 }}>View Profile</Text>
-        </TouchableOpacity>
       </View>
-    </View>
-  );
+    );
+  }
+  return null;
 };
 
 export default AvatarCard;
@@ -40,7 +67,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    // justifyContent: "cente",
   },
   text: {
     flex: 1,

@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/shared/hooks";
-import { Text } from "@rneui/themed";
+import { makeStyles, Text } from "@rneui/themed";
 import React from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -9,11 +9,16 @@ type Props = {};
 
 const BioComponent = (props: Props) => {
   const { user } = useAppSelector((state) => state.auth);
+  const styles = useStyles();
 
   return (
     <View>
       <Text h4>Bio</Text>
-      <Text>{user?.bio}</Text>
+      {user?.bio ? (
+        <Text>{user.bio}</Text>
+      ) : (
+        <Text style={styles.bioPlaceholder}>Update profile to add bio</Text>
+      )}
       <Trend style={{ marginTop: 24 }} />
     </View>
   );
@@ -21,4 +26,9 @@ const BioComponent = (props: Props) => {
 
 export default BioComponent;
 
-const styles = StyleSheet.create({});
+const useStyles = makeStyles((theme) => ({
+  bioPlaceholder: {
+    color: theme.colors.grey0,
+    marginVertical: 12,
+  },
+}));

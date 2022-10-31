@@ -13,9 +13,10 @@ const lightTheme = {
 };
 
 const darkTheme = {
-  primary: "#031166",
+  primary: "#465BE6",
   secondary: "#465BE6",
   grey0: "#898989",
+  white: "#212427",
 };
 
 const commonBorderRadius = 10;
@@ -28,11 +29,13 @@ const theme = createTheme({
   components: {
     Button: {
       raised: false,
-      color: lightTheme.primary,
       radius: commonBorderRadius,
       size: "md",
       buttonStyle: {
         height: StyleConstants.BUTTON_HEIGHT,
+      },
+      titleStyle: {
+        fontFamily: "nunitoBold",
       },
     },
     Text: {
@@ -45,6 +48,11 @@ const theme = createTheme({
       },
       h4Style: {
         fontSize: 22,
+      },
+    },
+    ListItemCheckBox: {
+      containerStyle: {
+        backgroundColor: "transparent",
       },
     },
     Input: {

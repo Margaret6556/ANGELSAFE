@@ -33,7 +33,7 @@ export default SearchIcon;
 const useStyles = makeStyles((theme) => ({
   containerStyle: {
     // marginRight: 20,
-    backgroundColor: theme.colors.background,
+    backgroundColor: theme.colors.white,
     height: 45,
     borderRadius: 50,
     width: 45,

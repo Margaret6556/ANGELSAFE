@@ -4,11 +4,13 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { AddGroupParamList } from "../../types";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
-import { Input, Button, Text, useTheme } from "@rneui/themed";
+import { Input, Button, Text, useTheme, makeStyles } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
 import { useAppDispatch, useKeyboardShowing } from "@/shared/hooks";
 // import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useAddGroupMutation } from "@/shared/api/groups";
+import useDarkMode from "@/shared/hooks/useDarkMode";
+import logger from "@/shared/utils/logger";
 
 type FieldsType = {
   groupname: string;
@@ -21,9 +23,9 @@ const AddGroup = ({
   const [multilineHeight, setMultiLineHeight] = useState(0);
   const { keyboardIsShowing } = useKeyboardShowing();
   const [addGroup, addGroupResponse] = useAddGroupMutation();
-  const { theme } = useTheme();
+  const isDark = useDarkMode();
 
-  const styles = makeStyles({ primary: theme.colors.primary });
+  const styles = useStyles({ isDark });
 
   const {
     handleSubmit,
@@ -47,7 +49,7 @@ const AddGroup = ({
         });
       }
     } catch (e) {
-      console.log({ e });
+      logger("groups", { e });
     }
   };
 
@@ -74,7 +76,8 @@ const AddGroup = ({
           control={control}
           name="groupname"
           rules={{
-            max: 21,
+            max: 20,
+            min: 7
           }}
           render={({ field }) => (
             <View>
@@ -82,17 +85,12 @@ const AddGroup = ({
                 label={
                   <View style={styles.inputLabelContainer}>
                     <Text style={styles.inputLabel}>Enter Group Name</Text>
-                    <Text
-                      style={[
-                        styles.inputLabel,
-                        { fontSize: 14, color: "#666" },
-                      ]}
-                    >
-                      {gname.length}/21
+                    <Text style={[styles.inputLabel, { fontSize: 14 }]}>
+                      {gname.length}/20
                     </Text>
                   </View>
                 }
-                maxLength={21}
+                maxLength={20}
                 {...field}
                 onChangeText={field.onChange}
                 labelStyle={{ fontSize: 16 }}
@@ -105,14 +103,12 @@ const AddGroup = ({
           control={control}
           render={({ field }) => (
             <Input
-              maxLength={100}
+              maxLength={200}
               label={
                 <View style={styles.inputLabelContainer}>
                   <Text style={styles.inputLabel}>Enter Group Description</Text>
-                  <Text
-                    style={[styles.inputLabel, { fontSize: 14, color: "#666" }]}
-                  >
-                    {gdescription.length}/100
+                  <Text style={[styles.inputLabel, { fontSize: 14 }]}>
+                    {gdescription.length}/200
                   </Text>
                 </View>
               }
@@ -141,21 +137,21 @@ const AddGroup = ({
 
 export default AddGroup;
 
-const makeStyles = (args: any) =>
-  StyleSheet.create({
-    wrapper: {
-      flex: 1,
-      padding: StyleConstants.PADDING_HORIZONTAL,
-      justifyContent: "space-between",
-    },
-    inputs: {},
-    inputLabelContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      marginBottom: 8,
-    },
-    inputLabel: {
-      color: args.primary,
-    },
-  });
+const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
+  wrapper: {
+    flex: 1,
+    padding: StyleConstants.PADDING_HORIZONTAL,
+    justifyContent: "space-between",
+  },
+  inputs: {},
+  inputLabelContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  inputLabel: {
+    // color: theme.colors.white,
+    color: props.isDark ? theme.colors.grey0 : theme.colors.primary,
+  },
+}));

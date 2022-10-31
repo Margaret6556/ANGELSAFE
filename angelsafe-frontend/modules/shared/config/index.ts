@@ -34,8 +34,14 @@ export const _API = {
     UNHEART: "/post/unheart",
     UNLIKE: "/post/unlike",
   },
+  STAT: {
+    CREATE: "/stat/create",
+    VIEW: "/stat/view",
+  },
   CHAT: {
-    LIST: "/api/chat/list",
+    LIST: "/chat/list",
+    CREATE: "/chat/create",
+    VIEW: "/chat/view",
   },
   TEST: "/info/version",
 };
@@ -43,3 +49,7 @@ export const _API = {
 export enum Auth {
   KEY = "auth_token",
 }
+
+export const ONE_DAY = 60 * 60 * 24 * 1000;
+export const FIVE_MINUTES = 5 * 60 * 1000;
+export const TEN_MINUTES = 10 * 60 * 1000;

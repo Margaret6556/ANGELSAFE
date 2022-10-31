@@ -1,9 +1,8 @@
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Avatar, Text } from "@rneui/themed";
 import { FlatList } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GroupParamsList, GroupsType } from "@/groups/types";
 import { _API } from "@/shared/config";
 
@@ -11,7 +10,8 @@ interface GroupProps {
   data: GroupsType[];
 }
 const Groups = ({ data }: GroupProps) => {
-  const navigation = useNavigation<StackNavigationProp<GroupParamsList>>();
+  const navigation =
+    useNavigation<NavigationProp<GroupParamsList, "GroupDetails">>();
 
   const handlePress = (id: string) => () => {
     navigation.navigate("GroupDetails", { id });
@@ -53,12 +53,9 @@ const styles = StyleSheet.create({
     width: "100%",
     flex: 1,
     justifyContent: "flex-start",
-    // marginTop: 48,
   },
   container: {},
-  avatar: {
-    // height: 100,
-  },
+  avatar: {},
   avatarContainer: {
     alignItems: "center",
     justifyContent: "flex-start",
@@ -69,5 +66,7 @@ const styles = StyleSheet.create({
   },
   textGroupName: {
     fontSize: 14,
+    textAlign: "center",
+    marginTop: 4,
   },
 });

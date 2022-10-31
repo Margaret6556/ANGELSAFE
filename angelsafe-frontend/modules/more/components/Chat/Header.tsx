@@ -2,15 +2,19 @@ import { StyleSheet, View } from "react-native";
 import React from "react";
 import { Avatar, Icon, makeStyles, Text, useTheme } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { UserType } from "@/shared/types";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
 interface HeaderChatInterfaceProps {
   onBack: () => void;
 }
 const HeaderChatInterface = ({ onBack }: HeaderChatInterfaceProps) => {
   const { theme } = useTheme();
+  const { params } = useRoute<RouteProp<{ receiver: UserType }>>();
   const handleBack = () => {
     onBack();
   };
+
   const styles = useStyles();
   return (
     <View style={styles.wrapper}>
@@ -21,7 +25,7 @@ const HeaderChatInterface = ({ onBack }: HeaderChatInterfaceProps) => {
         <View style={styles.avatarContainer}>
           <Avatar
             source={{
-              uri: "https://xsgames.co/randomusers/avatar.php?g=male",
+              uri: params.profilePic,
             }}
             size={45}
             rounded
@@ -39,7 +43,7 @@ const HeaderChatInterface = ({ onBack }: HeaderChatInterfaceProps) => {
           marginTop: 4,
         }}
       >
-        TEST USER
+        {params.username}
       </Text>
     </View>
   );

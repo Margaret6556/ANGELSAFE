@@ -12,13 +12,26 @@ export type GroupsType = {
 export type GroupDetailsType = {
   members: string;
   online: number;
+  joined: 0 | 1;
 } & GroupsType;
 
 const groupsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getGroups: builder.query<BackendResponse<GroupsType[]>, void>({
       query: () => _API.GROUP.LIST,
-      providesTags: ["GROUPS"],
+      providesTags: (res) => {
+        const tag = { type: "GROUPS" as const, id: "LIST" };
+        if (res?.data) {
+          return [
+            ...res.data.map(({ id }) => ({
+              type: "GROUPS" as const,
+              id,
+            })),
+            tag,
+          ];
+        }
+        return [tag];
+      },
     }),
     getSingleGroup: builder.query<BackendResponse<GroupDetailsType>, string>({
       query: (groupId) => ({
@@ -28,45 +41,7 @@ const groupsApiSlice = apiSlice.injectEndpoints({
           groupId,
         },
       }),
-      providesTags: ["GROUPS"],
-    }),
-    addGroup: builder.mutation<
-      BackendResponse<{ groupId: string }>,
-      Pick<GroupsType, "groupname" | "description">
-    >({
-      query: (body) => ({
-        url: _API.GROUP.REGISTER,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["GROUPS"],
-    }),
-    updateGroupPhoto: builder.mutation<
-      BackendResponse<{}>,
-      { profilePic: string; groupId: string }
-    >({
-      query: (body) => ({
-        url: _API.GROUP.UPDATE_PIC,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["GROUPS"],
-    }),
-    joinGroup: builder.mutation<BackendResponse<{}>, { groupId: string }>({
-      query: (body) => ({
-        url: _API.GROUP.JOIN,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["GROUPS"],
-    }),
-    unjoinGroup: builder.mutation<BackendResponse<{}>, { groupId: string }>({
-      query: (body) => ({
-        url: _API.GROUP.UNJOIN,
-        method: "POST",
-        body,
-      }),
-      invalidatesTags: ["GROUPS"],
+      providesTags: (_, __, arg) => [{ type: "GROUPS", id: arg }],
     }),
     getGroupMembers: builder.query<
       BackendResponse<Array<UserType>>,
@@ -77,7 +52,45 @@ const groupsApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      providesTags: ["GROUPS"],
+      providesTags: (_, __, arg) => [{ type: "GROUPS", id: arg.groupId }],
+    }),
+    addGroup: builder.mutation<
+      BackendResponse<{ groupId: string }>,
+      Pick<GroupsType, "groupname" | "description">
+    >({
+      query: (body) => ({
+        url: _API.GROUP.REGISTER,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "GROUPS", id: "LIST" }],
+    }),
+    updateGroupPhoto: builder.mutation<
+      BackendResponse<{}>,
+      { profilePic: string; groupId: string }
+    >({
+      query: (body) => ({
+        url: _API.GROUP.UPDATE_PIC,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: [{ type: "GROUPS", id: "LIST" }],
+    }),
+    joinGroup: builder.mutation<BackendResponse<{}>, { groupId: string }>({
+      query: (body) => ({
+        url: _API.GROUP.JOIN,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (_, __, arg) => [{ type: "GROUPS", id: arg.groupId }],
+    }),
+    unjoinGroup: builder.mutation<BackendResponse<{}>, { groupId: string }>({
+      query: (body) => ({
+        url: _API.GROUP.UNJOIN,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (_, __, arg) => [{ type: "GROUPS", id: arg.groupId }],
     }),
   }),
   overrideExisting: true,
@@ -91,4 +104,5 @@ export const {
   useJoinGroupMutation,
   useUnjoinGroupMutation,
   useGetGroupMembersQuery,
+  useLazyGetSingleGroupQuery,
 } = groupsApiSlice;

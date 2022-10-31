@@ -5,13 +5,14 @@ import { AppTabParamList } from "@/shared/types";
 import { Header } from "./components";
 import { SearchIcon, TransitionSlide } from "@/shared/components";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { Icon } from "@rneui/themed";
+import { Icon, useTheme } from "@rneui/themed";
 
 const GroupStack = createStackNavigator<GroupParamsList>();
 
 const GroupScreen = ({
   navigation,
 }: BottomTabScreenProps<AppTabParamList, "Groups">) => {
+  const { theme } = useTheme();
   return (
     <GroupStack.Navigator
       screenOptions={
@@ -41,8 +42,9 @@ const GroupScreen = ({
           presentation: "modal",
           cardOverlayEnabled: false,
           cardStyle: {
-            backgroundColor: "#efefef",
+            backgroundColor: theme.colors.grey5,
           },
+          headerBackTitleVisible: false,
         }}
       />
     </GroupStack.Navigator>

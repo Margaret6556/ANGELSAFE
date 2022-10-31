@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { HomeParamsList, HomeScreenProps } from "../types";
+import { HomeParamsList } from "../types";
 import { Container } from "@/shared/components";
+import { StackScreenProps } from "@react-navigation/stack";
 
 type Props = {};
 
 const AddNewSymptom = ({
   navigation,
-}: HomeScreenProps<HomeParamsList, "Add New Symptom">) => {
+}: StackScreenProps<HomeParamsList, "Add New Symptom">) => {
   return (
     <Container
       containerProps={{

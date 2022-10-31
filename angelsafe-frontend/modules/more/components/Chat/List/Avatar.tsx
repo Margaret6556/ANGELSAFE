@@ -4,14 +4,11 @@ import { Avatar } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface AvatarChatProps {
-  uri?: string;
+  profilePicture: string;
   onPress?: () => void;
 }
 
-const AvatarChat = ({
-  uri = "https://xsgames.co/randomusers/avatar.php?g=male",
-  onPress,
-}: AvatarChatProps) => {
+const AvatarChat = ({ profilePicture, onPress }: AvatarChatProps) => {
   const handleOnPress = () => {
     onPress && onPress();
   };
@@ -20,7 +17,7 @@ const AvatarChat = ({
     <TouchableOpacity onPress={handleOnPress}>
       <Avatar
         source={{
-          uri,
+          uri: profilePicture,
         }}
         size={45}
         containerStyle={{

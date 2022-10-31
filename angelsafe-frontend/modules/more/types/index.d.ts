@@ -11,6 +11,8 @@ export type ChatParamsList = {
   ChatList: undefined;
   ChatInterface: {
     id: string;
+    username: string;
+    profilePic: string;
   };
 };
 

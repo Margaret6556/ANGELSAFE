@@ -5,6 +5,7 @@ import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AppTabParamList } from "@/shared/types";
 import EditProfile from "./screens/EditProfile";
 import { TransitionSlide } from "@/shared/components";
+import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 
 const ProfileStack = createStackNavigator<ProfileParamsList>();
 
@@ -33,9 +34,7 @@ const GroupScreen = ({
         component={EditProfile}
         options={{
           headerBackTitleVisible: false,
-          headerStyle: {
-            backgroundColor: "#fff",
-          },
+          headerStyle: {},
           // header: () => null,
         }}
       />

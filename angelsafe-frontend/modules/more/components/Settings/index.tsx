@@ -1,8 +1,8 @@
 import { MoreParamsList } from "@/more/types";
-import { useLazyLogoutQuery } from "@/shared/api/auth";
 import { useAppDispatch } from "@/shared/hooks";
 import { logout } from "@/shared/state/reducers/auth/actions";
 import { AppTabParamList } from "@/shared/types";
+import logger from "@/shared/utils/logger";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React from "react";
 import { Alert, StyleSheet, View } from "react-native";
@@ -10,7 +10,6 @@ import Card from "../List/Card";
 
 const SettingsComponent = () => {
   const dispatch = useAppDispatch();
-  const [_logout, logoutRes] = useLazyLogoutQuery();
   const navigation =
     useNavigation<NavigationProp<AppTabParamList & MoreParamsList>>();
 
@@ -24,10 +23,9 @@ const SettingsComponent = () => {
 
   const handleLogout = async () => {
     try {
-      await _logout().unwrap();
       dispatch(logout());
     } catch (e) {
-      console.log("logout", e);
+      logger("auth", e as any);
     }
   };
   const handleNotificationPress = () => {

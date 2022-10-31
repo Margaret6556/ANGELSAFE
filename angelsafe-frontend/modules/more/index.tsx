@@ -6,12 +6,14 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import ChatScreen from "./screens/Chat";
 import { TransitionSlide } from "@/shared/components";
 import AccountSecurity from "./screens/AccountSecurity";
+import { useTheme } from "@rneui/themed";
 
 const MoreStack = createStackNavigator<MoreParamsList>();
 
 const GroupScreen = ({
   navigation,
 }: BottomTabScreenProps<AppTabParamList, "More">) => {
+  const { theme } = useTheme();
   return (
     <MoreStack.Navigator
       screenOptions={{
@@ -27,6 +29,7 @@ const GroupScreen = ({
         component={AccountSecurity}
         options={{
           headerBackTitleVisible: false,
+          headerTintColor: theme.colors.primary,
         }}
       />
       <MoreStack.Screen

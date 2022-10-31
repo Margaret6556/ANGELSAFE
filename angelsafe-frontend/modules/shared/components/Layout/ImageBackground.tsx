@@ -6,8 +6,7 @@ import {
   View,
 } from "react-native";
 import { ChildrenProps } from "@/shared/types";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-import { setBackgroundColor } from "@/shared/state/reducers/theme";
+import { useAppSelector } from "@/shared/hooks";
 
 interface LayoutProps extends ChildrenProps {}
 const ImageBackgroundContainer = ({ children }: LayoutProps) => {

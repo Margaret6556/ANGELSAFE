@@ -1,22 +1,23 @@
-import { SERVER_URL, _API } from "@/shared/config";
+import { Auth, FIVE_MINUTES, SERVER_URL, _API } from "@/shared/config";
 import {
   BaseQueryFn,
   createApi,
   FetchArgs,
   fetchBaseQuery,
 } from "@reduxjs/toolkit/query/react";
+import { setItemAsync } from "expo-secure-store";
 import { RootState } from "../state";
-import { setLoggedIn } from "../state/reducers/auth";
+import { setLoggedIn, setUser } from "../state/reducers/auth";
+import { logout } from "../state/reducers/auth/actions";
 import { BackendErrorResponse, BackendResponse } from "../types";
-
-const FIVE_MINUTES = 1 * 60 * 1000;
+import logger from "../utils/logger";
 
 const baseQuery = fetchBaseQuery({
   baseUrl: SERVER_URL,
   prepareHeaders: (headers, { getState, endpoint }) => {
     const token = (getState() as RootState).auth.user?.token;
     if (token && endpoint !== "login") {
-      console.log("here", token);
+      logger("api", { endpoint });
       headers.set("Authorization", `Bearer ${token}`);
     }
     return headers;
@@ -41,27 +42,49 @@ const baseQueryWithReauth: typeof baseQuery = async (
 
   if (isLoggedIn && isExpired) {
     try {
-      console.log("refresh hit");
-      // const data = (await baseQuery(
-      //   _API.AUTH.REFRESH,
-      //   api,
-      //   extraOptions
-      // )) as BackendResponse<{ token: string }>;
-      // console.log((data as any).error.data);
-      // console.log(data);
-      // api.dispatch(setLoggedIn(true));
+      const {
+        data: {
+          data: { token },
+          status,
+        },
+      } = (await baseQuery(_API.AUTH.REFRESH, api, extraOptions)) as {
+        data: BackendResponse<{ token: string }>;
+      };
+
+      if (token && status === 200) {
+        await setItemAsync(Auth.KEY, token);
+        api.dispatch(setUser({ token }));
+        api.dispatch(setLoggedIn(true));
+        logger("api", `New token: ${token}`);
+      } else if (status === 401) {
+        logger("api", "Received status 401 - Unauthenticated");
+        api.dispatch(logout());
+      }
     } catch (e) {
-      console.log({ e });
+      const err = e as BackendResponse<BackendErrorResponse>;
+      logger("api", err.data);
     }
   }
 
   const result = await baseQuery(args, api, extraOptions);
+
+  if (result.error?.status) {
+    const err = result.error;
+    const {
+      request: { url },
+    } = result.meta as any;
+    logger("api", {
+      message: err.data.message,
+      status: result.error.status,
+      url,
+    });
+  }
 
   return result;
 };
 
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["AUTH", "GROUPS", "PROFILE", "CHAT", "POST"],
+  tagTypes: ["AUTH", "GROUPS", "PROFILE", "CHAT", "POST", "STAT"],
   endpoints: () => ({}),
 });

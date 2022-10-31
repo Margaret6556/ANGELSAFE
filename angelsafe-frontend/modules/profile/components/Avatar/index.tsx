@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import { Avatar, Icon, Text } from "@rneui/themed";
+import { Avatar, Icon, makeStyles, Text, useTheme } from "@rneui/themed";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BackendResponse, BackendErrorResponse } from "@/shared/types";
@@ -22,6 +22,7 @@ import { useUpdateProfilePictureMutation } from "@/shared/api/profile";
 import { Loading } from "@/shared/components";
 import { BlurView } from "expo-blur";
 import { setUser } from "@/shared/state/reducers/auth";
+import logger from "@/shared/utils/logger";
 
 interface IAvatarProps {
   source?: ImageSourcePropType;
@@ -38,13 +39,15 @@ const AvatarComponent = (props: IAvatarProps) => {
   const [image, setImage] = useState<ImageResult>();
   const [updatePhoto, updatePhotoResponse] = useUpdateProfilePictureMutation();
   const dispatch = useAppDispatch();
+  const { theme } = useTheme();
+  const styles = useStyles();
 
   useEffect(() => {
     const upload = async () => {
       try {
         await handleUploadImage();
       } catch (e) {
-        console.log({ e });
+        logger("profile", { e });
       }
     };
 
@@ -82,7 +85,7 @@ const AvatarComponent = (props: IAvatarProps) => {
       }
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message);
+        logger("profile", e.message);
       }
     }
   };
@@ -94,19 +97,14 @@ const AvatarComponent = (props: IAvatarProps) => {
         profilePic,
       }).unwrap();
 
-
-
       dispatch(
         setUser({
           profilePic,
         })
       );
-      // if (status === 200) {
-      //   navigation.navigate("Entry" as any);
-      // }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
-      console.log(err, e);
+      logger("profile", err);
     }
   };
 
@@ -129,13 +127,10 @@ const AvatarComponent = (props: IAvatarProps) => {
           <Icon
             type="material"
             name="add-a-photo"
-            size={18}
-            containerStyle={{
-              top: -20,
-              zIndex: 10,
-              backgroundColor: "hsla(0, 100%, 10%, 0.3)",
-              height: 30,
-            }}
+            size={16}
+            containerStyle={styles.iconContainer}
+            style={{ backgroundColor: theme.colors.background }}
+            color={theme.colors.secondary}
           />
         </TouchableOpacity>
         <View style={styles.text}>
@@ -166,18 +161,27 @@ const AvatarComponent = (props: IAvatarProps) => {
 
 export default AvatarComponent;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     flexDirection: "row",
     alignItems: "center",
   },
   avatarWithUpload: {
-    overflow: "hidden",
-    backgroundColor: "yellow",
     height: 64,
     borderRadius: 50,
   },
   text: {
     marginLeft: 16,
   },
-});
+  iconContainer: {
+    top: -18,
+    zIndex: 10,
+    backgroundColor: theme.colors.background,
+    height: 25,
+    width: 25,
+    left: 40,
+    borderRadius: 50,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+}));

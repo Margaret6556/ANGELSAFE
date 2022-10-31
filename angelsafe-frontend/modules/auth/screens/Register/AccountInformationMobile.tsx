@@ -8,6 +8,8 @@ import { _API } from "@/shared/config";
 import NumberInput from "@/shared/components/NumberInput";
 import { StackScreenProps } from "@react-navigation/stack";
 import { useRegisterMutation } from "@/shared/api/auth";
+import logger from "@/shared/utils/logger";
+import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 
 type FieldType = {
   mobile: string;
@@ -42,7 +44,8 @@ const RegisterScreen = ({
         });
       }
     } catch (e) {
-      console.log({ e });
+      const err = e as BackendResponse<BackendErrorResponse>;
+      logger("auth", err);
     }
   };
 

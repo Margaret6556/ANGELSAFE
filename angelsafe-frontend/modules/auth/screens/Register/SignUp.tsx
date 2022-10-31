@@ -17,6 +17,7 @@ import {
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import DropDownInput from "@/shared/components/DropDownInput";
 import _countries from "@/shared/config/countries";
+import logger from "@/shared/utils/logger";
 
 const mappedCountries = _countries.map((c) => ({
   label: c,
@@ -94,7 +95,6 @@ const SignUp = ({
       const { data, status } = await registerProfile(val).unwrap();
 
       if (status === 200) {
-        console.log({ data });
         dispatch(
           setUser({
             username: val.username,
@@ -106,8 +106,9 @@ const SignUp = ({
         navigation.navigate("Account Created");
       }
     } catch (e) {
-      setError((e as BackendResponse<BackendErrorResponse>).data.message);
-      console.log({ e });
+      const err = e as BackendResponse<BackendErrorResponse>;
+      setError(err.data.message);
+      logger("auth", err);
     }
   };
 

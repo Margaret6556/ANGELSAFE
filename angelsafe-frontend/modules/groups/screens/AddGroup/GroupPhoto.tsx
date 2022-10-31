@@ -13,6 +13,7 @@ import { StyleConstants } from "@/shared/styles";
 import { _API } from "@/shared/config";
 import { useUpdateGroupPhotoMutation } from "@/shared/api/groups";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import logger from "@/shared/utils/logger";
 
 const GroupPhoto = ({
   navigation,
@@ -51,7 +52,7 @@ const GroupPhoto = ({
       }
     } catch (e) {
       if (e instanceof Error) {
-        console.log(e.message);
+        logger("groups", e.message);
       }
     }
   };
@@ -72,7 +73,7 @@ const GroupPhoto = ({
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
-      console.log(err, e);
+      logger("groups", err);
     }
   };
 

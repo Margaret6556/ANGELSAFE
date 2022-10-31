@@ -1,4 +1,4 @@
-import { Alert, Keyboard, Pressable, StyleSheet, View } from "react-native";
+import { Alert, Keyboard, Pressable, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ProfileParamsList } from "../types";
@@ -33,6 +33,8 @@ import {
 } from "@/shared/config/profileStaticData";
 import { FlatList, ScrollView } from "react-native-gesture-handler";
 import { StyleConstants } from "@/shared/styles";
+import useDarkMode from "@/shared/hooks/useDarkMode";
+import logger from "@/shared/utils/logger";
 
 const mappedHobbies = hobbies.map((hobby) => ({
   id: hobby,
@@ -49,7 +51,7 @@ const mappedMusicGenres = musicGenres.map((music) => ({
   name: music,
 }));
 
-const bioMaxLength = 150;
+const bioMaxLength = 200;
 
 type FieldsType = {
   bio: string;
@@ -67,6 +69,7 @@ const EditProfile = ({
   const [multilineHeight, setMultiLineHeight] = useState(0);
   const [buttonMargin, setButtonMargin] = useState(20);
   const { keyboardIsShowing } = useKeyboardShowing();
+  const isDark = useDarkMode();
 
   const dispatch = useAppDispatch();
   const styles = useStyles({
@@ -145,7 +148,7 @@ const EditProfile = ({
         type: "value",
         message: err.data.message,
       });
-      console.log({ err });
+      logger("profile", err);
     }
   };
 
@@ -164,7 +167,13 @@ const EditProfile = ({
       <Container
         type="image"
         containerProps={{
-          style: styles.container,
+          style: {
+            ...styles.container,
+            backgroundColor: isDark ? theme.colors.background : "transparent",
+          },
+          imageStyle: {
+            opacity: isDark ? 0 : 1,
+          },
         }}
       >
         <FlatList
@@ -187,7 +196,9 @@ const EditProfile = ({
                     <View style={styles.inputLabelContainer}>
                       <Text
                         style={{
-                          color: theme.colors.primary,
+                          color: isDark
+                            ? theme.colors.grey1
+                            : theme.colors.primary,
                           fontSize: 16,
                         }}
                       >
@@ -212,6 +223,8 @@ const EditProfile = ({
                   labelStyle={{ fontSize: 16 }}
                   maxLength={bioMaxLength}
                   placeholder={user?.bio}
+                  style={{ backgroundColor: theme.colors.white }}
+                  placeholderTextColor={theme.colors.grey0}
                 />
               )}
             />
@@ -296,7 +309,7 @@ const useStyles = makeStyles((theme, props: { buttonMargin: number }) => ({
   bioLength: {
     textAlign: "right",
     fontSize: 12,
-    color: "#666",
+    color: theme.colors.black,
   },
   inputLabelContainer: {
     marginTop: StyleConstants.PADDING_VERTICAL,

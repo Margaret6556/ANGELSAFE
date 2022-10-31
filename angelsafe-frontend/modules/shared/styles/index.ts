@@ -3,8 +3,8 @@ import { StyleSheet } from "react-native";
 export const buttomBottomPosition = 48;
 
 export enum StyleConstants {
-  PADDING_HORIZONTAL = 20,
-  PADDING_VERTICAL = 24,
+  PADDING_HORIZONTAL = 12,
+  PADDING_VERTICAL = 20,
   BUTTON_BOTTOM_POSITION = 48,
   GAP_BOTTOM = 12,
   GAP_VERTICAL = 8,

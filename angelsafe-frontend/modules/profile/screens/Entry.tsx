@@ -19,6 +19,7 @@ import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
 import AboutMeTab from "../components/AboutMe";
 import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 import useDarkMode from "@/shared/hooks/useDarkMode";
+import MyPosts from "../components/MyPosts";
 
 const deviceHeight = Dimensions.get("window").height;
 
@@ -32,7 +33,7 @@ const EntryScreen = ({
 }: StackScreenProps<ProfileParamsList, "Entry">) => {
   const [bounces, setBounces] = useState(false);
   const [view, setView] = useState(ProfileView.ABOUT_ME);
-  const { theme } = useTheme();
+  // const { theme } = useTheme();
   const isDark = useDarkMode();
 
   const styles = useStyles({ isDark });
@@ -65,7 +66,7 @@ const EntryScreen = ({
       case ProfileView.POST: {
         return (
           <View style={styles.contentWrapper}>
-            <Text>klsjadf</Text>
+            <MyPosts />
           </View>
         );
       }
@@ -110,12 +111,7 @@ const EntryScreen = ({
             <TouchableOpacity
               style={[
                 styles.tabLabelContainer,
-                {
-                  borderBottomColor:
-                    view === ProfileView.ABOUT_ME
-                      ? theme.colors.primary
-                      : "transparent",
-                },
+                view === ProfileView.ABOUT_ME ? styles.tabLabelActive : {},
               ]}
               onPress={handleSelection(ProfileView.ABOUT_ME)}
             >
@@ -124,16 +120,11 @@ const EntryScreen = ({
             <TouchableOpacity
               style={[
                 styles.tabLabelContainer,
-                {
-                  borderBottomColor:
-                    view === ProfileView.POST
-                      ? theme.colors.primary
-                      : "transparent",
-                },
+                view === ProfileView.POST ? styles.tabLabelActive : {},
               ]}
               onPress={handleSelection(ProfileView.POST)}
             >
-              <Text style={styles.tabLabel}>Post</Text>
+              <Text style={styles.tabLabel}>My Posts</Text>
             </TouchableOpacity>
           </View>
 
@@ -153,7 +144,7 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
     paddingHorizontal: 0,
     paddingVertical: 0,
     justifyContent: "flex-start",
-    backgroundColor: props.isDark ? theme.colors.grey1 : "transparent",
+    backgroundColor: props.isDark ? theme.colors.white : "transparent",
   },
   containerTop: {
     backgroundColor: theme.colors.background,
@@ -168,23 +159,28 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
     paddingHorizontal: 0,
     width: "100%",
   },
-  divider: { top: -14 },
+  divider: { top: -14, zIndex: 1 },
   tab: {
     flexDirection: "row",
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
   },
   tabLabelContainer: {
     borderBottomWidth: 4,
-    borderBottomColor: "transparent",
+    zIndex: 2,
     minWidth: 100,
     paddingBottom: 8,
     marginVertical: 12,
     marginRight: 12,
+    borderColor: "transparent",
+  },
+  tabLabelActive: {
+    borderColor: theme.colors.primary,
   },
   tabLabel: {
     fontFamily: "nunitoBold",
     textAlign: "center",
     fontSize: 18,
+    color: theme.colors.black,
   },
   contentWrapper: {
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,

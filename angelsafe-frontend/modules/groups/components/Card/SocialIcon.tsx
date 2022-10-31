@@ -1,7 +1,7 @@
 import { Text, View } from "react-native";
 import React from "react";
 import { Icon } from "@rneui/themed";
-import { makeStyles } from "@rneui/base";
+import { makeStyles } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 interface SocialIconProps {
@@ -50,6 +50,7 @@ const useStyles = makeStyles((theme) => ({
   label: {
     fontSize: 16,
     marginLeft: 4,
+    color: theme.colors.black,
     // marginTop: 4,
   },
 }));

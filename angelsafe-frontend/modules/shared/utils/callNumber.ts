@@ -1,7 +1,7 @@
 import { Alert, Linking, Platform } from "react-native";
+import logger from "./logger";
 
 export default function (phone: string) {
-  console.log("callNumber ----> ", phone);
   let phoneNumber = phone;
   if (Platform.OS !== "android") {
     phoneNumber = `telprompt:${phone}`;
@@ -17,5 +17,5 @@ export default function (phone: string) {
         return Linking.openURL(phoneNumber);
       }
     })
-    .catch((err) => console.log(err));
+    .catch((err) => logger("more", err));
 }
