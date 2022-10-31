@@ -179,6 +179,9 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
+	let skip = 0;
+	if(data.skip)
+		skip = data.skip;
       const messages = await DBHelper
         .getCollection(config.chatCollection)
         .find({ 
@@ -186,7 +189,7 @@ module.exports = (config) => {
             { participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }},
             { participants: { $in: [DB.getObjectId(data.receiverId)] }}
           ]
-        }).sort( { timestamp: 1 } ).toArray();
+        }).sort( { timestamp: 1 } ).skip(skip).limit(20).toArray();
       let newMessages = [];
       messages.forEach((message)=>{
         newMessages.push({

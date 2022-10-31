@@ -9,7 +9,7 @@ class ChatService {
   }
 
   static isRequestViewValid(data) {
-    return TypeCheck('{ receiverId: String, ip: String }', data);
+    return TypeCheck('{ receiverId: String, skip: Maybe String, ip: String }', data);
   }
 }
 

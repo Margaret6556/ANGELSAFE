@@ -368,7 +368,9 @@ module.exports = (config) => {
           timestamp: post.timestamp,
           comments: post.comments.length,
           hearts: post.hearts.length,
-          likes: post.likes.length
+          likes: post.likes.length,
+hearted: post.hearts.indexOf(decodedAuth.data.id) > -1? 1:0,
+liked: post.likes.indexOf(decodedAuth.data.id) > -1? 1:0
         });
       });
       return res.status(result.status).json(result);
