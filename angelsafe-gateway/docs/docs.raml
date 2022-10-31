@@ -298,15 +298,15 @@ version: v0.1.0
                 body:
                     application/json:
                         example: |
-                        {
-                            "id": "Y3ODkwIiwibmFtZSI6Ikpva...",
-                            "groupname": "angelsafev2",
-                            "description": "sample group",
-                            "profilePic": "data:image/png;base64,iVY...",
-                            "members": 3,
-                            "joined": 1,
-                            "online": 2
-                        }
+                            {
+                                "id": "Y3ODkwIiwibmFtZSI6Ikpva...",
+                                "groupname": "angelsafev2",
+                                "description": "sample group",
+                                "profilePic": "data:image/png;base64,iVY...",
+                                "members": 3,
+                                "joined": 1,
+                                "online": 2
+                            }
 /api/group/join:
     post:
         headers: 
@@ -456,6 +456,7 @@ version: v0.1.0
             application/json:
                 example: |
                     {
+                        "skip": "0",
                         "receiverId": "K3OasvdgiwibmFtZSI6Ikpva...",
                     }
         responses:
@@ -596,7 +597,9 @@ version: v0.1.0
                                 "timestamp" 12355476565,
                                 "comments": 12,
                                 "hearts": 3,
-                                "likes": 56
+                                "likes": 56,
+                                "hearted": 0,
+                                "liked": 1
                             }]
 /api/post/list:
     post:
@@ -626,7 +629,9 @@ version: v0.1.0
                                 "timestamp" 12355476565,
                                 "comments": 12,
                                 "hearts": 3,
-                                "likes": 56
+                                "likes": 56,
+                                "hearted": 0,
+                                "liked": 1
                             }]
 /api/post/heart:
     post:

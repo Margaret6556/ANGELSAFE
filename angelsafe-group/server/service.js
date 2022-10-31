@@ -309,6 +309,11 @@ module.exports = (config) => {
         if(data.clients.indexOf(member.toString()) > -1)
           online++;
       });
+      const isJoined = isExisting.members.some(element => {
+        if (element.toString() == decodedAuth.data.id.toString())
+          return 1;
+        return 0;
+      });
       result.status = 200;
       result.error = null;
       result.message = 'Getting Group Successful';
@@ -318,7 +323,7 @@ module.exports = (config) => {
         profilePic: isExisting.profilePic,
         description: isExisting.description,
         members: isExisting.members.length,
-        joined:  isExisting.members.indexOf(decodedAuth.data.id) > -1? 1:0,
+        joined:  isJoined? 1:0,
         online
       };
       return res.status(result.status).json(result);

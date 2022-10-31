@@ -298,6 +298,16 @@ module.exports = (config) => {
       result.message = 'Getting Post Successful';
       result.data = [];
       findResult.forEach((post)=>{
+        const isLiked = post.likes.some(element => {
+          if (element.toString() == decodedAuth.data.id.toString())
+            return 1;
+          return 0;
+        });
+        const isHearted = post.hearts.some(element => {
+          if (element.toString() == decodedAuth.data.id.toString())
+            return 1;
+          return 0;
+        });
         result.data.push({
           id: post._id.toString(),
           ownerId: post.ownerId.toString(),
@@ -306,7 +316,9 @@ module.exports = (config) => {
           timestamp: post.timestamp,
           comments: post.comments.length,
           hearts: post.hearts.length,
-          likes: post.likes.length
+          likes: post.likes.length,
+          hearted: isHearted?1:0,
+          liked: isLiked?1:0
         });
       });
       return res.status(result.status).json(result);
@@ -360,6 +372,16 @@ module.exports = (config) => {
       result.message = 'Getting Group Post Successful';
       result.data = [];
       findResult.forEach((post)=>{
+        const isLiked = post.likes.some(element => {
+          if (element.toString() == decodedAuth.data.id.toString())
+            return 1;
+          return 0;
+        });
+        const isHearted = post.hearts.some(element => {
+          if (element.toString() == decodedAuth.data.id.toString())
+            return 1;
+          return 0;
+        });
         result.data.push({
           id: post._id.toString(),
           ownerId: post.ownerId.toString(),
@@ -369,8 +391,8 @@ module.exports = (config) => {
           comments: post.comments.length,
           hearts: post.hearts.length,
           likes: post.likes.length,
-hearted: post.hearts.indexOf(decodedAuth.data.id) > -1? 1:0,
-liked: post.likes.indexOf(decodedAuth.data.id) > -1? 1:0
+          hearted: isHearted?1:0,
+          liked: isLiked?1:0
         });
       });
       return res.status(result.status).json(result);

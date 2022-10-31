@@ -179,9 +179,9 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
-	let skip = 0;
-	if(data.skip)
-		skip = data.skip;
+      let skip = 0;
+      if(data.skip)
+		    skip = parseInt(data.skip);
       const messages = await DBHelper
         .getCollection(config.chatCollection)
         .find({ 
