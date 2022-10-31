@@ -7,12 +7,14 @@ const service = express();
 const DB = require('./lib/DB');
 const Users = require('./lib/Users');
 const MobileNumber = require('./lib/MobileNumber');
+const Emailer = require('./lib/Emailer');
 
 module.exports = (config) => {
   const log = config.log();
 
   const users = new Users();
   const DBHelper = new DB(config);
+  const EmailHelper = new Emailer(config);
 
   // Add a request logging middleware in development mode
   if (service.get('env') === 'development') {
@@ -166,7 +168,15 @@ module.exports = (config) => {
         result.message = 'Something is wrong';
         throw result;
       } else {
-        // TODO send Email verification code
+        try{
+          EmailHelper.sendMail(
+            data.email, 
+            'AngelSafe Registration', 
+            `Welcome to AngelSafe Community. Kindly validate your email by visiting this page, http://localhost:3001/verify-email/${code}`
+          );
+        } catch(err){
+          log.debug(err);
+        }
         result.status = 200;
         result.error = null;
         result.message = 'Registration Successful';
