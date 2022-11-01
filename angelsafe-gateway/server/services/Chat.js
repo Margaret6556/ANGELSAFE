@@ -39,11 +39,12 @@ class ChatService {
     });
   }
 
-  async getList(req) {
+  async getList(req, data) {
     const { ip, port } = await this.getService('angelsafe-chat');
     return ChatService.callService({
-      method: 'get',
+      method: 'post',
       url: `http://${ip}:${port}/list`,
+      data,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': req.headers.authorization

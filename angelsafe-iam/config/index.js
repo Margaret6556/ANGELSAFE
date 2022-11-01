@@ -26,6 +26,9 @@ module.exports = {
     emailUser: '',
     emailPass: '',
     emailSecure: false,
+    accountSid: '',
+    serviceId: '',
+    authToken: '',
     log: () => getLogger(name, version, 'debug'),
   },
   production: {

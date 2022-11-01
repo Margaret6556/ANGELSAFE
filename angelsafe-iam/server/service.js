@@ -8,6 +8,7 @@ const DB = require('./lib/DB');
 const Users = require('./lib/Users');
 const MobileNumber = require('./lib/MobileNumber');
 const Emailer = require('./lib/Emailer');
+const SMS = require('./lib/SMS');
 
 module.exports = (config) => {
   const log = config.log();
@@ -15,6 +16,7 @@ module.exports = (config) => {
   const users = new Users();
   const DBHelper = new DB(config);
   const EmailHelper = new Emailer(config);
+  const SMSHelper = new SMS(config);
 
   // Add a request logging middleware in development mode
   if (service.get('env') === 'development') {
@@ -70,7 +72,7 @@ module.exports = (config) => {
       }
       data.timestamp = new Date().valueOf();
       data.otpTimestamp = data.timestamp;
-      data.otp = 123456;// TODO Users.generateOTP(config.OTPMax);
+      data.otp = Users.generateOTP(config.OTPMax);
       data.mfa = [Users.MFA.mobileNumber];
       const insertResult = await DBHelper.getCollection(config.usersCollection).insertOne(data);
       log.debug(insertResult);
@@ -80,7 +82,11 @@ module.exports = (config) => {
         result.message = 'Something is wrong';
         throw result;
       } else {
-        // TODO send OTP to SMS
+        try{
+          SMSHelper.sendSMS(data.mobileNumber, `Your OTP for AngelSafe is: ${data.otp}`);
+        } catch(err){
+          log.debug(err);
+        }
         log.debug('OTP: ', data.otp);
         result.status = 200;
         result.error = null;
@@ -228,7 +234,7 @@ module.exports = (config) => {
             .getCollection(config.usersCollection)
             .findOne({
               mobileNumber: data.mobileNumber,
-              otp: data.otp,
+              otp: parseInt(data.otp),
               otpTimestamp: { $gte: (new Date().valueOf() - 86400000) },
             });
           if (!isExisting) {
@@ -400,13 +406,13 @@ module.exports = (config) => {
         result.message = 'Mobile Number is not registered!';
         throw result;
       }
-      const otp = 123456;// TODO Users.generateOTP(config.OTPMax);
+      const otp = Users.generateOTP(config.OTPMax);
       const updatedResult = await DBHelper.getCollection(config.usersCollection).updateOne(
         { mobileNumber: data.mobileNumber },
         {
           $set: {
             otpTimestamp: new Date().valueOf(),
-            otp: otp.toString(),
+            otp: parseInt(otp),
             ip: data.ip,
           },
         },
@@ -418,7 +424,11 @@ module.exports = (config) => {
         result.message = 'Something is wrong';
         throw result;
       } else {
-        // TODO send OTP to SMS
+        try{
+          SMSHelper.sendSMS(data.mobileNumber, `Your OTP for AngelSafe is: ${otp}`);
+        } catch(err){
+          log.debug(err);
+        }
         log.debug('OTP: ', otp);
         result.status = 200;
         result.error = null;
@@ -533,7 +543,6 @@ module.exports = (config) => {
         result.message = 'Something is wrong';
         throw result;
       } else {
-        // TODO send OTP to SMS
         log.debug('Token: ', token);
         result.status = 200;
         result.error = null;

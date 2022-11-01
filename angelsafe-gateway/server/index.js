@@ -94,7 +94,12 @@ async function processData(req, res) {
                 result.status = 200;
                 result.error = null;
                 result.message = 'Getting Hotline Successful';
-                result.data = { emergency: "911",  }; // TODO create version on config and create entry on API docu
+                result.data = { 
+                  "Emotional Help": "1-800-985-5990",
+                  "American Cancer Society": "1-800-227-2345",
+                  "Hearing Impaired": "1-800-448-1833",
+                  "Christian Oriented Hotline": "1-877-949-HELP"
+                }; // TODO create version on config and create entry on API docu
                 res.status(result.status).json(result);
                 break;
               default:
@@ -335,7 +340,7 @@ async function processData(req, res) {
           break;
           case 'list':
             switch (req.method) {
-              case 'GET':
+              case 'POST':
                 result = await GroupService.getGroups(req, data);
                 res.status(result.status).json(result);
                 break;
@@ -372,7 +377,7 @@ async function processData(req, res) {
                 if(result.status == 200){
                   const clientIndex = clients.indexOf(result.data.receiverId);
                   if(clientIndex > -1)
-                    clientSockets[clientIndex].emit('new-message');
+                    clientSockets[clientIndex].emit('new-message', result.data.senderId);
                 }
                 res.status(result.status).json(result);
                 break;
@@ -419,8 +424,8 @@ async function processData(req, res) {
             break;
           case 'list':
             switch (req.method) {
-              case 'GET':
-                result = await ChatService.getList(req);
+              case 'POST':
+                result = await ChatService.getList(req, data);
                 let newList = [];
                 await Promise.all(result.data.map(async (item) => {
                   const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});

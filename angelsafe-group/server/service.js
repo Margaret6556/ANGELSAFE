@@ -592,7 +592,7 @@ module.exports = (config) => {
     }
   });
 
-  service.get('/list', async (req, res, next) => {
+  service.post('/list', async (req, res, next) => {
     const result = {
       status: 400,
       error: 'Invalid API',
@@ -631,7 +631,7 @@ module.exports = (config) => {
         skip = parseInt(data.skip);
       const groups = await DBHelper
         .getCollection(config.groupCollection)
-        .find(options).skip(skip).limit(30).toArray();
+        .find(options).sort({groupname: 1}).skip(skip).limit(20).toArray();
       let newGroups = [];
       groups.forEach((group)=>{
         newGroups.push({

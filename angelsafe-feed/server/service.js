@@ -365,7 +365,7 @@ module.exports = (config) => {
         skip = parseInt(skip);
       const findResult = await DBHelper.getCollection(config.postCollection).find({
         groupId: DB.getObjectId(data.groupId)
-      }).skip(skip).limit(30).toArray();
+      }).sort({timestamp: -1}).skip(skip).limit(20).toArray();
       log.debug(result);
       result.status = 200;
       result.error = null;

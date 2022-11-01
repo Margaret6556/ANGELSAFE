@@ -114,6 +114,7 @@ module.exports = (config) => {
           result.error = null;
           result.message = 'Creating Message Successful';
           result.data = {
+            senderId: decodedAuth.data.id,
             receiverId: data.receiverId
           };
         }
@@ -136,6 +137,7 @@ module.exports = (config) => {
           result.error = null;
           result.message = 'Creating Message Successful';
           result.data = {
+            senderId: decodedAuth.data.id,
             receiverId: data.receiverId
           };
         }
@@ -222,7 +224,7 @@ module.exports = (config) => {
     }
   });
 
-  service.get('/list', async (req, res, next) => {
+  service.post('/list', async (req, res, next) => {
     const result = {
       status: 400,
       error: 'Invalid API',
@@ -249,11 +251,14 @@ module.exports = (config) => {
         result.message = 'Invalid Login Credentials';
         throw result;
       }
+      let skip = 0;
+      if(data.skip)
+        skip = parseInt(data.skip);
       const list = await DBHelper
         .getCollection(config.conversationCollection)
         .find({
           participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }
-        }).sort({ [decodedAuth.data.id]: -1 }).toArray();
+        }).skip(skip).limit(20).sort({ [decodedAuth.data.id]: -1 }).toArray();
       let newList = [];
       list.forEach((item)=>{
         newList.push({

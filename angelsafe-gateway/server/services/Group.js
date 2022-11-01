@@ -132,12 +132,12 @@ class GroupService {
     });
   }
 
-  // TODO add skip(offset).limit(limit)
-  async getGroups(req) {
+  async getGroups(req,data) {
     const { ip, port } = await this.getService('angelsafe-group');
     return GroupService.callService({
-      method: 'get',
+      method: 'post',
       url: `http://${ip}:${port}/list`,
+      data,
       headers: {
         'Content-Type': 'application/json',
         'Authorization': req.headers.authorization
