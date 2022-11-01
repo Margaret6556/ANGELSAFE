@@ -47,7 +47,7 @@ module.exports = (config) => {
           message: data.message,
           profilePic: data.profilePic,
           groupname: data.groupname,
-          groupId: data.id,
+          groupId: data.groupId,
           read: 0
         }
       );
