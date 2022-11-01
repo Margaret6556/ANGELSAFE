@@ -633,6 +633,130 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/comment', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Feed.isRequestCommentValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      const updatedResult = await DBHelper.getCollection(config.postCollection).updateOne({
+        _id: DB.getObjectId(data.postId)
+      },{
+        $addToSet: {
+          comments: { message: data.message.toString().substring(0, 150), ownerId: DB.getObjectId(decodedAuth.data.id), timestamp: new Date().valueOf() }
+        }
+      });
+      log.debug(updatedResult);
+      if (!updatedResult.modifiedCount) {
+        result.status = 500;
+        result.error = 'Internal Server Error';
+        result.message = 'Something is wrong';
+        throw result;
+      } else {
+        result.status = 200;
+        result.error = null;
+        result.message = 'Commenting a Post Successful';
+        result.data = null;
+      }
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
+  service.post('/list-comment', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      if (!Feed.isRequestListCommentValid(data)) {
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Invalid Data';
+        throw result;
+      }
+      // TODO SKip
+      // let skip = 0;
+      // if(data.skip)
+      //   skip = parseInt(skip);
+      const isExisting = await DBHelper.getCollection(config.postCollection).findOne({
+        _id: DB.getObjectId(data.postId)
+      });
+      log.debug(isExisting);
+      if(!isExisting){
+        result.status = 400;
+        result.error = 'Bad Request';
+        result.message = 'Post is not existing';
+        throw result;
+      }
+      //let newComments = isExisting.comments.slice(1, isExisting.comments.length)
+      let newComments = isExisting.comments;
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Post Comments Successful';
+      result.data = [];
+      newComments.forEach((comment)=>{
+        result.data.push({
+          ownerId: comment.ownerId.toString(),
+          message: comment.message,
+          timestamp: comment.timestamp,
+        });
+      });
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   service.post('/chart', async (req, res, next) => {
     const result = {
       status: 400,

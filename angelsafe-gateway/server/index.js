@@ -433,16 +433,18 @@ async function processData(req, res) {
                     const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});
                     newList.push({ ...item, receiver: profileObj.data[0]});
                   }))
+                  result.data = newList;
+                  res.status(result.status).json(result);
                 } else {
-                    result = await ChatService.getList(req, data);
-                    let newList = [];
-                    await Promise.all(result.data.map(async (item) => {
-                      const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});
-                      newList.push({ ...item, receiver: profileObj.data[0]});
-                    }))
+                  result = await ChatService.getList(req, data);
+                  let newList = [];
+                  await Promise.all(result.data.map(async (item) => {
+                    const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});
+                    newList.push({ ...item, receiver: profileObj.data[0]});
+                  }));
+                  result.data = newList;
+                  res.status(result.status).json(result);
                 }
-                result.data = newList;
-                res.status(result.status).json(result);
                 break;
               default:
                 res.status(result.status).json(result);
@@ -556,6 +558,26 @@ async function processData(req, res) {
             switch (req.method) {
               case 'POST':
                 result = await FeedService.unlike(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'comment':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.comment(req, data);
+                res.status(result.status).json(result);
+                break;
+              default:
+                res.status(result.status).json(result);
+            }
+            break;
+          case 'list-comment':
+            switch (req.method) {
+              case 'POST':
+                result = await FeedService.listComment(req, data);
                 res.status(result.status).json(result);
                 break;
               default:

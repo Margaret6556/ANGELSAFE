@@ -709,3 +709,46 @@ version: v0.1.0
                 body:
                     application/json:
                         example: null
+/api/post/comment:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "postId": "635429a9756d27bdb4...",
+                        "message": "This is a sample comment"
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: null
+/api/post/list-comment:
+    post:
+        headers: 
+            Authorization: 
+                displayName: Authentication
+                description: Bearer JWT
+                type: string
+                required: true
+        body:
+            application/json:
+                example: |
+                    {
+                        "postId": "635429a9756d27bdb4...",
+                    }
+        responses:
+            200:
+                body:
+                    application/json:
+                        example: |
+                            {
+                                "ownerId": "6360e0c4c883be95...",
+                                "message": "This is a sample comment"
+                            }

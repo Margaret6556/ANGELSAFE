@@ -20,6 +20,14 @@ class FeedService {
     return TypeCheck('{ postId: String , ip: String}', data);
   }
 
+  static isRequestCommentValid(data) {
+    return TypeCheck('{ postId: String , message: String, ip: String}', data);
+  }
+
+  static isRequestListCommentValid(data) {
+    return TypeCheck('{ postId: String , skip: Maybe String, ip: String}', data);
+  }
+
 }
 
 module.exports = FeedService;

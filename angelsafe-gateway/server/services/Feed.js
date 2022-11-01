@@ -153,6 +153,32 @@ class FeedService {
     });
   }
 
+  async comment(req, data) {
+    const { ip, port } = await this.getService('angelsafe-feed');
+    return FeedService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/comment`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
+  async listComment(req, data) {
+    const { ip, port } = await this.getService('angelsafe-feed');
+    return FeedService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/list-comment`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   static async callService(requestOptions) {
     const result = await circuitBreaker.callService(requestOptions);
     return result;
