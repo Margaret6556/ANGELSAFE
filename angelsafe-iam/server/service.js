@@ -61,9 +61,7 @@ module.exports = (config) => {
         throw result;
       }
       data.mobileNumber = MobileNumber.validateNumberFormat(data.mobileNumber);
-      const isExisting = await DBHelper
-        .getCollection(config.usersCollection)
-        .findOne({ mobileNumber: data.mobileNumber });
+      const isExisting = await DBHelper.getCollection(config.usersCollection).findOne({ mobileNumber: data.mobileNumber });
       if (isExisting) {
         result.status = 400;
         result.error = 'Bad Request';
