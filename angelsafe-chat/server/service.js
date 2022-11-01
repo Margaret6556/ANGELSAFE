@@ -252,13 +252,27 @@ module.exports = (config) => {
         throw result;
       }
       let skip = 0;
+      let find = {
+        participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }
+      };
+      if(data.ids){
+        let objectIDs = [];
+        data.ids.forEach((id)=>{
+          objectIDs.push(DB.getObjectId(id));
+        });
+        find = {
+          $and: [{
+            participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }
+          },{
+            participants: { $in: objectIDs }
+          }]
+        }
+      }
       if(data.skip)
         skip = parseInt(data.skip);
       const list = await DBHelper
         .getCollection(config.conversationCollection)
-        .find({
-          participants: { $in: [DB.getObjectId(decodedAuth.data.id)] }
-        }).skip(skip).limit(20).sort({ [decodedAuth.data.id]: -1 }).toArray();
+        .find(find).skip(skip).limit(20).sort({ [decodedAuth.data.id]: -1 }).toArray();
       let newList = [];
       list.forEach((item)=>{
         newList.push({

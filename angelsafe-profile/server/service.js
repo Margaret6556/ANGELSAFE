@@ -419,6 +419,50 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/id', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      const profiles = await DBHelper
+        .getCollection(config.profileCollection)
+        .find({ username: {'$regex' : `.*${data.username.toString()}.*`, '$options' : 'i'}}).toArray();
+      let newIds = [];
+      profiles.forEach((profile)=>{
+        newIds.push(profile.ownerId.toString());
+      });
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Ids by Username Successful';
+      result.data = newIds;
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   // eslint-disable-next-line no-unused-vars
   service.use((error, req, res, next) => {
     res.status(error.status || 500);

@@ -425,12 +425,22 @@ async function processData(req, res) {
           case 'list':
             switch (req.method) {
               case 'POST':
-                result = await ChatService.getList(req, data);
-                let newList = [];
-                await Promise.all(result.data.map(async (item) => {
-                  const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});
-                  newList.push({ ...item, receiver: profileObj.data[0]});
-                }))
+                if(data.username){
+                  result = await ProfileService.getIdByUsername(req, data);
+                  result = await ChatService.getList(req, {...data, ids: result.data});
+                  let newList = [];
+                  await Promise.all(result.data.map(async (item) => {
+                    const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});
+                    newList.push({ ...item, receiver: profileObj.data[0]});
+                  }))
+                } else {
+                    result = await ChatService.getList(req, data);
+                    let newList = [];
+                    await Promise.all(result.data.map(async (item) => {
+                      const profileObj = await ProfileService.getProfiles(req, { ids: [item.receiver], ip: data.ip});
+                      newList.push({ ...item, receiver: profileObj.data[0]});
+                    }))
+                }
                 result.data = newList;
                 res.status(result.status).json(result);
                 break;

@@ -77,6 +77,19 @@ class ProfileService {
     });
   }
 
+  async getIdByUsername(req, data) {
+    const { ip, port } = await this.getService('angelsafe-profile');
+    return ProfileService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/id`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   static async callService(requestOptions) {
     const result = await circuitBreaker.callService(requestOptions);
     return result;
