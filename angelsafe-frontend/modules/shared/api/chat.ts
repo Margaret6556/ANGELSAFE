@@ -1,6 +1,9 @@
 import { apiSlice } from ".";
 import { _API } from "../config";
+import store from "../state";
 import { BackendResponse, UserType } from "../types";
+import { io } from "socket.io-client";
+import logger from "../utils/logger";
 
 export type ProfileRegisterType = {
   username: string;
@@ -32,7 +35,10 @@ type SingleChatResponse = {
 const chatApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getChatList: builder.query<BackendResponse<ChatListResponse[]>, void>({
-      query: () => _API.CHAT.LIST,
+      query: () => ({
+        url: _API.CHAT.LIST,
+        method: "POST",
+      }),
       providesTags: (res) => {
         const tag = { type: "CHAT" as const, id: "LIST" };
         if (res?.data) {
@@ -56,6 +62,36 @@ const chatApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
+      onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+      ) {
+        try {
+          const {
+            auth: { user },
+          } = store.getState();
+          const token = user?.token || "";
+
+          const socket = io("http://mobile.angelsafe.co", {
+            extraHeaders: {
+              token: token,
+            },
+          });
+
+          socket.connect();
+          socket.on("connect", function () {
+            logger("chat", `Socket connected: ${socket.connected}`);
+          });
+          socket.on("new-message", function () {
+            store.dispatch(
+              apiSlice.util.invalidateTags([{ type: "CHAT", id: "LIST" }])
+            );
+            logger("chat", `new message`);
+          });
+        } catch (e) {
+          logger("groups", { e, path: "socket" });
+        }
+      },
       providesTags: [{ type: "CHAT" as const, id: "LIST" }],
     }),
     createChat: builder.mutation<BackendResponse<{}>, CreateChatType>({

@@ -74,20 +74,13 @@ const SettingsComponent = () => {
           onPress={handleNotificationPress}
         />
       </View>
-      <View style={styles.container}>
+      {/* <View style={styles.container}>
         <Card
           icon={{ name: "accessibility", type: "material" }}
           label="Accessiblity"
           onPress={handleAccessibility}
         />
-      </View>
-      <View style={styles.container}>
-        <Card
-          icon={{ name: "wrench", type: "material-community" }}
-          label="Test API"
-          onPress={handleAccessibility}
-        />
-      </View>
+      </View> */}
       <View style={styles.container}>
         <Card
           icon={{ name: "logout", type: "material" }}

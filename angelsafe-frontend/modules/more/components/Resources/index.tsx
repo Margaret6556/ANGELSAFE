@@ -5,10 +5,10 @@ import callNumber from "@/shared/utils/callNumber";
 
 const ResourcesComponent = () => {
   const handleEmotionalHelp = () => {
-    callNumber("+9191231312");
+    callNumber("+18009855990");
   };
   const handleOverdose = () => {
-    callNumber("+9191231312");
+    callNumber("+18009855990");
   };
 
   return (

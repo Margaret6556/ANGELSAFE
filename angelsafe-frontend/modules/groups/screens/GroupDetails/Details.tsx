@@ -6,6 +6,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
   Dimensions,
+  Alert,
 } from "react-native";
 import { Button, lightColors, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Container, Loading } from "@/shared/components";
@@ -23,6 +24,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import GroupFeed from "../../components/Feed";
 import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
+import StatChart from "./StatChart";
 
 const deviceHeight = Dimensions.get("screen").height;
 
@@ -53,6 +55,34 @@ const GroupDetailsScreen = ({
       logger("groups", { status });
     } catch (e) {
       logger("groups", { e });
+    }
+  };
+
+  const showUnjoinAlert = (members: string) => async () => {
+    if (+members === 1) {
+      Alert.alert(
+        "Confirm unjoin",
+        "You are the only member left, group will be disbanded if you leave. Confirm?",
+        [
+          {
+            onPress: async () => {
+              await handleGroupUnjoin();
+              return;
+            },
+            text: "Confirm",
+            style: "destructive",
+          },
+          {
+            onPress: () => {
+              return;
+            },
+            style: "cancel",
+            text: "Cancel",
+          },
+        ]
+      );
+    } else {
+      handleGroupUnjoin();
     }
   };
 
@@ -90,11 +120,7 @@ const GroupDetailsScreen = ({
         return <GroupFeed groupId={id} isJoined={!!data?.data.joined} />;
       }
       case RenderView.SYMPTOM_CHART: {
-        return (
-          <View style={{ marginVertical: 12 }}>
-            <Text>Come back later, data not yet available.</Text>
-          </View>
-        );
+        return <StatChart groupId={id} />;
       }
       default:
         return null;
@@ -150,7 +176,11 @@ const GroupDetailsScreen = ({
                   containerStyle={styles.joinButtonContainerStyle}
                   buttonStyle={styles.joinButtonStyle}
                   titleStyle={styles.joinButtonTitleStyle}
-                  onPress={group.joined ? handleGroupUnjoin : handleGroupJoin}
+                  onPress={
+                    group.joined
+                      ? showUnjoinAlert(group.members)
+                      : handleGroupJoin
+                  }
                   // disabled
                   activeOpacity={0.5}
                 />

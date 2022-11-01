@@ -4,7 +4,6 @@ import { Button, Icon } from "@rneui/themed";
 import { Text } from "@rneui/base";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { useNavigation } from "@react-navigation/native";
-import { HomeParamsList, HomeScreenProps } from "@/home/types";
 
 type IAddSymptomProps = {
   onPress: () => void;
@@ -13,7 +12,6 @@ type IAddSymptomProps = {
 const AddNewSymptomButton = (props: IAddSymptomProps) => {
   const { navigate } = useNavigation<any>();
   const handlePress = () => {
-    // navigate("Add New Symptom");
     props.onPress();
   };
   return (

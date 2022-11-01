@@ -37,11 +37,15 @@ export const _API = {
   STAT: {
     CREATE: "/stat/create",
     VIEW: "/stat/view",
+    CHART: "/stat/chart",
   },
   CHAT: {
     LIST: "/chat/list",
     CREATE: "/chat/create",
     VIEW: "/chat/view",
+  },
+  NOTIFICATIONS: {
+    LIST: "/notif/list",
   },
   TEST: "/info/version",
 };

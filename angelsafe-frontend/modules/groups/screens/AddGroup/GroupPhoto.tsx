@@ -100,10 +100,20 @@ const GroupPhoto = ({
           title={image ? "Select another" : "Select an Image"}
           onPress={handleSelectImage}
           buttonStyle={styles.buttonStyle}
-          containerStyle={styles.buttonContainerStyle}
+          // containerStyle={styles.buttonContainerStyle}
           titleStyle={{ fontSize: 14 }}
         />
-        {image ? (
+        {image && (
+          <Button
+            title="Confirm"
+            onPress={handleUploadImage}
+            buttonStyle={styles.buttonStyle}
+            // containerStyle={styles.buttonContainerStyle}
+            titleStyle={{ fontSize: 14 }}
+            loading={updatePhotoResponse.isLoading}
+          />
+        )}
+        {/* {image ? (
           <Button
             title="Confirm"
             onPress={handleUploadImage}
@@ -121,7 +131,7 @@ const GroupPhoto = ({
             titleStyle={{ fontSize: 14 }}
             type="outline"
           />
-        )}
+        )} */}
       </View>
     </View>
   );
@@ -141,17 +151,18 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   buttonContainer: {
-    height: 100,
+    // height: 100,
     width: "100%",
     justifyContent: "space-between",
-    flexDirection: "row",
-    alignItems: "center",
+    // flexDirection: "row",
+    // alignItems: "center",
   },
   buttonStyle: {
+    marginBottom: 24,
     // width: "50%"
   },
   buttonContainerStyle: {
-    width: "40%",
+    width: "100%",
     margin: 12,
   },
   iconContainer: {

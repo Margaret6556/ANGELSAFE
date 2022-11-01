@@ -6,7 +6,6 @@ export type HomeParamsList = {
   Entry: {
     symptoms: string[];
   };
-  "Add New Symptom": undefined;
 };
 
 export type MoodsType = {

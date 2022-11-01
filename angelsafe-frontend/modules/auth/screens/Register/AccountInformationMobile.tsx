@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AuthRegisterParamList } from "@/auth/types";
 import { View, StyleSheet, Keyboard } from "react-native";
-import { Text, Button } from "@rneui/themed";
+import { Text, Button, makeStyles } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useForm } from "react-hook-form";
 import { _API } from "@/shared/config";
@@ -18,6 +18,7 @@ type FieldType = {
 const RegisterScreen = ({
   navigation,
 }: StackScreenProps<AuthRegisterParamList, "Account Information">) => {
+  const styles = useStyles();
   const {
     control,
     formState: { isSubmitting },
@@ -94,7 +95,7 @@ const RegisterScreen = ({
 
 export default RegisterScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     justifyContent: "space-between",
   },
@@ -104,26 +105,6 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
   },
-  // inputContainer: {
-  //   width: "100%",
-  //   borderRadius: 10,
-  //   padding: 0,
-  // },
-  // inputTextContainer: {
-  //   borderTopRightRadius: 10,
-  //   borderBottomRightRadius: 10,
-  //   padding: 0,
-  // },
-  // inputError: {
-  //   borderColor: "red",
-  //   borderWidth: 1,
-  // },
-  // errorText: {
-  //   textAlign: "right",
-  //   color: "red",
-  //   marginVertical: 4,
-  //   fontSize: 12,
-  // },
   image: {
     width: 180,
     height: 180,
@@ -134,6 +115,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 14,
-    color: "#333",
+    color: theme.colors.grey1,
   },
-});
+}));

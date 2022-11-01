@@ -26,7 +26,7 @@ const Header = (props: Props) => {
       <View style={styles.container}>
         <Text h3>Groups</Text>
         <View style={styles.icons}>
-          <SearchIcon />
+          {/* <SearchIcon /> */}
           <TouchableOpacity activeOpacity={0.5} onPress={handleAddGroup}>
             <Icon
               type="antdesign"

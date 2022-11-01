@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Auth from "./auth";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAppSelector } from "@/shared/hooks";
@@ -12,6 +12,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { AppTabParamList, RootStackParamList } from "./shared/types";
 import { Loading, TabBarIcon, TransitionSlide } from "./shared/components";
 import useThemeMode from "./shared/hooks/useThemeMode";
+import { useGetNotificationsListQuery } from "./shared/api/alerts";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
@@ -31,6 +32,7 @@ const App = () => {
           ...TransitionSlide,
         }}
       >
+        {/* <RootStack.Screen name="App" component={TabNavigator} /> */}
         {isLoggedIn ? (
           <RootStack.Screen name="App" component={TabNavigator} />
         ) : (
@@ -44,12 +46,24 @@ const App = () => {
 };
 
 const BottomTab = createBottomTabNavigator<AppTabParamList>();
+
 const TabNavigator = () => {
+  const { data } = useGetNotificationsListQuery();
+  const [notifBadge, setNotifBadge] = useState(0);
+
+  useEffect(() => {
+    if (data && !!data.data.length) {
+      const notifs = data?.data.reduce((p, c) => p + (c.read === 1 ? 0 : 1), 0);
+      setNotifBadge(notifs);
+    }
+  }, [data]);
+
   return (
     <BottomTab.Navigator
       screenOptions={{
         header: () => null,
         tabBarStyle: {},
+        tabBarHideOnKeyboard: true,
       }}
       initialRouteName="Home"
     >
@@ -76,7 +90,6 @@ const TabNavigator = () => {
                 iconProps={{ name: "person-circle", type: "ionicon" }}
               />
             ),
-            tabBarHideOnKeyboard: true,
           }}
         />
         <BottomTab.Screen
@@ -92,13 +105,13 @@ const TabNavigator = () => {
                 }}
               />
             ),
-            // tabBarHideOnKeyboard: true,
           }}
         />
         <BottomTab.Screen
           name="Alerts"
           component={AlertStack}
           options={{
+            tabBarBadge: notifBadge || undefined,
             tabBarIcon: ({ focused }) => (
               <TabBarIcon
                 focused={focused}
@@ -117,7 +130,6 @@ const TabNavigator = () => {
                 iconProps={{ name: "more-horiz", type: "material" }}
               />
             ),
-            tabBarHideOnKeyboard: true,
           }}
         />
       </BottomTab.Group>

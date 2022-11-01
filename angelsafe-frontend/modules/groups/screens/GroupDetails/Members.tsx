@@ -37,11 +37,6 @@ const Members = ({
         }}
       >
         <FlatList
-          ListHeaderComponent={
-            <Text h4 style={{ padding: StyleConstants.PADDING_HORIZONTAL }}>
-              Members
-            </Text>
-          }
           style={styles.listContainer}
           data={data.data}
           renderItem={({ item }) => {

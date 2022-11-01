@@ -12,6 +12,7 @@ export enum Moods {
 type MoodAndSymptomsType = {
   mood: Moods | undefined;
   symptoms: string[];
+  initialSymptoms: string[];
   lastSubmitted: number;
   isEditableToday: boolean;
   tomorrowsEpoch: number;
@@ -20,6 +21,13 @@ type MoodAndSymptomsType = {
 const initialState: MoodAndSymptomsType = {
   mood: undefined,
   symptoms: [],
+  initialSymptoms: [
+    "Anxiety",
+    "Panic attacks",
+    "Fatigue",
+    "Nausea",
+    "Difficulty of Breathing",
+  ],
   lastSubmitted: 0,
   isEditableToday: true,
   tomorrowsEpoch: 0,
@@ -32,6 +40,14 @@ const themeSlice = createSlice({
     setMood: (state, action: PayloadAction<Moods>) => {
       state.mood = action.payload;
       state.lastSubmitted = 0;
+    },
+    setInitialSymptoms: (state, action: PayloadAction<string>) => {
+      let arr = [...state.initialSymptoms, action.payload];
+      if (state.initialSymptoms.includes(action.payload)) {
+        arr = arr.filter((i) => i !== action.payload);
+      }
+
+      state.initialSymptoms = arr;
     },
     setSymptoms: (state, action: PayloadAction<string>) => {
       if (!!state.symptoms.length) {
@@ -57,5 +73,10 @@ const themeSlice = createSlice({
 });
 
 export default themeSlice.reducer;
-export const { setMood, setSymptoms, setLastSubmitted, enableEditToday } =
-  themeSlice.actions;
+export const {
+  setMood,
+  setSymptoms,
+  setLastSubmitted,
+  enableEditToday,
+  setInitialSymptoms,
+} = themeSlice.actions;

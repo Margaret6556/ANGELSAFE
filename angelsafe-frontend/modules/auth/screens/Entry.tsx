@@ -1,34 +1,27 @@
-import React, { useState } from "react";
+import React from "react";
 import { AuthParamList } from "@/auth/types";
 import { View, StyleSheet } from "react-native";
-import { Button, Image } from "@rneui/themed";
-import { Container } from "@/shared/components";
+import { Button } from "@rneui/themed";
+import { Container, Logo } from "@/shared/components";
 import { StackScreenProps } from "@react-navigation/stack";
+import { StyleConstants } from "@/shared/styles";
 
 const LoginScreen = ({
   navigation,
 }: StackScreenProps<AuthParamList, "Entry">) => {
-  const [isChecked, setIsChecked] = useState(false);
-
-  // const handleCheckBoxPress = () => {
-  //   setIsChecked(!isChecked);
-  // };
-
   return (
     <Container>
       <View style={styles.imageContainer}>
-        <Image
-          source={require("../../../assets/logo.png")}
-          resizeMode="contain"
-          style={styles.image}
-          containerStyle={styles.imageContainer}
-        />
+        <Logo />
       </View>
       <View style={styles.buttonGroup}>
         <Button
           title="Login"
           onPress={() => {
             navigation.push("Login");
+          }}
+          buttonStyle={{
+            marginBottom: StyleConstants.PADDING_VERTICAL,
           }}
         />
         <Button
@@ -50,12 +43,10 @@ export default LoginScreen;
 const styles = StyleSheet.create({
   buttonGroup: {
     width: "100%",
-    height: 130,
     justifyContent: "space-between",
   },
-  imageContainer: {},
-  image: {
-    width: 180,
-    height: 180,
+  imageContainer: {
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

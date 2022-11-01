@@ -8,13 +8,30 @@ export type StatsType = {
   experience: string[];
 };
 
+export type StatChartType = {
+  "1": number;
+  "2": number;
+  "3": number;
+  "4": number;
+  "5": number;
+};
+
 const statsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     viewStat: builder.query<BackendResponse<StatsType & { id: string }>, void>({
       query: () => _API.STAT.VIEW,
-      /**
-       * nothing to invalidate here
-       */
+      providesTags: ["STAT"],
+    }),
+    getGroupChart: builder.query<
+      BackendResponse<StatChartType>,
+      { groupId: string }
+    >({
+      query: (body) => ({
+        url: _API.STAT.CHART,
+        method: "POST",
+        body,
+      }),
+      providesTags: ["STAT"],
     }),
     createStat: builder.mutation<BackendResponse<{}>, StatsType>({
       query: (body) => ({
@@ -22,9 +39,14 @@ const statsApiSlice = apiSlice.injectEndpoints({
         body,
         method: "POST",
       }),
+      invalidatesTags: ["STAT"],
     }),
   }),
   overrideExisting: true,
 });
 
-export const { useCreateStatMutation, useViewStatQuery } = statsApiSlice;
+export const {
+  useCreateStatMutation,
+  useViewStatQuery,
+  useGetGroupChartQuery,
+} = statsApiSlice;

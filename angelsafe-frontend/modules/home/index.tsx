@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { HomeParamsList } from "./types";
-import { EntryScreen, AddNewSymptom } from "./screens/";
+import { EntryScreen } from "./screens/";
 import { AppTabParamList } from "@/shared/types";
 import { useAppSelector } from "@/shared/hooks";
 import { useEffect } from "react";
@@ -32,15 +32,6 @@ const HomeScreen = ({
         component={EntryScreen}
         options={{
           header: () => null,
-        }}
-      />
-      <HomeStack.Screen
-        name="Add New Symptom"
-        component={AddNewSymptom}
-        options={{
-          header: () => null,
-          presentation: "modal",
-          cardOverlayEnabled: false,
         }}
       />
     </HomeStack.Navigator>

@@ -1,6 +1,9 @@
 import { apiSlice } from ".";
 import { _API } from "../config";
 import { BackendResponse, UserType } from "../types";
+import { io } from "socket.io-client";
+import logger from "../utils/logger";
+import store from "../state";
 
 export type GroupsType = {
   description: string;
@@ -18,7 +21,10 @@ export type GroupDetailsType = {
 const groupsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getGroups: builder.query<BackendResponse<GroupsType[]>, void>({
-      query: () => _API.GROUP.LIST,
+      query: () => ({
+        url: _API.GROUP.LIST,
+        method: "POST",
+      }),
       providesTags: (res) => {
         const tag = { type: "GROUPS" as const, id: "LIST" };
         if (res?.data) {
@@ -41,6 +47,30 @@ const groupsApiSlice = apiSlice.injectEndpoints({
           groupId,
         },
       }),
+      onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+      ) {
+        try {
+          const {
+            auth: { user },
+          } = store.getState();
+          const token = user?.token || "";
+
+          const socket = io("http://mobile.angelsafe.co", {
+            extraHeaders: {
+              token: token,
+            },
+          });
+
+          socket.connect();
+          socket.on("connect", function () {
+            logger("groups", `Socket connected: ${socket.connected}`);
+          });
+        } catch (e) {
+          logger("groups", { e, path: "socket" });
+        }
+      },
       providesTags: (_, __, arg) => [{ type: "GROUPS", id: arg }],
     }),
     getGroupMembers: builder.query<
@@ -63,7 +93,7 @@ const groupsApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "GROUPS", id: "LIST" }],
+      invalidatesTags: [{ type: "GROUPS", id: "LIST" }, "NOTIFICATIONS"],
     }),
     updateGroupPhoto: builder.mutation<
       BackendResponse<{}>,

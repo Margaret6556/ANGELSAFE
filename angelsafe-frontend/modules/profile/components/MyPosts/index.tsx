@@ -75,6 +75,6 @@ const useStyles = makeStyles((theme) => ({
   },
   noPost: {
     color: theme.colors.grey0,
-    textAlign: "center",
+    // textAlign: "center",
   },
 }));

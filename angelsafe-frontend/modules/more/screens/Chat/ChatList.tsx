@@ -63,7 +63,7 @@ const ChatList = ({
         <View style={styles.header}>
           <Text>{user?.username}</Text>
           <View style={{ flexDirection: "row" }}>
-            <SearchIcon />
+            {/* <SearchIcon /> */}
             {/* <TouchableOpacity onPress={handleProfilePress}>
               <Avatar
                 source={{

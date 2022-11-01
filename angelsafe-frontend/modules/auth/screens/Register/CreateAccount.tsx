@@ -2,13 +2,14 @@ import React from "react";
 import { AuthRegisterParamList } from "@/auth/types";
 import { View, Image, StyleSheet, ImageBackground } from "react-native";
 import { useAppDispatch } from "@/shared/hooks";
-import { Text, Button } from "@rneui/themed";
+import { Text, Button, makeStyles } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { StackScreenProps } from "@react-navigation/stack";
 
 const CreateAccount = ({
   navigation,
 }: StackScreenProps<AuthRegisterParamList, "Create an Account">) => {
+  const styles = useStyles();
   return (
     <Container>
       <Image
@@ -37,7 +38,7 @@ const CreateAccount = ({
 
 export default CreateAccount;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   button: {
     width: "100%",
     height: 100,
@@ -53,6 +54,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 14,
-    color: "#333",
+    color: theme.colors.grey1,
   },
-});
+}));

@@ -17,7 +17,6 @@ const GroupScreen = ({
       initialRouteName="Details"
       screenOptions={{
         ...TransitionSlide,
-        header: () => null,
       }}
     >
       <GroupDetailsStack.Screen
@@ -26,18 +25,24 @@ const GroupScreen = ({
         initialParams={{
           id: route.params.id,
         }}
+        options={{
+          header: () => null,
+        }}
       />
       <GroupDetailsStack.Screen
         name="Members"
         component={Members}
-        options={{ presentation: "modal" }}
+        options={{
+          presentation: "modal",
+        }}
       />
       <GroupDetailsStack.Screen
         name="ViewProfile"
         component={ViewProfile}
+        options={{
+          headerTitle: "",
+        }}
       />
-      {/* <GroupDetailsStack.Screen name="GroupInfo" component={GroupInfo} />
-      <GroupDetailsStack.Screen name="GroupPhoto" component={GroupPhoto} /> */}
     </GroupDetailsStack.Navigator>
   );
 };

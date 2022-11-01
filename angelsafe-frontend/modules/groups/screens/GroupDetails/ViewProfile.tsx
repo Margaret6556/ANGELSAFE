@@ -9,6 +9,7 @@ import { StyleConstants } from "@/shared/styles";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AppTabParamList } from "@/shared/types";
 import { MoreParamsList } from "@/more/types";
+import { useAppSelector } from "@/shared/hooks";
 
 type Props = {};
 
@@ -17,6 +18,7 @@ const ViewProfile = ({
 }: StackScreenProps<GroupDetailsParamList, "ViewProfile">) => {
   const { id } = route.params;
   const { data, isError, error } = useViewProfileQuery({ ids: [id] });
+  const { user } = useAppSelector((state) => state.auth);
   const styles = useStyles();
   const navigation =
     useNavigation<NavigationProp<AppTabParamList & MoreParamsList>>();
@@ -52,9 +54,11 @@ const ViewProfile = ({
             <Text h4 style={{ marginRight: 12 }}>
               {profile.username}
             </Text>
-            <TouchableOpacity onPress={handleSendMessage}>
-              <Icon type="ionicon" name="paper-plane" />
-            </TouchableOpacity>
+            {profile.username !== user?.username && (
+              <TouchableOpacity onPress={handleSendMessage}>
+                <Icon type="ionicon" name="paper-plane" />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
         <Divider style={styles.divider} />
@@ -81,6 +85,7 @@ export default ViewProfile;
 const useStyles = makeStyles((theme) => ({
   container: {
     justifyContent: "flex-start",
+    backgroundColor: theme.colors.background,
   },
   top: {
     width: "100%",

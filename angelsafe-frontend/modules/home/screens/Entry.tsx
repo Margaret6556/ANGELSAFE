@@ -9,9 +9,10 @@ import {
   MoodsComponent,
   SymptomsComponent,
   AddNewSymptomButton,
+  AddSymptomsModal,
 } from "../components";
 import { StyleConstants } from "@/shared/styles";
-import { initialSymptoms, moods } from "../data";
+import { moods } from "../data";
 import { StackScreenProps } from "@react-navigation/stack";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AppTabParamList } from "@/shared/types";
@@ -28,16 +29,17 @@ const EntryScreen = ({
   navigation,
 }: StackScreenProps<HomeParamsList, "Entry">) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [addSymptomsModalVis, setSymptomsModalVisible] = useState(false);
   const {
     auth: { user, redirectToGroup },
-    experience: { mood, symptoms, lastSubmitted },
+    experience: { mood, symptoms, lastSubmitted, initialSymptoms },
   } = useAppSelector((state) => state);
   const dispatch = useAppDispatch();
   const { navigate } = useNavigation<NavigationProp<AppTabParamList>>();
   const styles = useStyles();
   const statQuery = useViewStatQuery();
   const debouncedOpenModal = useDebouncedCallback(
-    () => handleToggleModalVisibility(true),
+    () => handleToggleSubmitModalVisibility(true),
     4500
   );
 
@@ -74,7 +76,7 @@ const EntryScreen = ({
       } = store.getState();
 
       if (mood && !!symptoms.length && !lastSubmitted) {
-        handleToggleModalVisibility();
+        handleToggleSubmitModalVisibility();
       }
     };
 
@@ -89,8 +91,12 @@ const EntryScreen = ({
     }
   }, [mood, symptoms, lastSubmitted]);
 
-  const handleToggleModalVisibility = (bool?: boolean) => {
+  const handleToggleSubmitModalVisibility = (bool?: boolean) => {
     setModalVisible(bool || !modalVisible);
+  };
+
+  const handleToggleAddSymptomsModal = (bool?: boolean) => {
+    setSymptomsModalVisible(bool || !addSymptomsModalVis);
   };
 
   return (
@@ -116,11 +122,20 @@ const EntryScreen = ({
           </View>
           <View style={styles.symptomsContainer}>
             <SymptomsComponent symptoms={initialSymptoms} />
-            <AddNewSymptomButton onPress={handleToggleModalVisibility} />
+            <AddNewSymptomButton onPress={handleToggleAddSymptomsModal} />
           </View>
         </View>
       </Container>
-      <Modal isVisible={modalVisible} onCancel={handleToggleModalVisibility} />
+      {moods && !!symptoms.length && (
+        <Modal
+          isVisible={modalVisible}
+          onCancel={handleToggleSubmitModalVisibility}
+        />
+      )}
+      <AddSymptomsModal
+        isVisible={addSymptomsModalVis}
+        onCancel={handleToggleAddSymptomsModal}
+      />
     </>
   );
 };

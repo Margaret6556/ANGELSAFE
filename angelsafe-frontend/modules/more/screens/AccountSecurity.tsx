@@ -54,13 +54,17 @@ const AccountSecurity = ({
 
       if (status === 200) {
         dispatch(setUser({ email }));
-        Alert.alert("Success", undefined, [
-          {
-            onPress: () => {
-              navigation.goBack();
+        Alert.alert(
+          "A verification email will be sent to your provided email.",
+          undefined,
+          [
+            {
+              onPress: () => {
+                navigation.goBack();
+              },
             },
-          },
-        ]);
+          ]
+        );
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
