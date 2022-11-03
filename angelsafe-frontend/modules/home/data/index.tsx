@@ -9,12 +9,12 @@ import { MoodsType } from "../types";
 //   "Difficulty of Breathing",
 // ];
 
-export const additionalSymptoms = [
-  {
-    title: "Add Symptoms",
-    data: ["Tiredness", "Morning sickness", "Pain", "Weightloss", "Diarrhea"],
-  },
-];
+// export const additionalSymptoms = [
+//   {
+//     title: "Add Symptoms",
+//     data: ["Tiredness", "Morning sickness", "Pain", "Weightloss", "Diarrhea"],
+//   },
+// ];
 
 export const moods: MoodsType[] = [
   {

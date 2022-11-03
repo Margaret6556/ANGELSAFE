@@ -7,42 +7,32 @@ import ProfileStack from "./profile";
 import GroupStack from "./groups";
 import AlertStack from "./alerts";
 import MoreStack from "./more";
-import useRestoreSession from "./shared/hooks/useRestoreSession";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AppTabParamList, RootStackParamList } from "./shared/types";
-import { Loading, TabBarIcon, TransitionSlide } from "./shared/components";
+import { TabBarIcon, TransitionSlide } from "./shared/components";
 import useThemeMode from "./shared/hooks/useThemeMode";
 import { useGetNotificationsListQuery } from "./shared/api/alerts";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   useThemeMode();
-  const status = useRestoreSession();
   const { isLoggedIn } = useAppSelector((state) => state.auth);
 
-  if (status === "loading") {
-    return <Loading />;
-  }
-
-  if (status === "done") {
-    return (
-      <RootStack.Navigator
-        screenOptions={{
-          header: () => null,
-          ...TransitionSlide,
-        }}
-      >
-        {/* <RootStack.Screen name="App" component={TabNavigator} /> */}
-        {isLoggedIn ? (
-          <RootStack.Screen name="App" component={TabNavigator} />
-        ) : (
-          <RootStack.Screen name="Auth" component={Auth} />
-        )}
-      </RootStack.Navigator>
-    );
-  }
-
-  return null;
+  return (
+    <RootStack.Navigator
+      screenOptions={{
+        header: () => null,
+        ...TransitionSlide,
+      }}
+    >
+      {/* <RootStack.Screen name="App" component={TabNavigator} /> */}
+      {isLoggedIn ? (
+        <RootStack.Screen name="App" component={TabNavigator} />
+      ) : (
+        <RootStack.Screen name="Auth" component={Auth} />
+      )}
+    </RootStack.Navigator>
+  );
 };
 
 const BottomTab = createBottomTabNavigator<AppTabParamList>();

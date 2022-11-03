@@ -1,20 +1,21 @@
-import { additionalSymptoms } from "@/home/data";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-import { setInitialSymptoms } from "@/shared/state/reducers/experience";
-// import { setInitialSymptoms } from "@/shared/state/reducers/experience";
+import {
+  setAdditionalSymptoms,
+  setInitialSymptoms,
+} from "@/shared/state/reducers/experience";
 import { StyleConstants } from "@/shared/styles";
-import { ListItemTitle } from "@rneui/base/dist/ListItem/ListItem.Title";
 import {
   Button,
   CheckBox,
   Icon,
+  Input,
   ListItem,
   makeStyles,
   Text,
 } from "@rneui/themed";
 import React, { useState } from "react";
-import { SectionList, View } from "react-native";
+import { FlatList, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Modal from "react-native-modal";
 
@@ -23,10 +24,12 @@ interface IModalProps {
   onCancel: () => void;
 }
 
-const index = (props: IModalProps) => {
-  // const [symptoms, setNewSymptoms] = useState<string[]>([]);
+const AddSymptomsModal = (props: IModalProps) => {
+  const [customSymptoms, setCustomSymptoms] = useState("");
   const styles = useStyles();
-  const { initialSymptoms } = useAppSelector((state) => state.experience);
+  const { initialSymptoms, additionalSymptoms } = useAppSelector(
+    (state) => state.experience
+  );
   const dispatch = useAppDispatch();
 
   const handleClose = () => {
@@ -35,17 +38,21 @@ const index = (props: IModalProps) => {
 
   const handleAddSymptom = (item: string) => () => {
     dispatch(setInitialSymptoms(item));
-
-    // let arr = [...symptoms, item];
-    // if (symptoms.includes(item)) {
-    //   arr = arr.filter((i) => i !== item);
-    // }
-    // setNewSymptoms(arr);
   };
 
   const handleSubmit = () => {
-    // dispatch(setInitialSymptoms(symptoms));
     handleClose();
+  };
+
+  const handleInputChange = (text: string) => {
+    setCustomSymptoms(text);
+  };
+
+  const handleAddCustomSymptom = () => {
+    if (customSymptoms.length > 2) {
+      dispatch(setAdditionalSymptoms(customSymptoms));
+      setCustomSymptoms("");
+    }
   };
 
   return (
@@ -62,12 +69,28 @@ const index = (props: IModalProps) => {
         }}
       >
         <View style={styles.content}>
-          <Text h2 style={{ textAlign: "center", marginBottom: 56 }}>
+          <Text h2 style={{ textAlign: "center", marginBottom: 36 }}>
             Add Symptoms
           </Text>
-          <SectionList
-            sections={additionalSymptoms}
-            keyExtractor={(item, index) => item + index}
+          <Input
+            style={styles.input}
+            placeholder="Custom symptoms"
+            maxLength={30}
+            autoCapitalize="none"
+            value={customSymptoms}
+            rightIcon={{
+              type: "ionicon",
+              name: "add",
+              onPress: handleAddCustomSymptom,
+              iconStyle: {},
+              style: {},
+              containerStyle: styles.inputIconContainerStyle,
+            }}
+            onChangeText={handleInputChange}
+          />
+          <FlatList
+            data={additionalSymptoms}
+            showsVerticalScrollIndicator={false}
             renderItem={({ item }) => (
               <TouchableOpacity
                 activeOpacity={0.5}
@@ -81,25 +104,32 @@ const index = (props: IModalProps) => {
                 </ListItem>
               </TouchableOpacity>
             )}
+            ListFooterComponent={
+              <Button
+                title="Done"
+                onPress={handleSubmit}
+                containerStyle={{
+                  marginVertical: 24,
+                }}
+              />
+            }
           />
-
-          <Button title="Done" onPress={handleSubmit} />
         </View>
       </Container>
     </Modal>
   );
 };
 
-export default index;
+export default AddSymptomsModal;
 
-const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     margin: 0,
     width: "100%",
   },
   container: {
     flex: 0,
-    height: "80%",
+    height: "90%",
     width: "100%",
     marginTop: "auto",
     backgroundColor: theme.colors.background,
@@ -129,5 +159,13 @@ const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
     alignItems: "center",
     justifyContent: "space-between",
     width: "100%",
+  },
+  input: {
+    backgroundColor: theme.colors.grey5,
+  },
+  inputIconContainerStyle: {
+    // height: "100%",
+    // backgroundColor: theme.colors.grey1,
+    // justifyContent: "center",
   },
 }));

@@ -1,4 +1,3 @@
-import base64 from "react-native-base64";
 import { apiSlice } from ".";
 import { _API } from "../config";
 import type { BackendResponse } from "../types";
@@ -48,5 +47,6 @@ const statsApiSlice = apiSlice.injectEndpoints({
 export const {
   useCreateStatMutation,
   useViewStatQuery,
+  useLazyViewStatQuery,
   useGetGroupChartQuery,
 } = statsApiSlice;

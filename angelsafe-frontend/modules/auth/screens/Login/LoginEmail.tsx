@@ -15,6 +15,8 @@ import { Auth } from "@/shared/config";
 import { setItemAsync } from "expo-secure-store";
 import emailRegex from "@/shared/utils/emailRegex";
 import logger from "@/shared/utils/logger";
+import { useLazyViewStatQuery } from "@/shared/api/stats";
+import useLoginFetchProfileStats from "@/shared/hooks/useLoginFetchProfileStats";
 
 type Props = {};
 
@@ -32,6 +34,8 @@ const LoginEmail = ({}: StackScreenProps<
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   const dispatch = useAppDispatch();
   const [getProfile, getProfileResponse] = useLazyGetProfileQuery();
+  const [getStats, getStatsResponse] = useLazyViewStatQuery();
+  const loginAndFetchProfile = useLoginFetchProfileStats();
   const {
     control,
     formState: { errors },
@@ -60,10 +64,11 @@ const LoginEmail = ({}: StackScreenProps<
       } = await login(val).unwrap();
 
       if (status === 200) {
-        const { data } = await getProfile(`Bearer ${token}`).unwrap();
-        dispatch(setUser({ ...data, token }));
-        await setItemAsync(Auth.KEY, token);
-        dispatch(setLoggedIn(true));
+        await loginAndFetchProfile(token);
+        // const { data } = await getProfile(`Bearer ${token}`).unwrap();
+        // dispatch(setUser({ ...data, token }));
+        // await setItemAsync(Auth.KEY, token);
+        // dispatch(setLoggedIn(true));
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;

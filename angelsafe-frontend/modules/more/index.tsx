@@ -23,7 +23,14 @@ const GroupScreen = ({
         ...TransitionSlide,
       }}
     >
-      <MoreStack.Screen name="Entry" component={EntryScreen} />
+      <MoreStack.Screen
+        name="Entry"
+        component={EntryScreen}
+        options={{
+          headerTitle: "More",
+          headerTintColor: theme.colors.primary,
+        }}
+      />
       <MoreStack.Screen
         name="Account Security"
         component={AccountSecurity}

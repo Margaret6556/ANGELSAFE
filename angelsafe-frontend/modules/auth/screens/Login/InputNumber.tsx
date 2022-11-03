@@ -1,7 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AuthLoginParamsList } from "@/auth/types";
 import { View, StyleSheet, Animated, Easing } from "react-native";
-import { Button, Image, Text, Input, CheckBox } from "@rneui/themed";
+import {
+  Button,
+  Image,
+  Text,
+  Input,
+  CheckBox,
+  makeStyles,
+} from "@rneui/themed";
 import { useForm } from "react-hook-form";
 import NumberInput from "@/shared/components/NumberInput";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -17,9 +24,7 @@ type FieldType = {
 const LoginScreen = ({
   navigation,
 }: StackScreenProps<AuthLoginParamsList, "Input Number">) => {
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState(null);
-  const [items, setItems] = useState(countries);
+  const styles = useStyles();
 
   const {
     control,
@@ -48,8 +53,12 @@ const LoginScreen = ({
     >
       <View style={styles.container}>
         <View style={styles.subtitle}>
-          <Text h4>Welcome back</Text>
-          <Text h4>you've been missed.</Text>
+          <Text h4 h4Style={styles.h4}>
+            Welcome back
+          </Text>
+          <Text h4 h4Style={styles.h4}>
+            you've been missed.
+          </Text>
         </View>
 
         <NumberInput control={control} />
@@ -61,17 +70,6 @@ const LoginScreen = ({
         />
       </View>
 
-      {/* <View>
-        <DropDownPicker
-          open={open}
-          value={value}
-          items={items}
-          setOpen={setOpen}
-          setValue={setValue}
-          setItems={setItems}
-          listMode="MODAL"
-        />
-      </View> */}
       <Button
         title="Login"
         onPress={handleSubmit(handleLogin)}
@@ -84,7 +82,7 @@ const LoginScreen = ({
 
 export default LoginScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     justifyContent: "space-between",
     flex: 1,
@@ -124,4 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
   },
-});
+  h4: {
+    color: theme.colors.primary,
+  },
+}));

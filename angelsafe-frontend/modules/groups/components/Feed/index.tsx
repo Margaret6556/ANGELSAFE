@@ -47,6 +47,7 @@ const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
           isVisible={modalVisible}
           style={styles.modalContainer}
           onBackdropPress={handleNewPost}
+          avoidKeyboard
         >
           <AddPost onClose={handleNewPost} groupId={groupId} />
         </Modal>

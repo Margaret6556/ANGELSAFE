@@ -78,6 +78,9 @@ const baseQueryWithReauth: typeof baseQuery = async (
       status: result.error.status,
       url,
     });
+    if (result.error.status === 401) {
+      await api.dispatch(logout());
+    }
   }
 
   return result;

@@ -1,7 +1,7 @@
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { StyleConstants } from "@/shared/styles";
-import { Button, Image, makeStyles, Text } from "@rneui/themed";
+import { Button, Icon, Image, makeStyles, Text, useTheme } from "@rneui/themed";
 import React, { useEffect, useState } from "react";
 import { View } from "react-native";
 import Modal from "react-native-modal";
@@ -9,7 +9,10 @@ import { moods } from "@/home/data";
 import { MoodsType } from "@/home/types";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useCreateStatMutation } from "@/shared/api/stats";
-import { setLastSubmitted } from "@/shared/state/reducers/experience";
+import {
+  setHasCancelled,
+  setLastSubmitted,
+} from "@/shared/state/reducers/experience";
 import { apiSlice } from "@/shared/api";
 import logger from "@/shared/utils/logger";
 
@@ -24,6 +27,7 @@ const index = (props: IModalProps) => {
   const dispatch = useAppDispatch();
   const [selectedMood, setSelectedMood] = useState<MoodsType | null>(null);
   const [updated, setUpdated] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (mood) {
@@ -39,6 +43,7 @@ const index = (props: IModalProps) => {
   const handleClose = () => {
     createStatResponse.reset();
     setUpdated(false);
+    dispatch(setHasCancelled());
     props.onCancel();
   };
 
@@ -61,7 +66,7 @@ const index = (props: IModalProps) => {
         dispatch(apiSlice.util.invalidateTags(["STAT"]));
         setTimeout(() => {
           handleClose();
-        }, 1500);
+        }, 4000);
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
@@ -81,49 +86,51 @@ const index = (props: IModalProps) => {
           style: styles.container,
         }}
       >
-        <View style={styles.content}>
-          <Text h2 style={{ textAlign: "center", marginBottom: 56 }}>
-            Daily Entry Log
-          </Text>
-          <Text style={{ marginBottom: 40 }}>You stated you're:</Text>
-          <View style={styles.contentSection}>
-            <Text style={{ flex: 1 }}>Feeling:</Text>
-            {selectedMood?.image && (
-              <View
-                style={{ flex: 1, flexDirection: "row", alignItems: "center" }}
-              >
-                <Image
-                  source={selectedMood.image}
-                  style={{
-                    width: 40,
-                    height: 40,
-                    marginRight: 12,
-                  }}
-                />
-                <Text style={styles.labelSelection}>{selectedMood.label}</Text>
+        {!updated ? (
+          <>
+            <View style={styles.content}>
+              <Text h2 style={{ textAlign: "center", marginBottom: 56 }}>
+                Daily Entry Log
+              </Text>
+              <Text style={{ marginBottom: 40 }}>You stated you're:</Text>
+              <View style={styles.contentSection}>
+                <Text style={{ flex: 1 }}>Feeling:</Text>
+                {selectedMood?.image && (
+                  <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Image
+                      source={selectedMood.image}
+                      style={{
+                        width: 40,
+                        height: 40,
+                        marginRight: 12,
+                      }}
+                    />
+                    <Text style={styles.labelSelection}>
+                      {selectedMood.label}
+                    </Text>
+                  </View>
+                )}
               </View>
-            )}
-          </View>
-          <View style={styles.contentSection}>
-            <Text style={{ flex: 1 }}>Experiencing:</Text>
-            {invalid ? (
-              <Text style={(styles.labelSelection, { flex: 1 })}>
-                Please add symptoms
-              </Text>
-            ) : (
-              <Text style={[styles.labelSelection, { flex: 1 }]}>
-                {symptoms.reduce((p, c) => (!p ? c : `${p}, ${c}`), "")}
-              </Text>
-            )}
-          </View>
-        </View>
-        <View style={styles.buttons}>
-          {updated ? (
-            <View style={styles.textSuccessContainer}>
-              <Text style={styles.textSuccess}>Success!</Text>
+              <View style={styles.contentSection}>
+                <Text style={{ flex: 1 }}>Experiencing:</Text>
+                {invalid ? (
+                  <Text style={(styles.labelSelection, { flex: 1 })}>
+                    Please add symptoms
+                  </Text>
+                ) : (
+                  <Text style={[styles.labelSelection, { flex: 1 }]}>
+                    {symptoms.reduce((p, c) => (!p ? c : `${p}, ${c}`), "")}
+                  </Text>
+                )}
+              </View>
             </View>
-          ) : (
-            <>
+            <View style={styles.buttons}>
               <Button
                 title="Submit"
                 style={{ marginBottom: 24 }}
@@ -132,9 +139,41 @@ const index = (props: IModalProps) => {
                 disabled={invalid}
               />
               <Button title="Cancel" type="outline" onPress={handleClose} />
-            </>
-          )}
-        </View>
+            </View>
+          </>
+        ) : (
+          <View style={[styles.content, { justifyContent: "space-between" }]}>
+            <Text h2 style={{ textAlign: "center", marginBottom: 56 }}>
+              New Entry Logged
+            </Text>
+            <Image
+              source={require("../../../../assets/home/newEntry.png")}
+              resizeMode="contain"
+              style={{
+                width: "100%",
+                height: 240,
+              }}
+            />
+            <View style={{ marginBottom: 24 }}>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "center",
+                }}
+              >
+                <Icon
+                  type="ionicon"
+                  name="information-circle"
+                  color={theme.colors.primary}
+                />
+                <Text style={styles.viewThis}>
+                  You can view this on your profile
+                </Text>
+              </View>
+              <Button title="Close" onPress={handleClose} />
+            </View>
+          </View>
+        )}
       </Container>
     </Modal>
   );
@@ -192,5 +231,11 @@ const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
     fontFamily: "nunitoBold",
     fontSize: 18,
     textAlign: "center",
+  },
+  viewThis: {
+    textAlign: "center",
+    marginBottom: 12,
+    color: theme.colors.primary,
+    fontSize: 18,
   },
 }));

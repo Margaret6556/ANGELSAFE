@@ -71,55 +71,53 @@ const AddPost = (props: AddPostProps) => {
 
   return (
     <Container
-      type="keyboard"
       containerProps={{
-        // style: styles.container,
-        behavior: "height",
         style: styles.container,
-        keyboardVerticalOffset: Platform.OS === "ios" ? 300 : 0,
       }}
     >
       <View style={styles.wrapper}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={handleClose}>
-            <Icon
-              type="entypo"
-              name="cross"
-              color={theme.colors.grey3}
-              size={32}
-            />
-          </TouchableOpacity>
+        <View>
+          <View style={styles.header}>
+            <TouchableOpacity onPress={handleClose}>
+              <Icon
+                type="entypo"
+                name="cross"
+                color={theme.colors.grey3}
+                size={32}
+              />
+            </TouchableOpacity>
+          </View>
+          <Controller
+            name="message"
+            control={control}
+            render={({ field }) => (
+              <Input
+                maxLength={MAX_POST_LENGTH}
+                label={
+                  <View style={styles.inputLabelContainer}>
+                    <Text style={styles.inputLabel}>Enter your Post</Text>
+                    <Text style={[styles.inputLabel, { fontSize: 12 }]}>
+                      {message.length}/{MAX_POST_LENGTH}
+                    </Text>
+                  </View>
+                }
+                errorMessage={errors.message?.message}
+                multiline
+                inputStyle={{
+                  height: Math.max(250, multilineHeight),
+                  color: isDark ? theme.colors.white : theme.colors.black,
+                  textAlignVertical: "top",
+                }}
+                {...field}
+                onContentSizeChange={(event) => {
+                  setMultiLineHeight(event.nativeEvent.contentSize.height);
+                }}
+                onChangeText={field.onChange}
+                labelStyle={{ fontSize: 16 }}
+              />
+            )}
+          />
         </View>
-        <Controller
-          name="message"
-          control={control}
-          render={({ field }) => (
-            <Input
-              maxLength={MAX_POST_LENGTH}
-              label={
-                <View style={styles.inputLabelContainer}>
-                  <Text style={styles.inputLabel}>Enter your Post</Text>
-                  <Text style={[styles.inputLabel, { fontSize: 12 }]}>
-                    {message.length}/{MAX_POST_LENGTH}
-                  </Text>
-                </View>
-              }
-              errorMessage={errors.message?.message}
-              multiline
-              inputStyle={{
-                height: Math.max(250, multilineHeight),
-                color: isDark ? theme.colors.white : theme.colors.black,
-                textAlignVertical: "top",
-              }}
-              {...field}
-              onContentSizeChange={(event) => {
-                setMultiLineHeight(event.nativeEvent.contentSize.height);
-              }}
-              onChangeText={field.onChange}
-              labelStyle={{ fontSize: 16 }}
-            />
-          )}
-        />
         <Button
           title={createPostResponse.isSuccess ? "Success" : "Post"}
           onPress={handleSubmit(handleAddPost)}
@@ -137,17 +135,18 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   wrapper: {
     width: "100%",
     marginTop: "auto",
-    // maxHeight: "65%",
     backgroundColor: props.isDark ? theme.colors.white : theme.colors.grey5,
     justifyContent: "space-between",
-    alignItems: "stretch",
+    // alignItems: "stretch",
     borderTopLeftRadius: StyleConstants.PADDING_HORIZONTAL / 2,
     borderTopRightRadius: StyleConstants.PADDING_HORIZONTAL / 2,
     padding: 24,
+    height: "60%",
   },
   container: {
     paddingHorizontal: 0,
     paddingVertical: 0,
+    paddingBottom: 0,
   },
   header: {
     width: "100%",
@@ -159,9 +158,10 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 12,
+    // marginBottom: 12,
   },
   inputLabel: {
     color: props.isDark ? theme.colors.black : theme.colors.primary,
+    marginBottom: StyleConstants.PADDING_VERTICAL,
   },
 }));

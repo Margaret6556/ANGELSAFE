@@ -13,14 +13,23 @@ type MoodAndSymptomsType = {
   mood: Moods | undefined;
   symptoms: string[];
   initialSymptoms: string[];
+  additionalSymptoms: string[];
   lastSubmitted: number;
   isEditableToday: boolean;
   tomorrowsEpoch: number;
+  hasCancelled: boolean;
 };
 
 const initialState: MoodAndSymptomsType = {
   mood: undefined,
   symptoms: [],
+  additionalSymptoms: [
+    "Tiredness",
+    "Morning sickness",
+    "Pain",
+    "Weightloss",
+    "Diarrhea",
+  ],
   initialSymptoms: [
     "Anxiety",
     "Panic attacks",
@@ -31,6 +40,7 @@ const initialState: MoodAndSymptomsType = {
   lastSubmitted: 0,
   isEditableToday: true,
   tomorrowsEpoch: 0,
+  hasCancelled: false,
 };
 
 const themeSlice = createSlice({
@@ -49,6 +59,9 @@ const themeSlice = createSlice({
 
       state.initialSymptoms = arr;
     },
+    setAdditionalSymptoms: (state, action: PayloadAction<string>) => {
+      state.additionalSymptoms = [action.payload, ...state.additionalSymptoms];
+    },
     setSymptoms: (state, action: PayloadAction<string>) => {
       if (!!state.symptoms.length) {
         if (state.symptoms.includes(action.payload)) {
@@ -60,6 +73,10 @@ const themeSlice = createSlice({
         state.symptoms = [action.payload];
       }
       state.lastSubmitted = 0;
+      state.hasCancelled = false;
+    },
+    setHasCancelled: (state) => {
+      state.hasCancelled = true;
     },
     setLastSubmitted: (state, action: PayloadAction<number>) => {
       state.lastSubmitted = action.payload;
@@ -79,4 +96,6 @@ export const {
   setLastSubmitted,
   enableEditToday,
   setInitialSymptoms,
+  setAdditionalSymptoms,
+  setHasCancelled,
 } = themeSlice.actions;

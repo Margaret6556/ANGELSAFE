@@ -13,6 +13,7 @@ import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useLazyGetProfileQuery } from "@/shared/api/profile";
 import CountdownTimer from "../Countdown";
 import logger from "@/shared/utils/logger";
+import useLoginFetchProfileStats from "@/shared/hooks/useLoginFetchProfileStats";
 
 interface IOtpViewProps {
   mobile: string;
@@ -31,6 +32,7 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
   const [getProfile] = useLazyGetProfileQuery();
   const styles = useStyles();
   const dispatch = useDispatch();
+  const loginAndFetchProfile = useLoginFetchProfileStats();
 
   const handleVerify = async () => {
     try {
@@ -43,11 +45,8 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
       }).unwrap();
 
       if (status === 200) {
-        await setItemAsync(Auth.KEY, token);
         if (isLoginScreen) {
-          const { data } = await getProfile(`Bearer ${token}`).unwrap();
-          dispatch(setUser({ ...data, token }));
-          dispatch(setLoggedIn(true));
+          await loginAndFetchProfile(token);
         } else {
           dispatch(setUser({ token }));
           navigate && navigate();

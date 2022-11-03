@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { HomeParamsList } from "@/home/types";
 import { View } from "react-native";
-import { makeStyles, Text } from "@rneui/themed";
+import { Avatar, makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import {
@@ -19,11 +19,11 @@ import { AppTabParamList } from "@/shared/types";
 import store from "@/shared/state";
 import { useDebouncedCallback } from "use-debounce";
 import { useViewStatQuery } from "@/shared/api/stats";
-import {
-  setLastSubmitted,
-  setMood,
-  setSymptoms,
-} from "@/shared/state/reducers/experience";
+// import {
+//   setLastSubmitted,
+//   setMood,
+//   setSymptoms,
+// } from "@/shared/state/reducers/experience";
 
 const EntryScreen = ({
   navigation,
@@ -32,16 +32,23 @@ const EntryScreen = ({
   const [addSymptomsModalVis, setSymptomsModalVisible] = useState(false);
   const {
     auth: { user, redirectToGroup },
-    experience: { mood, symptoms, lastSubmitted, initialSymptoms },
+    experience: {
+      mood,
+      symptoms,
+      lastSubmitted,
+      initialSymptoms,
+      hasCancelled,
+    },
   } = useAppSelector((state) => state);
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
   const { navigate } = useNavigation<NavigationProp<AppTabParamList>>();
   const styles = useStyles();
-  const statQuery = useViewStatQuery();
-  const debouncedOpenModal = useDebouncedCallback(
-    () => handleToggleSubmitModalVisibility(true),
-    4500
-  );
+  // const statQuery = useViewStatQuery();
+  const debouncedOpenModal = useDebouncedCallback(() => {
+    if (!lastSubmitted || !hasCancelled) {
+      handleToggleSubmitModalVisibility(true);
+    }
+  }, 4500);
 
   /**
    * After a successful user registration, if user presses on "GO TO GROUPS",
@@ -56,26 +63,12 @@ const EntryScreen = ({
   }, []);
 
   useEffect(() => {
-    if (statQuery.data?.data) {
-      const { experience, stat } = statQuery.data.data;
-      const found = moods.find((i) => i.id === stat);
-      if (found) {
-        dispatch(setMood(found.label));
-      }
-      experience.forEach((i) => {
-        dispatch(setSymptoms(i));
-      });
-      dispatch(setLastSubmitted(new Date().getTime()));
-    }
-  }, [statQuery]);
-
-  useEffect(() => {
     const handleModal = () => {
       const {
         experience: { mood, symptoms, lastSubmitted },
       } = store.getState();
 
-      if (mood && !!symptoms.length && !lastSubmitted) {
+      if (mood && !!symptoms.length && !lastSubmitted && !hasCancelled) {
         handleToggleSubmitModalVisibility();
       }
     };
@@ -86,7 +79,7 @@ const EntryScreen = ({
   }, []);
 
   useEffect(() => {
-    if (mood && !!symptoms.length && !lastSubmitted) {
+    if (mood && !!symptoms.length) {
       debouncedOpenModal();
     }
   }, [mood, symptoms, lastSubmitted]);
@@ -109,16 +102,25 @@ const EntryScreen = ({
         }}
       >
         <View style={styles.container}>
-          <View style={styles.title}>
-            <Text h4>
-              Welcome, {"\n"}
+          <View style={[styles.title, styles.titleContainer]}>
+            <Text h4 h4Style={styles.h4}>
+              Welcome Back! {"\n"}
               {user?.username}
             </Text>
-            <Text h4>How are you feeling today?</Text>
+            <Avatar
+              source={{
+                uri: user?.profilePic,
+              }}
+              rounded
+              size={45}
+              containerStyle={{
+                marginRight: 4,
+              }}
+            />
           </View>
           <MoodsComponent moods={moods} />
           <View style={[styles.title, {}]}>
-            <Text>What are you experiencing?</Text>
+            <Text style={styles.experiencing}>What are you experiencing?</Text>
           </View>
           <View style={styles.symptomsContainer}>
             <SymptomsComponent symptoms={initialSymptoms} />
@@ -152,6 +154,11 @@ const useStyles = makeStyles((theme) => ({
   container: {
     width: "100%",
   },
+  titleContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   title: {
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
     marginBottom: 24,
@@ -165,5 +172,12 @@ const useStyles = makeStyles((theme) => ({
     borderTopRightRadius: 12,
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL / 2,
     paddingVertical: StyleConstants.PADDING_VERTICAL / 2,
+  },
+  h4: {
+    color: theme.colors.primary,
+    fontFamily: "nunitoBold",
+  },
+  experiencing: {
+    color: theme.colors.primary,
   },
 }));

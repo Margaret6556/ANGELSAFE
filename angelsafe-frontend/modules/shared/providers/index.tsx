@@ -13,6 +13,7 @@ import ThemeProvider from "./theme";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import ImageBackgroundContainer from "../components/Layout/ImageBackground";
 import { ActivityIndicator, useColorScheme } from "react-native";
+import SocketProvider from "./SocketProvider";
 
 interface ProviderProps extends ChildrenProps {
   onLayoutView: () => Promise<void>;
@@ -38,15 +39,17 @@ const Providers = ({ children, onLayoutView }: ProviderProps) => {
   return (
     <Provider store={store}>
       <PersistGate loading={<ActivityIndicator />} persistor={persistor}>
-        <ThemeProvider>
-          <ImageBackgroundContainer>
-            <NavigationContainer theme={navigationTheme}>
-              <SafeAreaProvider>
-                <Layout onLayout={onLayoutView}>{children}</Layout>
-              </SafeAreaProvider>
-            </NavigationContainer>
-          </ImageBackgroundContainer>
-        </ThemeProvider>
+        <SocketProvider>
+          <ThemeProvider>
+            <ImageBackgroundContainer>
+              <NavigationContainer theme={navigationTheme}>
+                <SafeAreaProvider>
+                  <Layout onLayout={onLayoutView}>{children}</Layout>
+                </SafeAreaProvider>
+              </NavigationContainer>
+            </ImageBackgroundContainer>
+          </ThemeProvider>
+        </SocketProvider>
       </PersistGate>
     </Provider>
   );

@@ -47,30 +47,6 @@ const groupsApiSlice = apiSlice.injectEndpoints({
           groupId,
         },
       }),
-      onCacheEntryAdded(
-        arg,
-        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
-      ) {
-        try {
-          const {
-            auth: { user },
-          } = store.getState();
-          const token = user?.token || "";
-
-          const socket = io("http://mobile.angelsafe.co", {
-            extraHeaders: {
-              token: token,
-            },
-          });
-
-          socket.connect();
-          socket.on("connect", function () {
-            logger("groups", `Socket connected: ${socket.connected}`);
-          });
-        } catch (e) {
-          logger("groups", { e, path: "socket" });
-        }
-      },
       providesTags: (_, __, arg) => [{ type: "GROUPS", id: arg }],
     }),
     getGroupMembers: builder.query<

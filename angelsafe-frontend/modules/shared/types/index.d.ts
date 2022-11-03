@@ -34,6 +34,7 @@ export type UserType = {
   username: string;
   email: string;
   mobile: string;
+  mobileNumber: string;
   token: string;
   year: string;
   gender: "Male" | "Female";

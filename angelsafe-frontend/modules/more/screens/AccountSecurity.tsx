@@ -3,7 +3,14 @@ import React, { useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { MoreParamsList } from "../types";
 import { Container } from "@/shared/components";
-import { Button, Input, makeStyles, Text, useTheme } from "@rneui/themed";
+import {
+  Button,
+  Divider,
+  Input,
+  makeStyles,
+  Text,
+  useTheme,
+} from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useRegisterEmailMutation } from "@/shared/api/auth";
@@ -12,10 +19,13 @@ import { setUser } from "@/shared/state/reducers/auth";
 import theme from "@/shared/state/reducers/theme";
 import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { StyleConstants } from "@/shared/styles";
 
 type FormType = {
   email: string;
   password: string;
+  confirmPassword?: string;
 };
 
 const AccountSecurity = ({
@@ -23,7 +33,8 @@ const AccountSecurity = ({
 }: StackScreenProps<MoreParamsList, "Account Security">) => {
   const [error, setError] = useState("");
   const [registerEmail, regEmailResponse] = useRegisterEmailMutation();
-  const [secureTextEntry, setSecureTextEntry] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
@@ -34,10 +45,12 @@ const AccountSecurity = ({
     control,
     formState: { errors },
     handleSubmit,
-  } = useForm({
+    watch,
+  } = useForm<FormType>({
     defaultValues: {
       email: user?.email ?? "",
       password: "",
+      confirmPassword: "",
     },
   });
 
@@ -47,25 +60,25 @@ const AccountSecurity = ({
 
   const handleAddLoginMethod = async (val: FormType) => {
     try {
-      const {
-        data: { email },
-        status,
-      } = await registerEmail(val).unwrap();
-
-      if (status === 200) {
-        dispatch(setUser({ email }));
-        Alert.alert(
-          "A verification email will be sent to your provided email.",
-          undefined,
-          [
-            {
-              onPress: () => {
-                navigation.goBack();
-              },
-            },
-          ]
-        );
-      }
+      console.log({ val });
+      // const {
+      //   data: { email },
+      //   status,
+      // } = await registerEmail(val).unwrap();
+      // if (status === 200) {
+      //   dispatch(setUser({ email }));
+      //   Alert.alert(
+      //     "A verification email will be sent to your provided email.",
+      //     undefined,
+      //     [
+      //       {
+      //         onPress: () => {
+      //           navigation.goBack();
+      //         },
+      //       },
+      //     ]
+      //   );
+      // }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
       logger("more", err);
@@ -76,59 +89,105 @@ const AccountSecurity = ({
     }
   };
 
+  const password = watch("password");
+
   return (
-    <Pressable style={{ flex: 1 }} onPress={Keyboard.dismiss}>
-      <Container
-        type="keyboard"
-        containerProps={{ style: styles.container, behavior: "height" }}
-      >
-        <View style={styles.wrapper}>
-          <Text h4>Add Login Method</Text>
-          <View style={{ marginVertical: 24 }}>
+    <KeyboardAwareScrollView contentContainerStyle={styles.container}>
+      <View style={styles.wrapper}>
+        {!user?.email && <Text h4>Add Login Method</Text>}
+        <View style={{ marginVertical: 24 }}>
+          {!user?.email && (
             <Text style={{ marginBottom: 24 }}>
               Enter your email and password to use as alternate login method.
             </Text>
+          )}
+          <Input
+            label="Mobile Number"
+            disabled
+            placeholder={user?.mobileNumber}
+            labelStyle={styles.label}
+            placeholderTextColor={theme.colors.grey1}
+            disabledInputStyle={{
+              color: theme.colors.black,
+              backgroundColor: theme.colors.grey4,
+            }}
+          />
+          <Controller
+            control={control}
+            name="email"
+            rules={{
+              required: "Invalid email",
+            }}
+            render={({ field }) => (
+              <Input
+                label="Email"
+                errorMessage={errors.email?.message}
+                autoCapitalize="none"
+                returnKeyType="next"
+                disabled={!!user?.email}
+                placeholder={user?.email}
+                labelStyle={styles.label}
+                placeholderTextColor={
+                  isDark ? theme.colors.black : theme.colors.white
+                }
+                disabledInputStyle={{
+                  color: theme.colors.black,
+                  backgroundColor: theme.colors.grey4,
+                }}
+                {...field}
+                onChangeText={field.onChange}
+              />
+            )}
+          />
+          {user?.email && (
+            <Divider style={{ marginTop: 12, marginBottom: 24 }} />
+          )}
+          <Controller
+            control={control}
+            name="password"
+            rules={{
+              required: "Please enter a password",
+            }}
+            render={({ field }) => (
+              <Input
+                label={!user?.email ? "Password" : "Change Password"}
+                secureTextEntry={secureTextEntry}
+                errorMessage={errors.password?.message}
+                autoCapitalize="none"
+                {...field}
+                onChangeText={field.onChange}
+                rightIcon={{
+                  type: "ionicon",
+                  name: secureTextEntry ? "eye-outline" : "eye-off-outline",
+                  onPress: handleSetSecureText,
+                }}
+                labelStyle={styles.label}
+                inputStyle={{
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                  color: isDark ? theme.colors.white : theme.colors.black,
+                }}
+                textContentType="password"
+              />
+            )}
+          />
+          {user?.email && (
             <Controller
               control={control}
-              name="email"
+              name="confirmPassword"
               rules={{
-                required: "Invalid email",
+                required: !!user.email,
+                validate: (val) =>
+                  val === password ? true : "Password do not match",
               }}
-              render={({ field }) => (
+              render={({ field, fieldState: { error } }) => (
                 <Input
-                  label="Email"
-                  errorMessage={errors.email?.message}
-                  autoCapitalize="none"
-                  returnKeyType="next"
-                  disabled={!!user?.email}
-                  placeholder={user?.email}
-                  labelStyle={styles.label}
-                  placeholderTextColor={
-                    isDark ? theme.colors.black : theme.colors.white
-                  }
-                  disabledInputStyle={{
-                    color: theme.colors.black,
-                    backgroundColor: theme.colors.grey4,
-                  }}
-                  {...field}
-                  onChangeText={field.onChange}
-                />
-              )}
-            />
-            <Controller
-              control={control}
-              name="password"
-              rules={{
-                required: "Please enter a password",
-              }}
-              render={({ field }) => (
-                <Input
-                  label="Password"
+                  label="Confirm password"
                   secureTextEntry={secureTextEntry}
-                  errorMessage={errors.password?.message}
+                  errorMessage={error?.message}
                   autoCapitalize="none"
+                  textContentType="password"
                   {...field}
-                  onChangeText={field.onChange}
                   rightIcon={{
                     type: "ionicon",
                     name: secureTextEntry ? "eye-outline" : "eye-off-outline",
@@ -140,21 +199,22 @@ const AccountSecurity = ({
                     borderBottomRightRadius: 0,
                     color: isDark ? theme.colors.white : theme.colors.black,
                   }}
+                  onChangeText={field.onChange}
                 />
               )}
             />
-            {error && <Text style={{ color: "red" }}>{error}</Text>}
-          </View>
+          )}
+          {error && <Text style={{ color: "red" }}>{error}</Text>}
         </View>
-        <Button
-          title="Submit"
-          containerStyle={{ width: "100%" }}
-          onPress={handleSubmit(handleAddLoginMethod)}
-          loading={regEmailResponse.isLoading}
-          disabled={!!Object.keys(errors).length}
-        />
-      </Container>
-    </Pressable>
+      </View>
+      <Button
+        title="Submit"
+        containerStyle={{ width: "100%" }}
+        onPress={handleSubmit(handleAddLoginMethod)}
+        loading={regEmailResponse.isLoading}
+        disabled={!!Object.keys(errors).length}
+      />
+    </KeyboardAwareScrollView>
   );
 };
 
@@ -163,6 +223,8 @@ export default AccountSecurity;
 const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   container: {
     justifyContent: "space-between",
+    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
   },
   label: {
     color: props.isDark ? theme.colors.black : theme.colors.primary,

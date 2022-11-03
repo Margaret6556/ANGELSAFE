@@ -47,7 +47,7 @@ const Header = (props: Props) => {
 
 export default Header;
 
-export const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => ({
   wrapper: {},
   container: {
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,

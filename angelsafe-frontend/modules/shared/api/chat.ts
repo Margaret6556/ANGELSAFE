@@ -55,43 +55,13 @@ const chatApiSlice = apiSlice.injectEndpoints({
     }),
     viewChat: builder.query<
       BackendResponse<SingleChatResponse[]>,
-      { receiverId: string }
+      { receiverId: string; skip?: string }
     >({
       query: (body) => ({
         url: _API.CHAT.VIEW,
         method: "POST",
         body,
       }),
-      onCacheEntryAdded(
-        arg,
-        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
-      ) {
-        try {
-          const {
-            auth: { user },
-          } = store.getState();
-          const token = user?.token || "";
-
-          const socket = io("http://mobile.angelsafe.co", {
-            extraHeaders: {
-              token: token,
-            },
-          });
-
-          socket.connect();
-          socket.on("connect", function () {
-            logger("chat", `Socket connected: ${socket.connected}`);
-          });
-          socket.on("new-message", function () {
-            store.dispatch(
-              apiSlice.util.invalidateTags([{ type: "CHAT", id: "LIST" }])
-            );
-            logger("chat", `new message`);
-          });
-        } catch (e) {
-          logger("groups", { e, path: "socket" });
-        }
-      },
       providesTags: [{ type: "CHAT" as const, id: "LIST" }],
     }),
     createChat: builder.mutation<BackendResponse<{}>, CreateChatType>({
