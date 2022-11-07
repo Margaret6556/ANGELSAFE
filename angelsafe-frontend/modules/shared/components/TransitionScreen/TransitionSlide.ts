@@ -4,8 +4,13 @@ const TransitionScreen = {
   cardStyle: { backgroundColor: "transparent" },
   // gestureDirection: "horizontal",
   transitionSpec: {
-    open: TransitionSpecs.TransitionIOSSpec,
-    close: TransitionSpecs.TransitionIOSSpec,
+    open: {
+      ...TransitionSpecs.FadeInFromBottomAndroidSpec,
+      config: {
+        ...TransitionSpecs.FadeInFromBottomAndroidSpec.config,
+      },
+    },
+    close: TransitionSpecs.FadeOutToBottomAndroidSpec,
   },
   cardStyleInterpolator: ({ current, next, layouts }: any) => {
     return {
@@ -23,7 +28,7 @@ const TransitionScreen = {
                   inputRange: [0, 1],
                   outputRange: [0, -layouts.screen.width],
                 })
-              : 1,
+              : 0,
           },
         ],
       },

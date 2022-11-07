@@ -6,35 +6,39 @@ import { useViewProfileQuery } from "@/shared/api/profile";
 import { Divider, Icon, Image, makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AppTabParamList } from "@/shared/types";
-import { MoreParamsList } from "@/more/types";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { useAppSelector } from "@/shared/hooks";
-
-type Props = {};
+import { RootStackParamList } from "@/shared/types";
 
 const ViewProfile = ({
+  navigation,
   route,
-}: StackScreenProps<GroupDetailsParamList, "ViewProfile">) => {
+}: CompositeScreenProps<
+  StackScreenProps<GroupDetailsParamList, "ViewProfile">,
+  StackScreenProps<RootStackParamList>
+>) => {
   const { id } = route.params;
   const { data, isError, error } = useViewProfileQuery({ ids: [id] });
   const { user } = useAppSelector((state) => state.auth);
   const styles = useStyles();
-  const navigation =
-    useNavigation<NavigationProp<AppTabParamList & MoreParamsList>>();
 
   const handleSendMessage = () => {
-    navigation.navigate("More", {
-      screen: "Chat",
-      params: {
-        screen: "ChatInterface",
+    if (data?.data[0]) {
+      navigation.navigate("App", {
+        screen: "More",
         params: {
-          id,
-          username: data?.data[0].username,
-          profilePic: data?.data[0].profilePic,
+          screen: "Chat",
+          params: {
+            screen: "ChatInterface",
+            params: {
+              id,
+              username: data.data[0].username,
+              profilePic: data.data[0].profilePic,
+            },
+          },
         },
-      },
-    } as any);
+      });
+    }
   };
 
   if (data) {

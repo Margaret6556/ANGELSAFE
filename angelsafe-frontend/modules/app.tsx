@@ -16,7 +16,8 @@ import { useGetNotificationsListQuery } from "./shared/api/alerts";
 const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   useThemeMode();
-  const { isLoggedIn } = useAppSelector((state) => state.auth);
+  const { isLoggedIn, user } = useAppSelector((state) => state.auth);
+  console.log(user?.token);
 
   return (
     <RootStack.Navigator
@@ -25,7 +26,6 @@ const App = () => {
         ...TransitionSlide,
       }}
     >
-      {/* <RootStack.Screen name="App" component={TabNavigator} /> */}
       {isLoggedIn ? (
         <RootStack.Screen name="App" component={TabNavigator} />
       ) : (

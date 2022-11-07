@@ -9,18 +9,10 @@ import { Icon, useTheme } from "@rneui/themed";
 
 const GroupStack = createStackNavigator<GroupParamsList>();
 
-const GroupScreen = ({
-  navigation,
-}: BottomTabScreenProps<AppTabParamList, "Groups">) => {
+const GroupScreen = ({}: BottomTabScreenProps<AppTabParamList, "Groups">) => {
   const { theme } = useTheme();
   return (
-    <GroupStack.Navigator
-      screenOptions={
-        {
-          // ...TransitionSlide,
-        }
-      }
-    >
+    <GroupStack.Navigator screenOptions={{}}>
       <GroupStack.Screen
         name="Entry"
         component={EntryScreen}

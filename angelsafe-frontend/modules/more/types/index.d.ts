@@ -1,10 +1,12 @@
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type ScreenProps } from "@/shared/types";
+import { NavigatorScreenParams } from "@react-navigation/native";
 
 export type MoreParamsList = {
   Entry: undefined;
-  Chat: undefined;
+  Chat: NavigatorScreenParams<ChatParamsList>;
   "Account Security": undefined;
+  Accessibility: undefined;
 };
 
 export type ChatParamsList = {

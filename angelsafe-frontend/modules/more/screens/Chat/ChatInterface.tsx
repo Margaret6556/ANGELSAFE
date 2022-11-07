@@ -25,9 +25,11 @@ const ChatInterface = ({
 
   useEffect(() => {
     if (!isLoading && !!data?.data.length && isSuccess) {
+      // const a = data.data[0].receiver;
+      // const b = { ...a, profilePic: "" };
+      // let d = data.data[data.data.length - 1];
       const isSender = data.data[data.data.length - 1].sender.id === user?.id;
 
-      let d = data.data[data.data.length - 1];
       // let a = {
       //   receiver: {
       //     id: d.receiver.id,

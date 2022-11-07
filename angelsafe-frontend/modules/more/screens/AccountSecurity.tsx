@@ -1,8 +1,7 @@
-import { Alert, Keyboard, Pressable, StyleSheet, View } from "react-native";
+import { Alert, View } from "react-native";
 import React, { useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { MoreParamsList } from "../types";
-import { Container } from "@/shared/components";
 import {
   Button,
   Divider,
@@ -16,7 +15,6 @@ import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useRegisterEmailMutation } from "@/shared/api/auth";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { setUser } from "@/shared/state/reducers/auth";
-import theme from "@/shared/state/reducers/theme";
 import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -34,7 +32,6 @@ const AccountSecurity = ({
   const [error, setError] = useState("");
   const [registerEmail, regEmailResponse] = useRegisterEmailMutation();
   const [secureTextEntry, setSecureTextEntry] = useState(true);
-  const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
@@ -60,25 +57,24 @@ const AccountSecurity = ({
 
   const handleAddLoginMethod = async (val: FormType) => {
     try {
-      console.log({ val });
-      // const {
-      //   data: { email },
-      //   status,
-      // } = await registerEmail(val).unwrap();
-      // if (status === 200) {
-      //   dispatch(setUser({ email }));
-      //   Alert.alert(
-      //     "A verification email will be sent to your provided email.",
-      //     undefined,
-      //     [
-      //       {
-      //         onPress: () => {
-      //           navigation.goBack();
-      //         },
-      //       },
-      //     ]
-      //   );
-      // }
+      const {
+        data: { email },
+        status,
+      } = await registerEmail(val).unwrap();
+      if (status === 200) {
+        dispatch(setUser({ email }));
+        Alert.alert(
+          "A verification email will be sent to your provided email.",
+          undefined,
+          [
+            {
+              onPress: () => {
+                navigation.goBack();
+              },
+            },
+          ]
+        );
+      }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
       logger("more", err);

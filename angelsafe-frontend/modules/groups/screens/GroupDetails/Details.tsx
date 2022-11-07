@@ -170,7 +170,19 @@ const GroupDetailsScreen = ({
                 >
                   <Text style={styles.statsLabel}>{group.members} members</Text>
                 </TouchableOpacity>
-                <Text style={styles.statsLabel}>{group.online} online</Text>
+                <Text
+                  style={[
+                    styles.statsLabel,
+                    {
+                      color:
+                        group.online > 0
+                          ? theme.colors.success
+                          : theme.colors.primary,
+                    },
+                  ]}
+                >
+                  {group.online} online
+                </Text>
                 <Button
                   title={group.joined ? "Joined" : "Join"}
                   containerStyle={styles.joinButtonContainerStyle}

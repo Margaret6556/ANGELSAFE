@@ -14,7 +14,12 @@ const Groups = ({ data }: GroupProps) => {
     useNavigation<NavigationProp<GroupParamsList, "GroupDetails">>();
 
   const handlePress = (id: string) => () => {
-    navigation.navigate("GroupDetails", { id });
+    navigation.navigate("GroupDetails", {
+      screen: "Details",
+      params: {
+        id,
+      },
+    });
   };
 
   return (

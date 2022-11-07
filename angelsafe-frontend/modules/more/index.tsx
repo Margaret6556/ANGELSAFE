@@ -7,12 +7,11 @@ import ChatScreen from "./screens/Chat";
 import { TransitionSlide } from "@/shared/components";
 import AccountSecurity from "./screens/AccountSecurity";
 import { useTheme } from "@rneui/themed";
+import Accessibility from "./screens/Accessibility";
 
 const MoreStack = createStackNavigator<MoreParamsList>();
 
-const GroupScreen = ({
-  navigation,
-}: BottomTabScreenProps<AppTabParamList, "More">) => {
+const GroupScreen = ({}: BottomTabScreenProps<AppTabParamList, "More">) => {
   const { theme } = useTheme();
   return (
     <MoreStack.Navigator
@@ -34,6 +33,14 @@ const GroupScreen = ({
       <MoreStack.Screen
         name="Account Security"
         component={AccountSecurity}
+        options={{
+          headerBackTitleVisible: false,
+          headerTintColor: theme.colors.primary,
+        }}
+      />
+      <MoreStack.Screen
+        name="Accessibility"
+        component={Accessibility}
         options={{
           headerBackTitleVisible: false,
           headerTintColor: theme.colors.primary,

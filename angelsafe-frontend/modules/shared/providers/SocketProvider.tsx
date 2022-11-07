@@ -46,7 +46,7 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
         logger("chat", "new message received");
       });
     }
-  }, []);
+  }, [user?.token]);
 
   const handleSetCb = (cb: CallbackType) => {
     setCb(cb);

@@ -96,13 +96,6 @@ const GroupPhoto = ({
         )}
       </View>
       <View style={styles.buttonContainer}>
-        <Button
-          title={image ? "Select another" : "Select an Image"}
-          onPress={handleSelectImage}
-          buttonStyle={styles.buttonStyle}
-          // containerStyle={styles.buttonContainerStyle}
-          titleStyle={{ fontSize: 14 }}
-        />
         {image && (
           <Button
             title="Confirm"
@@ -113,6 +106,14 @@ const GroupPhoto = ({
             loading={updatePhotoResponse.isLoading}
           />
         )}
+        <Button
+          title={image ? "Select another" : "Select an Image"}
+          onPress={handleSelectImage}
+          buttonStyle={styles.buttonStyle}
+          type={image ? "outline" : "solid"}
+          // containerStyle={styles.buttonContainerStyle}
+          titleStyle={{ fontSize: 14 }}
+        />
         {/* {image ? (
           <Button
             title="Confirm"

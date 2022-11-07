@@ -1,37 +1,16 @@
-import { View } from "react-native";
 import React from "react";
 import { useGetMyPostsQuery } from "@/shared/api/post";
-import { Card, Divider, makeStyles, Text } from "@rneui/themed";
-import { Loading } from "@/shared/components";
-import { useLazyGetSingleGroupQuery } from "@/shared/api/groups";
+import { makeStyles, Text } from "@rneui/themed";
+import { ErrorText, Loading } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { AppTabParamList } from "@/shared/types";
 import PostCard from "./PostCard";
 
 const MyPosts = () => {
-  const navigate = useNavigation<NavigationProp<AppTabParamList, "Groups">>();
   const styles = useStyles();
-  const { isError, data } = useGetMyPostsQuery();
-  const [getGroup] = useLazyGetSingleGroupQuery();
+  const { isError, data, error } = useGetMyPostsQuery();
 
-  const handlePress = (id: string) => () => {
-    navigate.navigate("Groups", {
-      screen: "GroupDetails",
-      params: {
-        id,
-      },
-    } as any);
-  };
-
-  const fetchGroup = async (groupId: string) => {
-    const a = await getGroup(groupId);
-  };
-
-  if (isError) {
-    return null;
+  if (isError || error) {
+    return <ErrorText />;
   }
 
   if (data) {
@@ -75,6 +54,5 @@ const useStyles = makeStyles((theme) => ({
   },
   noPost: {
     color: theme.colors.grey0,
-    // textAlign: "center",
   },
 }));

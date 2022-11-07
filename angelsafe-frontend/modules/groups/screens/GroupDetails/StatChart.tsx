@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Dimensions, View } from "react-native";
-import { ListItem, makeStyles, Text } from "@rneui/themed";
+import { Divider, makeStyles, Text } from "@rneui/themed";
 import { useGetGroupChartQuery } from "@/shared/api/stats";
 import { Loading } from "@/shared/components";
 import { PieChart } from "react-native-chart-kit";
 import { Moods } from "@/shared/state/reducers/experience";
-import { ListItemTitle } from "@rneui/base/dist/ListItem/ListItem.Title";
 
 interface StatChartProps {
   groupId: string;
@@ -24,27 +23,27 @@ const StatChart = ({ groupId }: StatChartProps) => {
         {
           name: Moods.HAPPY,
           color: MoodColors.HAPPY,
-          data: data.data[1],
+          data: 40,
         },
         {
           name: Moods.CALM,
           color: MoodColors.CALM,
-          data: data.data[2],
+          data: 30,
         },
         {
           name: Moods.SAD,
           color: MoodColors.SAD,
-          data: data.data[3],
+          data: 10,
         },
         {
           name: Moods.SICK,
           color: MoodColors.SICK,
-          data: data.data[4],
+          data: 5,
         },
         {
           name: Moods.ANGRY,
           color: MoodColors.ANGRY,
-          data: data.data[5],
+          data: 15,
         },
       ];
 
@@ -79,32 +78,38 @@ const StatChart = ({ groupId }: StatChartProps) => {
       const obj = {
         name: "",
         color: "red",
+        data: 100,
       };
 
       switch (i) {
         case "1": {
           obj.name = Moods.HAPPY;
           obj.color = MoodColors.HAPPY;
+          obj.data = 40;
           break;
         }
         case "2": {
           obj.name = Moods.CALM;
           obj.color = MoodColors.CALM;
+          obj.data = 30;
           break;
         }
         case "3": {
           obj.name = Moods.SAD;
           obj.color = MoodColors.SAD;
+          obj.data = 10;
           break;
         }
         case "4": {
           obj.name = Moods.SICK;
           obj.color = MoodColors.SICK;
+          obj.data = 5;
           break;
         }
         case "5": {
           obj.name = Moods.ANGRY;
           obj.color = MoodColors.ANGRY;
+          obj.data = 15;
           break;
         }
         default:
@@ -112,7 +117,7 @@ const StatChart = ({ groupId }: StatChartProps) => {
       }
       return {
         ...obj,
-        data: moods[i as keyof typeof moods],
+        // data: moods[i as keyof typeof moods],
       };
     });
 
@@ -143,15 +148,34 @@ const StatChart = ({ groupId }: StatChartProps) => {
             <View style={styles.legendWrapper} key={l.name}>
               <View
                 style={{
-                  width: 24,
-                  height: 24,
-                  backgroundColor: l.color,
-                  borderRadius: 50,
-                  marginRight: 8,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  minWidth: "25%",
+                  // backgroundColor: "red",
                 }}
+              >
+                <View
+                  style={{
+                    width: 24,
+                    height: 24,
+                    backgroundColor: l.color,
+                    borderRadius: 50,
+                    marginRight: 8,
+                  }}
+                />
+                <Text style={{ minWidth: 50 }}>{l.name}</Text>
+              </View>
+              <Divider
+                style={{ borderWidth: 1, borderColor: "#cacaca", width: "40%" }}
               />
-              <Text style={{ minWidth: 50 }}>{l.name}</Text>
-              <Text> - {l.data}%</Text>
+              <Text
+                style={{
+                  minWidth: "20%",
+                  textAlign: "center",
+                }}
+              >
+                {l.data}%
+              </Text>
             </View>
           ))}
         </View>
@@ -172,12 +196,13 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 24,
   },
   legends: {
-    width: "100%",
+    marginTop: 12,
   },
   legendWrapper: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 12,
+    justifyContent: "space-between",
   },
 }));
 

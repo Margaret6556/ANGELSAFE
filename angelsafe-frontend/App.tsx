@@ -7,6 +7,7 @@ import {
   Nunito_300Light,
   Nunito_500Medium,
   Nunito_600SemiBold,
+  Nunito_400Regular_Italic,
 } from "@expo-google-fonts/nunito";
 import * as SplashScreen from "expo-splash-screen";
 import { ActivityIndicator, View } from "react-native";
@@ -17,6 +18,7 @@ const App = () => {
     nunitoRegular: Nunito_400Regular,
     nunitoMedium: Nunito_500Medium,
     nunitoBold: Nunito_600SemiBold,
+    nunitoItalic: Nunito_400Regular_Italic,
   });
 
   useEffect(() => {

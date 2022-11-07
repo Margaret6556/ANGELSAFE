@@ -1,5 +1,11 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { NavigatorScreenParams } from "@react-navigation/native";
+import { MoreParamsList } from "@/more/types";
+import { GroupParamsList } from "@/groups/types";
+import { AlertParamsList } from "@/alerts/types";
+import { HomeParamsList } from "@/home/types";
+import { ProfileParamsList } from "@/profile/types";
 
 export interface ChildrenProps {
   children: React.ReactNode;
@@ -17,16 +23,16 @@ export type BackendErrorResponse = {
 };
 
 export type AppTabParamList = {
-  Alerts: undefined;
-  Home: undefined;
-  Groups: undefined;
-  More: undefined;
-  Profile: undefined;
+  Alerts: Navigator<AlertParamsList>;
+  Home: Navigator<HomeParamsList>;
+  Groups: NavigatorScreenParams<GroupParamsList>;
+  More: NavigatorScreenParams<MoreParamsList>;
+  Profile: Navigator<ProfileParamsList>;
 };
 
 export type RootStackParamList = {
   Auth: undefined;
-  App: undefined;
+  App: NavigatorScreenParams<AppTabParamList>;
 };
 
 export type UserType = {

@@ -25,7 +25,7 @@ const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
   }
 
   if (data) {
-    const reversed = [...data.data].reverse();
+    const { data: posts } = data;
     return (
       <>
         <View>
@@ -39,7 +39,7 @@ const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
             <Text style={styles.joinText}>Join the group to add a post</Text>
           )}
 
-          {reversed.map((args) => (
+          {posts.map((args) => (
             <Card key={args.id} {...args} />
           ))}
         </View>

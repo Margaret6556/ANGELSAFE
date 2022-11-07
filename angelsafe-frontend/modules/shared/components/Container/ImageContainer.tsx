@@ -1,10 +1,11 @@
 import React from "react";
-import { ChildrenProps } from "@/shared/types";
 import { ImageBackground, ImageBackgroundProps } from "react-native";
 import { containerStyle } from "@/shared/styles";
+import useGetBackgroundImage from "@/shared/hooks/useGetBackgroundImage";
 
 const ImageContainer = (props: ImageBackgroundProps) => {
-  const source = props?.source || require("../../../../assets/bg.png");
+  const bg = useGetBackgroundImage();
+  const source = props?.source || bg;
   const style = {
     ...containerStyle.container,
     ...{ backgroundColor: "rgba(255,255,255,0.9)" },

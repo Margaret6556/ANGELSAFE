@@ -1,15 +1,15 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { AlertParamsList } from "./types";
 import { EntryScreen } from "./screens";
-import { type NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TabParamList } from "@/app";
 import Header from "./components/Header";
+import { AppTabParamList } from "@/shared/types";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 
 const AlertStack = createStackNavigator<AlertParamsList>();
 
 const GroupScreen = ({
   navigation,
-}: NativeStackScreenProps<TabParamList, "Alerts">) => {
+}: BottomTabScreenProps<AppTabParamList, "Alerts">) => {
   return (
     <AlertStack.Navigator
       screenOptions={{

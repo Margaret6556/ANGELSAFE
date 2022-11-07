@@ -1,7 +1,6 @@
 import {
   ThemeProvider as RneuiThemeProvider,
   createTheme,
-  useThemeMode,
 } from "@rneui/themed";
 import { ChildrenProps } from "@/shared/types";
 import { StyleConstants } from "@/shared/styles";

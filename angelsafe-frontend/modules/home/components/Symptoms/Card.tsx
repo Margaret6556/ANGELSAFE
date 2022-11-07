@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { ListItem } from "@rneui/themed";
+import { ListItem, Text } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { makeStyles } from "@rneui/themed";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
@@ -27,17 +26,13 @@ const SymptomsCard = ({ title }: ISymptomsCard) => {
   };
 
   return (
-    <ListItem
-      containerStyle={styles.container}
-      onPress={handleCheck}
-      // disabled={!isEditableToday}
-    >
+    <ListItem containerStyle={styles.container} onPress={handleCheck}>
       <ListItem.Content style={styles.content}>
         <ListItem.CheckBox
           containerStyle={styles.checkbox}
           checked={includedSymptom}
         />
-        <ListItem.Title style={styles.title}>{title}</ListItem.Title>
+        <Text>{title}</Text>
       </ListItem.Content>
     </ListItem>
   );
@@ -63,9 +58,6 @@ const useStyles = makeStyles(
     },
     checkbox: {
       marginRight: StyleConstants.PADDING_HORIZONTAL,
-    },
-    title: {
-      // color: "#333",
     },
   })
 );

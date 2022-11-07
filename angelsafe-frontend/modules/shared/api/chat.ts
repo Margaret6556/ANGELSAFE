@@ -1,9 +1,6 @@
 import { apiSlice } from ".";
 import { _API } from "../config";
-import store from "../state";
 import { BackendResponse, UserType } from "../types";
-import { io } from "socket.io-client";
-import logger from "../utils/logger";
 
 export type ProfileRegisterType = {
   username: string;

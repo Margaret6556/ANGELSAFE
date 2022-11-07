@@ -4,15 +4,11 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { AuthLoginParamsList, AuthParamList } from "@/auth/types";
 import { Button, Image, Input } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
-import { Container } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useLoginMutation } from "@/shared/api/auth";
 import { useAppDispatch } from "@/shared/hooks";
-import { setLoggedIn, setUser } from "@/shared/state/reducers/auth";
 import { useLazyGetProfileQuery } from "@/shared/api/profile";
-import { Auth } from "@/shared/config";
-import { setItemAsync } from "expo-secure-store";
 import emailRegex from "@/shared/utils/emailRegex";
 import logger from "@/shared/utils/logger";
 import { useLazyViewStatQuery } from "@/shared/api/stats";
@@ -123,6 +119,9 @@ const LoginEmail = ({}: StackScreenProps<
               label="Email Address"
               errorMessage={errors.email?.message}
               autoCapitalize="none"
+              textContentType="emailAddress"
+              keyboardType="email-address"
+              autoCorrect={false}
               returnKeyType="next"
               {...field}
               onChangeText={field.onChange}
@@ -135,26 +134,28 @@ const LoginEmail = ({}: StackScreenProps<
           rules={{
             required: "Please enter a password",
           }}
-          render={({ field }) => (
-            <Input
-              label="Password"
-              secureTextEntry={secureTextEntry}
-              errorMessage={errors.password?.message}
-              autoCapitalize="none"
-              {...field}
-              onChangeText={field.onChange}
-              rightIcon={{
-                type: "ionicon",
-                name: secureTextEntry ? "eye-outline" : "eye-off-outline",
-                onPress: handleSetSecureText,
-                color: "#333",
-              }}
-              inputStyle={{
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              }}
-            />
-          )}
+          render={({ field }) => {
+            return (
+              <Input
+                label="Password"
+                secureTextEntry={secureTextEntry}
+                errorMessage={errors.password?.message}
+                autoCapitalize="none"
+                {...field}
+                onChangeText={field.onChange}
+                rightIcon={{
+                  type: "ionicon",
+                  name: secureTextEntry ? "eye-outline" : "eye-off-outline",
+                  onPress: handleSetSecureText,
+                  color: "#333",
+                }}
+                inputStyle={{
+                  borderTopRightRadius: 0,
+                  borderBottomRightRadius: 0,
+                }}
+              />
+            );
+          }}
         />
       </View>
       <Button

@@ -8,27 +8,33 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { Avatar } from "@rneui/base";
 import { FlatList } from "react-native-gesture-handler";
 import { useGetNotificationsListQuery } from "@/shared/api/alerts";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AppTabParamList } from "@/shared/types";
+import { CompositeScreenProps } from "@react-navigation/native";
 import timeSince from "@/shared/utils/timeSince";
+import { RootStackParamList } from "@/shared/types";
 
-const EntryScreen = ({}: StackScreenProps<AlertParamsList, "Entry">) => {
-  const navigation = useNavigation<NavigationProp<AppTabParamList, "Groups">>();
+const EntryScreen = ({
+  navigation,
+}: CompositeScreenProps<
+  StackScreenProps<AlertParamsList, "Entry">,
+  StackScreenProps<RootStackParamList>
+>) => {
   const { data, isLoading } = useGetNotificationsListQuery();
   const styles = useStyles();
   const { theme } = useTheme();
 
   const handleNavigate = (id: string) => () => {
-    // console.log({ id });
-    navigation.navigate("Groups", {
-      screen: "GroupDetails",
+    navigation.navigate("App", {
+      screen: "Groups",
       params: {
-        screen: "Details",
+        screen: "GroupDetails",
         params: {
-          id,
+          screen: "Details",
+          params: {
+            id,
+          },
         },
       },
-    } as any);
+    });
   };
 
   if (isLoading) {
@@ -90,6 +96,8 @@ const EntryScreen = ({}: StackScreenProps<AlertParamsList, "Entry">) => {
       </Container>
     );
   }
+
+  return null;
 };
 
 export default EntryScreen;

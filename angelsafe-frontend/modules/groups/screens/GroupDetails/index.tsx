@@ -1,6 +1,6 @@
 import { createStackNavigator } from "@react-navigation/stack";
 import { GroupDetailsParamList, GroupParamsList } from "../../types";
-import { type NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StackScreenProps } from "@react-navigation/stack";
 import { TransitionSlide } from "@/shared/components";
 import Details from "./Details";
 import Members from "./Members";
@@ -8,10 +8,7 @@ import ViewProfile from "./ViewProfile";
 
 const GroupDetailsStack = createStackNavigator<GroupDetailsParamList>();
 
-const GroupScreen = ({
-  navigation,
-  route,
-}: NativeStackScreenProps<GroupParamsList, "GroupDetails">) => {
+const GroupScreen = ({}: StackScreenProps<GroupParamsList, "GroupDetails">) => {
   return (
     <GroupDetailsStack.Navigator
       initialRouteName="Details"
@@ -22,9 +19,6 @@ const GroupScreen = ({
       <GroupDetailsStack.Screen
         name="Details"
         component={Details}
-        initialParams={{
-          id: route.params.id,
-        }}
         options={{
           header: () => null,
         }}

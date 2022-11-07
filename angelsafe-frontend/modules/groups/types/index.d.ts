@@ -1,9 +1,10 @@
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type ScreenProps } from "@/shared/types";
+import { NavigatorScreenParams } from "@react-navigation/native";
 
 export type GroupParamsList = {
   Entry: undefined;
-  GroupDetails: { id: string };
+  GroupDetails: NavigatorScreenParams<GroupDetailsParamList>;
   "Add Group": undefined;
 };
 

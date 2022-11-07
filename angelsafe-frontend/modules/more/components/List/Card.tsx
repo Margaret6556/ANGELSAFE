@@ -1,7 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React from "react";
 import { ListItem, Text, useTheme } from "@rneui/themed";
-import { StyleConstants } from "@/shared/styles";
 import { CardProps } from "@/more/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "@rneui/themed";
@@ -18,7 +16,7 @@ const MoreCard = ({ label, onPress, icon }: CardProps) => {
     <TouchableOpacity activeOpacity={0.5} onPress={handlePress}>
       <ListItem containerStyle={styles.container}>
         <ListItem.Content style={styles.content}>
-          <ListItem.Title style={styles.title}>{label}</ListItem.Title>
+          <Text>{label}</Text>
           <Icon size={20} color={theme.colors.grey0} {...icon} />
         </ListItem.Content>
       </ListItem>
@@ -38,5 +36,4 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  title: {},
 }));
