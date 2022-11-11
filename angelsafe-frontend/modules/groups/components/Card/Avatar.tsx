@@ -1,7 +1,6 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, TouchableOpacity } from "react-native";
 import React from "react";
 import { Avatar, Text } from "@rneui/themed";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { useAppSelector } from "@/shared/hooks";
 import timeSince from "@/shared/utils/timeSince";
 import { useGetProfileQuery } from "@/shared/api/profile";
@@ -17,12 +16,14 @@ const AvatarCard = (props: AvatarCardProps) => {
   const { user } = useAppSelector((state) => state.auth);
   const { data, isError } = useGetProfileQuery(props.userId);
   const navigation =
-    useNavigation<NavigationProp<GroupDetailsParamList, "ViewProfile">>();
+    useNavigation<NavigationProp<GroupDetailsParamList, "Details">>();
 
-  const handleOnViewProfile = () => () => {
-    navigation.navigate("ViewProfile", {
-      id: props.userId,
-    });
+  const handleOnViewProfile = () => {
+    if (data?.data.id) {
+      navigation.navigate("ViewProfile", {
+        id: data.data.id,
+      });
+    }
   };
 
   if (!user || isError) {

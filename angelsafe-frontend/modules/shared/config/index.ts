@@ -33,6 +33,8 @@ export const _API = {
     LIKE: "/post/like",
     UNHEART: "/post/unheart",
     UNLIKE: "/post/unlike",
+    COMMENTS_LIST: "/post/list-comment",
+    COMMENT: "/post/comment",
   },
   STAT: {
     CREATE: "/stat/create",

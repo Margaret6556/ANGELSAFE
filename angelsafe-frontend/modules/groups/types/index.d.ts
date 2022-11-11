@@ -1,6 +1,7 @@
 import { type NativeStackScreenProps } from "@react-navigation/native-stack";
 import { type ScreenProps } from "@/shared/types";
 import { NavigatorScreenParams } from "@react-navigation/native";
+import { PostsType } from "@/shared/api/post";
 
 export type GroupParamsList = {
   Entry: undefined;
@@ -17,6 +18,7 @@ export type GroupDetailsParamList = {
   Details: { id: string };
   Members: { groupId: string };
   ViewProfile: { id: string };
+  PostComments: PostsType;
 };
 
 export { GroupsType } from "@/shared/api/groups";

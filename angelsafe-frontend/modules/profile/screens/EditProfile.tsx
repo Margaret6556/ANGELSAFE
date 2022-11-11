@@ -3,14 +3,7 @@ import React, { useEffect, useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ProfileParamsList } from "../types";
 import { Container } from "@/shared/components";
-import {
-  Button,
-  Divider,
-  Input,
-  makeStyles,
-  Text,
-  useTheme,
-} from "@rneui/themed";
+import { Button, Input, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   useAppDispatch,

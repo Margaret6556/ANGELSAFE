@@ -15,7 +15,9 @@ const HomeScreen = ({
 
   useEffect(() => {
     if (redirectToGroup) {
-      navigation.navigate("Groups");
+      navigation.navigate("Groups", {
+        screen: "Entry",
+      });
     }
   }, []);
 

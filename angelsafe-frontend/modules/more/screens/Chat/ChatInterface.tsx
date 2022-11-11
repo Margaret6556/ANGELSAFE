@@ -1,5 +1,4 @@
-import { KeyboardAvoidingView, Platform } from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ChatParamsList } from "@/more/types";
 import { Container, Loading } from "@/shared/components";
@@ -18,28 +17,55 @@ const ChatInterface = ({
   const [messages, setMessages] = useState<IMessage[]>([]);
   const { data, isError, isLoading, isSuccess } = useViewChatQuery({
     receiverId,
+    skip: "10",
   });
   const [createChat, createChatResponse] = useCreateChatMutation();
   const { user } = useAppSelector((state) => state.auth);
   const styles = useStyles();
 
   useEffect(() => {
-    if (!isLoading && !!data?.data.length && isSuccess) {
-      // const a = data.data[0].receiver;
-      // const b = { ...a, profilePic: "" };
-      // let d = data.data[data.data.length - 1];
-      const isSender = data.data[data.data.length - 1].sender.id === user?.id;
+    if (!isLoading && !!data?.data.length && isSuccess && user) {
+      const copy = [...data.data].reverse(); // make newest 0
+      const isSender = copy[0].sender.id === user.id;
 
-      // let a = {
-      //   receiver: {
-      //     id: d.receiver.id,
-      //     username: d.receiver.username,
-      //   },
-      //   sender: {
-      //     id: d.sender.id,
-      //     username: d.sender.username,
-      //   },
-      // };
+      const aaa = {
+        receiver: {
+          ...copy[0].receiver,
+          profilePic: "",
+          hobbies: "",
+          movies: "",
+          music: "",
+          bio: "",
+        },
+        sender: {
+          ...copy[0].sender,
+          profilePic: "",
+          hobbies: "",
+          movies: "",
+          music: "",
+          bio: "",
+        },
+      };
+
+      console.log(
+        `
+      
+        `,
+        { sender: aaa.sender },
+        `
+        
+        `,
+        {
+          receiver: aaa.receiver,
+        },
+        `
+        
+        `,
+        { user: user.id, receiverId, msgId: copy[0].id },
+        `
+        
+        `
+      );
 
       if (isSender) {
         logger("chat", `i am sender, ${user.id}`);
@@ -47,18 +73,16 @@ const ChatInterface = ({
         logger("chat", `i am receiver, ${user?.id}`);
       }
 
-      const mappedObject: IMessage[] = data.data
-        .map((i) => ({
-          _id: i.id,
-          text: i.message,
-          createdAt: new Date(i.timestamp),
-          user: {
-            _id: isSender ? i.sender.id : i.receiver.id,
-            name: isSender ? i.sender.id : i.receiver.username,
-            avatar: isSender ? i.sender.id : i.receiver.profilePic,
-          },
-        }))
-        .reverse();
+      const mappedObject: IMessage[] = copy.map((i) => ({
+        _id: i.id,
+        text: i.message,
+        createdAt: new Date(i.timestamp),
+        user: {
+          _id: isSender ? i.sender.id : i.receiver.id,
+          name: isSender ? i.sender.username : i.receiver.username,
+          avatar: isSender ? i.sender.profilePic : i.receiver.profilePic,
+        },
+      }));
       setMessages(mappedObject);
     }
   }, [data]);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View } from "react-native";
 import { Card, makeStyles, Text, useTheme } from "@rneui/themed";
 import Avatar from "./Avatar";
@@ -13,9 +13,16 @@ import {
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import logger from "@/shared/utils/logger";
 import { PostsType } from "@/shared/api/post";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { GroupDetailsParamList } from "@/groups/types";
 
-const CardFeed = (props: PostsType) => {
-  const [comments] = useState(props.comments);
+interface CardFeedProps extends PostsType {
+  isComments?: boolean;
+  isGroupMember?: boolean;
+}
+
+const CardFeed = (props: CardFeedProps) => {
+  const navigation = useNavigation<NavigationProp<GroupDetailsParamList>>();
 
   const [likePost] = useLikePostMutation();
   const [unlikePost] = useUnLikePostMutation();
@@ -74,7 +81,12 @@ const CardFeed = (props: PostsType) => {
       logger("post", err);
     }
   };
-  const handleComment = () => {};
+
+  const handleComment = () => {
+    navigation.navigate("PostComments", {
+      ...props,
+    });
+  };
 
   return (
     <Card containerStyle={styles.cardContainer}>
@@ -82,48 +94,50 @@ const CardFeed = (props: PostsType) => {
       <View style={styles.cardDescription}>
         <Text>{props.message}</Text>
       </View>
-      <View style={styles.socialIcons}>
-        <SocialIcon
-          iconProps={{
-            name: "like2",
-            type: "antdesign",
-          }}
-          isEnabledIcon={{
-            name: "like1",
-            type: "antdesign",
-          }}
-          enabled={!!props.liked}
-          enabledColor={theme.colors.secondary}
-          label={props.likes}
-          onPress={handleToggleLike(!!!props.liked)}
-        />
-        <SocialIcon
-          iconProps={{
-            name: "hearto",
-            type: "antdesign",
-          }}
-          isEnabledIcon={{
-            name: "heart",
-            type: "antdesign",
-          }}
-          enabled={!!props.hearted}
-          enabledColor={theme.colors.error}
-          label={props.hearts}
-          onPress={handleToggleHeart(!!!props.hearted)}
-        />
-        <SocialIcon
-          iconProps={{
-            name: "chatbubble-outline",
-            type: "ionicon",
-          }}
-          isEnabledIcon={{
-            name: "",
-            type: "",
-          }}
-          label={comments}
-          onPress={handleComment}
-        />
-      </View>
+      {!props.isComments && (
+        <View style={styles.socialIcons}>
+          <SocialIcon
+            iconProps={{
+              name: "like2",
+              type: "antdesign",
+            }}
+            isEnabledIcon={{
+              name: "like1",
+              type: "antdesign",
+            }}
+            enabled={!!props.liked}
+            enabledColor={theme.colors.secondary}
+            label={props.likes}
+            onPress={handleToggleLike(!!!props.liked)}
+          />
+          <SocialIcon
+            iconProps={{
+              name: "hearto",
+              type: "antdesign",
+            }}
+            isEnabledIcon={{
+              name: "heart",
+              type: "antdesign",
+            }}
+            enabled={!!props.hearted}
+            enabledColor={theme.colors.error}
+            label={props.hearts}
+            onPress={handleToggleHeart(!!!props.hearted)}
+          />
+          <SocialIcon
+            iconProps={{
+              name: "chatbubble-outline",
+              type: "ionicon",
+            }}
+            isEnabledIcon={{
+              name: "",
+              type: "",
+            }}
+            label={props.comments}
+            onPress={handleComment}
+          />
+        </View>
+      )}
     </Card>
   );
 };
@@ -135,7 +149,7 @@ const useStyles = makeStyles({
     marginHorizontal: 0,
     marginBottom: StyleConstants.PADDING_VERTICAL,
     margin: 0,
-    borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
+    borderRadius: StyleConstants.PADDING_HORIZONTAL,
   },
   cardDescription: {
     marginVertical: 24,

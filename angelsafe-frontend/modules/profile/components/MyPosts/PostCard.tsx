@@ -18,9 +18,12 @@ const PostCard = (props: PostsType) => {
     navigate.navigate("Groups", {
       screen: "GroupDetails",
       params: {
-        id,
+        screen: "Details",
+        params: {
+          id,
+        },
       },
-    } as any);
+    });
   };
 
   if (isError) {

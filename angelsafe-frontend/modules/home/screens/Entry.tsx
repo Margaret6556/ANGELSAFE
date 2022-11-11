@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { HomeParamsList } from "@/home/types";
-import { View } from "react-native";
+import { Animated, StyleSheet, View, ViewStyle } from "react-native";
 import { Avatar, makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
@@ -28,6 +28,7 @@ import { useViewStatQuery } from "@/shared/api/stats";
 const EntryScreen = ({
   navigation,
 }: StackScreenProps<HomeParamsList, "Entry">) => {
+  const animation = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
   const [addSymptomsModalVis, setSymptomsModalVisible] = useState(false);
   const {
@@ -58,8 +59,18 @@ const EntryScreen = ({
 
   useEffect(() => {
     if (redirectToGroup) {
-      navigate("Groups");
+      navigate("Groups", {
+        screen: "Entry",
+      });
     }
+  }, []);
+
+  useEffect(() => {
+    Animated.timing(animation, {
+      toValue: 1,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   useEffect(() => {
@@ -92,6 +103,28 @@ const EntryScreen = ({
     setSymptomsModalVisible(bool || !addSymptomsModalVis);
   };
 
+  const createAnimation = useCallback(
+    (initialTranslateY: number): Animated.WithAnimatedObject<ViewStyle> => ({
+      opacity: animation,
+      transform: [
+        {
+          translateY: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [initialTranslateY, 0],
+          }),
+        },
+        {
+          scale: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0.9, 1],
+            // extrapolate: "clamp",
+          }),
+        },
+      ],
+    }),
+    [animation]
+  );
+
   return (
     <>
       <Container
@@ -102,7 +135,9 @@ const EntryScreen = ({
         }}
       >
         <View style={styles.container}>
-          <View style={[styles.title, styles.titleContainer]}>
+          <Animated.View
+            style={[styles.title, styles.titleContainer, createAnimation(20)]}
+          >
             <Text h4 h4Style={styles.h4}>
               Welcome Back! {"\n"}
               {user?.username}
@@ -117,15 +152,21 @@ const EntryScreen = ({
                 marginRight: 4,
               }}
             />
-          </View>
-          <MoodsComponent moods={moods} />
-          <View style={[styles.title, {}]}>
-            <Text style={styles.experiencing}>What are you experiencing?</Text>
-          </View>
-          <View style={styles.symptomsContainer}>
-            <SymptomsComponent symptoms={initialSymptoms} />
-            <AddNewSymptomButton onPress={handleToggleAddSymptomsModal} />
-          </View>
+          </Animated.View>
+          <Animated.View style={createAnimation(60)}>
+            <MoodsComponent moods={moods} />
+          </Animated.View>
+          <Animated.View style={createAnimation(100)}>
+            <View style={[styles.title, {}]}>
+              <Text style={styles.experiencing}>
+                What are you experiencing?
+              </Text>
+            </View>
+            <View style={styles.symptomsContainer}>
+              <SymptomsComponent symptoms={initialSymptoms} />
+              <AddNewSymptomButton onPress={handleToggleAddSymptomsModal} />
+            </View>
+          </Animated.View>
         </View>
       </Container>
       {moods && !!symptoms.length && (

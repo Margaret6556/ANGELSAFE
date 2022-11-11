@@ -1,4 +1,4 @@
-import { TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { GroupDetailsParamList } from "@/groups/types";
@@ -45,8 +45,12 @@ const ViewProfile = ({
     const {
       data: [profile],
     } = data;
+
     return (
-      <Container containerProps={{ style: styles.container }}>
+      <Container
+        type="scroll"
+        containerProps={{ contentContainerStyle: styles.container }}
+      >
         <View style={styles.top}>
           <Image
             source={{
@@ -60,7 +64,7 @@ const ViewProfile = ({
             </Text>
             {profile.username !== user?.username && (
               <TouchableOpacity onPress={handleSendMessage}>
-                <Icon type="ionicon" name="paper-plane" />
+                <Icon type="ionicon" name="mail" />
               </TouchableOpacity>
             )}
           </View>
@@ -76,6 +80,37 @@ const ViewProfile = ({
           <Text style={styles.bio}>
             Birth year: <Text>{profile.year}</Text>
           </Text>
+
+          <View style={[styles.content, { marginVertical: 24 }]}>
+            <Text style={styles.bio}>Hobbies</Text>
+            <View style={styles.hobbyContainer}>
+              {profile.hobbies.map((h) => (
+                <Text key={h} style={styles.hobby}>
+                  {h}
+                </Text>
+              ))}
+            </View>
+          </View>
+          <View style={styles.content}>
+            <Text style={styles.bio}>Favorite Music Genres</Text>
+            <View style={styles.hobbyContainer}>
+              {profile.movies.map((h) => (
+                <Text key={h} style={styles.hobby}>
+                  {h}
+                </Text>
+              ))}
+            </View>
+          </View>
+          <View style={styles.content}>
+            <Text style={styles.bio}>Favorite Music Genres</Text>
+            <View style={styles.hobbyContainer}>
+              {profile.music.map((h) => (
+                <Text key={h} style={styles.hobby}>
+                  {h}
+                </Text>
+              ))}
+            </View>
+          </View>
         </View>
       </Container>
     );
@@ -89,7 +124,7 @@ export default ViewProfile;
 const useStyles = makeStyles((theme) => ({
   container: {
     justifyContent: "flex-start",
-    backgroundColor: theme.colors.background,
+    // backgroundColor: theme.colors.background,
   },
   top: {
     width: "100%",
@@ -97,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
   },
   divider: {
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
     minWidth: "100%",
     borderColor: theme.colors.grey5,
     marginVertical: StyleConstants.PADDING_VERTICAL,
@@ -119,5 +154,22 @@ const useStyles = makeStyles((theme) => ({
     height: 160,
     marginBottom: 12,
     borderRadius: 100,
+  },
+  content: { marginBottom: StyleConstants.PADDING_VERTICAL * 1.5 },
+  hobbyContainer: {
+    flexWrap: "wrap",
+    flexDirection: "row",
+    justifyContent: "flex-start",
+  },
+  hobby: {
+    padding: 10,
+    backgroundColor: theme.colors.background,
+    overflow: "hidden",
+    margin: 10,
+    marginLeft: 0,
+    marginBottom: 0,
+    minWidth: 100,
+    borderRadius: 8,
+    textAlign: "center",
   },
 }));

@@ -1,22 +1,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AuthLoginParamsList } from "@/auth/types";
-import { View, StyleSheet, Animated, Easing } from "react-native";
 import {
-  Button,
-  Image,
-  Text,
-  Input,
-  CheckBox,
-  makeStyles,
-} from "@rneui/themed";
+  View,
+  Animated,
+  KeyboardAvoidingView,
+  Pressable,
+  Keyboard,
+  Platform,
+} from "react-native";
+import { Button, Text, makeStyles } from "@rneui/themed";
 import { useForm } from "react-hook-form";
 import NumberInput from "@/shared/components/NumberInput";
 import { StackScreenProps } from "@react-navigation/stack";
-import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
-import DropDownPicker from "react-native-dropdown-picker";
-import countries from "@/shared/config/countries";
-import LoginEmail from "./LoginEmail";
+import useIsKeyboardShowing from "@/shared/hooks/useIsKeyboardShowing";
 
 type FieldType = {
   mobile: string;
@@ -25,10 +22,21 @@ const LoginScreen = ({
   navigation,
 }: StackScreenProps<AuthLoginParamsList, "Input Number">) => {
   const styles = useStyles();
+  const buttonOpacity = useRef(new Animated.Value(1)).current;
+  const { keyboardIsShown, keyboardIsShowing } = useIsKeyboardShowing();
+  const e = Platform.OS === "ios" ? keyboardIsShowing : keyboardIsShown;
+
+  useEffect(() => {
+    Animated.timing(buttonOpacity, {
+      toValue: +!e,
+      useNativeDriver: true,
+      duration: 200,
+    }).start();
+  }, [e]);
 
   const {
     control,
-    formState: { errors, isSubmitting },
+    formState: { errors, isSubmitting, isDirty },
     handleSubmit,
   } = useForm<FieldType>({
     defaultValues: {
@@ -47,10 +55,7 @@ const LoginScreen = ({
   };
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.wrapper}
-      scrollEnabled={false}
-    >
+    <Pressable style={styles.wrapper} onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={styles.subtitle}>
           <Text h4 h4Style={styles.h4}>
@@ -62,21 +67,35 @@ const LoginScreen = ({
         </View>
 
         <NumberInput control={control} />
-        <Text style={{ textAlign: "center", marginVertical: 24 }}>- or -</Text>
-        <Button
-          title="Login with email"
-          type="outline"
-          onPress={handleLoginEmail}
-        />
+        <Animated.View style={{ opacity: buttonOpacity }}>
+          <Text style={{ textAlign: "center", marginVertical: 24 }}>
+            - or -
+          </Text>
+          <Button
+            title="Login with email"
+            type="outline"
+            onPress={handleLoginEmail}
+            disabled={e}
+          />
+        </Animated.View>
       </View>
 
-      <Button
-        title="Login"
-        onPress={handleSubmit(handleLogin)}
-        loading={isSubmitting}
-        containerStyle={{ marginBottom: 24 }}
-      />
-    </KeyboardAwareScrollView>
+      <KeyboardAvoidingView
+        style={{
+          width: "100%",
+          marginBottom: 24,
+        }}
+        behavior="padding"
+        keyboardVerticalOffset={100}
+      >
+        <Button
+          title="Login"
+          onPress={handleSubmit(handleLogin)}
+          loading={isSubmitting}
+          disabled={!isDirty}
+        />
+      </KeyboardAvoidingView>
+    </Pressable>
   );
 };
 
@@ -101,7 +120,6 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
   },
   loginEmail: {
-    // backgroundColor: "hsla(360, 80%, 40%, 0.2)",
     minHeight: 200,
     justifyContent: "flex-start",
     marginBottom: 100,

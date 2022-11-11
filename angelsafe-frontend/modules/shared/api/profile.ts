@@ -11,10 +11,11 @@ type UpdateProfileType = Partial<
   Omit<UserType, "id" | "token" | "username" | "photo">
 >;
 
-type ProfileViewType = Pick<
+type ProfileViewType = Omit<
   UserType,
-  "id" | "country" | "gender" | "year" | "profilePic" | "username"
-> & { member: string };
+  "mobile" | "mobileNumber" | "token" | "email" | "winCount" | "painCount"
+>;
+
 
 const profileApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

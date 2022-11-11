@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { AuthParamList } from "@/auth/types";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Animated } from "react-native";
 import { Button } from "@rneui/themed";
 import { Container, Logo } from "@/shared/components";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -9,30 +9,68 @@ import { StyleConstants } from "@/shared/styles";
 const LoginScreen = ({
   navigation,
 }: StackScreenProps<AuthParamList, "Entry">) => {
+  const animation = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(animation, {
+      toValue: 1,
+      useNativeDriver: true,
+      duration: 600,
+    }).start();
+  }, []);
+
+  const createAnimation = useCallback(
+    (val: number) => ({
+      opacity: animation,
+      transform: [
+        {
+          translateY: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [val, 0],
+          }),
+        },
+      ],
+    }),
+    []
+  );
+
   return (
     <Container>
-      <View style={styles.imageContainer}>
+      <Animated.View
+        style={[
+          styles.imageContainer,
+          {
+            opacity: animation,
+          },
+        ]}
+      >
         <Logo />
-      </View>
+      </Animated.View>
       <View style={styles.buttonGroup}>
-        <Button
-          title="Login"
-          onPress={() => {
-            navigation.push("Login");
-          }}
-          buttonStyle={{
+        <Animated.View
+          style={{
             marginBottom: StyleConstants.PADDING_VERTICAL,
+            ...createAnimation(100),
           }}
-        />
-        <Button
-          title="Sign Up"
-          color="#333"
-          type="outline"
-          onPress={() => {
-            navigation.setOptions({});
-            navigation.push("Register");
-          }}
-        />
+        >
+          <Button
+            title="Login"
+            onPress={() => {
+              navigation.push("Login");
+            }}
+          />
+        </Animated.View>
+        <Animated.View style={createAnimation(200)}>
+          <Button
+            title="Sign Up"
+            color="#333"
+            type="outline"
+            onPress={() => {
+              navigation.setOptions({});
+              navigation.push("Register");
+            }}
+          />
+        </Animated.View>
       </View>
     </Container>
   );

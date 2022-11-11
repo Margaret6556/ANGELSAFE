@@ -21,10 +21,7 @@ const TransitionOpacity = {
 
     return {
       cardStyle: {
-        opacity: current.progress.interpolate({
-          inputRange: [0, 1],
-          outputRange: [0, 1],
-        }),
+        opacity: current.progress,
       },
     };
   },

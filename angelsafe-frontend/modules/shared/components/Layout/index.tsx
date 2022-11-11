@@ -5,17 +5,27 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import MainStatusBar from "../MainStatusBar";
 import useDarkMode from "@/shared/hooks/useDarkMode";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-import { useTheme } from "@rneui/themed";
+import { makeStyles, useTheme } from "@rneui/themed";
+import { setSafeAreaBg, setThemeFontSize } from "@/shared/state/reducers/theme";
 
 interface LayoutProps extends ChildrenProps {
   onLayout: () => Promise<void>;
 }
 const Layout = ({ children, onLayout }: LayoutProps) => {
   useDarkMode();
-  const { fontSizeMultiplier } = useAppSelector((state) => state.theme);
+  const { fontSizeMultiplier, safeAreaBg } = useAppSelector(
+    (state) => state.theme
+  );
   const { updateTheme } = useTheme();
+  const dispatch = useAppDispatch();
+  const styles = useStyles({
+    color: safeAreaBg,
+  });
 
   useEffect(() => {
+    dispatch(setThemeFontSize(fontSizeMultiplier));
+    // dispatch(setSafeAreaBg("transparent"));
+
     updateTheme({
       components: {
         Text: {
@@ -55,9 +65,10 @@ const Layout = ({ children, onLayout }: LayoutProps) => {
 
 export default Layout;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((_, props: { color: string }) => ({
   container: {
+    backgroundColor: props.color,
     flex: 1,
     zIndex: 2,
   },
-});
+}));

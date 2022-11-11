@@ -1,23 +1,34 @@
-import { Platform, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
-  Avatar,
-  Input,
-  makeStyles,
-  Button,
-  useTheme,
-  Icon,
-} from "@rneui/themed";
-import { StyleConstants } from "@/shared/styles";
-import { Controller, useForm } from "react-hook-form";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { useCreatePostMutation } from "@/shared/api/post";
-import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+  View,
+  TouchableOpacity,
+  Animated,
+  Dimensions,
+  GestureResponderEvent,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import useDarkMode from "@/shared/hooks/useDarkMode";
-import { Container } from "@/shared/components";
+import { StyleConstants } from "@/shared/styles";
+import {
+  Button,
+  Icon,
+  Input,
+  ListItem,
+  makeStyles,
+  Text,
+  useTheme,
+} from "@rneui/themed";
+import Modal from "react-native-modal";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { Controller, useForm } from "react-hook-form";
+import { useCreatePostMutation } from "@/shared/api/post";
+import { BackendResponse, BackendErrorResponse } from "@/shared/types";
 import logger from "@/shared/utils/logger";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
-interface AddPostProps {
+interface IModalProps {
+  isVisible: boolean;
   onClose: () => void;
   groupId: string;
 }
@@ -26,8 +37,11 @@ type FieldType = {
   message: string;
 };
 
+const HEIGHT = Dimensions.get("window").height;
 const MAX_POST_LENGTH = 250;
-const AddPost = (props: AddPostProps) => {
+
+const AddPostModal = (props: IModalProps) => {
+  const animation = useRef(new Animated.Value(0)).current;
   const [multilineHeight, setMultiLineHeight] = useState(0);
   const { theme } = useTheme();
   const [createPost, createPostResponse] = useCreatePostMutation();
@@ -39,6 +53,7 @@ const AddPost = (props: AddPostProps) => {
     handleSubmit,
     watch,
     setError,
+    setValue,
   } = useForm<FieldType>({
     defaultValues: {
       message: "",
@@ -59,6 +74,8 @@ const AddPost = (props: AddPostProps) => {
       const { status } = await createPost(body).unwrap();
       if (status === 200) {
         handleClose();
+        setValue("message", "");
+        createPostResponse.reset();
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
@@ -69,99 +86,174 @@ const AddPost = (props: AddPostProps) => {
     }
   };
 
+  const handleAnimation = (event: GestureResponderEvent) => {
+    Animated.spring(animation, {
+      toValue: event.nativeEvent.pageY * 1.5,
+      useNativeDriver: false,
+      speed: 40,
+    }).start();
+  };
+
   return (
-    <Container
-      containerProps={{
-        style: styles.container,
+    <Modal
+      isVisible={props.isVisible}
+      style={styles.wrapper}
+      onBackdropPress={handleClose}
+      avoidKeyboard
+      useNativeDriverForBackdrop
+      presentationStyle="overFullScreen"
+      onStartShouldSetResponder={() => true}
+      onResponderRelease={(e) => {
+        const threshold = HEIGHT * 0.6;
+        if (e.nativeEvent.pageY > threshold) {
+          handleClose();
+        } else {
+          Animated.timing(animation, {
+            toValue: 100,
+            duration: 200,
+            useNativeDriver: false,
+          }).start();
+        }
       }}
+      onResponderMove={handleAnimation}
     >
-      <View style={styles.wrapper}>
-        <View>
-          <View style={styles.header}>
-            <TouchableOpacity onPress={handleClose}>
-              <Icon
-                type="entypo"
-                name="cross"
-                color={theme.colors.grey3}
-                size={32}
+      <Animated.View
+        style={[
+          styles.container,
+          {
+            maxHeight: animation.interpolate({
+              inputRange: [0, HEIGHT],
+              outputRange: ["100%", "35%"],
+              extrapolate: "clamp",
+            }),
+          },
+        ]}
+      >
+        <View style={styles.content}>
+          <View style={styles.notch} />
+          <View style={styles.wrapper}>
+            <View style={styles.header}>
+              <TouchableOpacity onPress={handleClose}>
+                <Icon
+                  type="entypo"
+                  name="cross"
+                  color={theme.colors.grey3}
+                  size={32}
+                />
+              </TouchableOpacity>
+              <Button
+                title={createPostResponse.isSuccess ? "Success" : "Post"}
+                onPress={handleSubmit(handleAddPost)}
+                loading={createPostResponse.isLoading}
+                disabled={!!errors.message}
+                containerStyle={{
+                  minWidth: 100,
+                  height: 50,
+                }}
               />
-            </TouchableOpacity>
+            </View>
+            <Text
+              style={[styles.inputLabel, { fontSize: 12, textAlign: "right" }]}
+            >
+              {message.length}/{MAX_POST_LENGTH}
+            </Text>
+            <KeyboardAwareScrollView>
+              <Controller
+                name="message"
+                control={control}
+                rules={{
+                  required: {
+                    value: true,
+                    message: "Cannot post an empty message",
+                  },
+                }}
+                render={({ field, fieldState: { error } }) => (
+                  <Input
+                    maxLength={MAX_POST_LENGTH}
+                    errorMessage={error?.message}
+                    multiline
+                    inputStyle={{
+                      height: Math.max(250, multilineHeight),
+                      color: isDark ? theme.colors.white : theme.colors.black,
+                      textAlignVertical: "top",
+                    }}
+                    placeholder="Type your thoughts.."
+                    {...field}
+                    onContentSizeChange={(event) => {
+                      setMultiLineHeight(event.nativeEvent.contentSize.height);
+                    }}
+                    onChangeText={field.onChange}
+                    labelStyle={{ fontSize: 16 }}
+                  />
+                )}
+              />
+            </KeyboardAwareScrollView>
           </View>
-          <Controller
-            name="message"
-            control={control}
-            render={({ field }) => (
-              <Input
-                maxLength={MAX_POST_LENGTH}
-                label={
-                  <View style={styles.inputLabelContainer}>
-                    <Text style={styles.inputLabel}>Enter your Post</Text>
-                    <Text style={[styles.inputLabel, { fontSize: 12 }]}>
-                      {message.length}/{MAX_POST_LENGTH}
-                    </Text>
-                  </View>
-                }
-                errorMessage={errors.message?.message}
-                multiline
-                inputStyle={{
-                  height: Math.max(250, multilineHeight),
-                  color: isDark ? theme.colors.white : theme.colors.black,
-                  textAlignVertical: "top",
-                }}
-                {...field}
-                onContentSizeChange={(event) => {
-                  setMultiLineHeight(event.nativeEvent.contentSize.height);
-                }}
-                onChangeText={field.onChange}
-                labelStyle={{ fontSize: 16 }}
-              />
-            )}
-          />
         </View>
-        <Button
-          title={createPostResponse.isSuccess ? "Success" : "Post"}
-          onPress={handleSubmit(handleAddPost)}
-          loading={createPostResponse.isLoading}
-          disabled={!!errors.message}
-        />
-      </View>
-    </Container>
+      </Animated.View>
+    </Modal>
   );
 };
 
-export default AddPost;
+export default AddPostModal;
 
 const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   wrapper: {
+    margin: 0,
     width: "100%",
-    marginTop: "auto",
-    backgroundColor: props.isDark ? theme.colors.white : theme.colors.grey5,
-    justifyContent: "space-between",
-    // alignItems: "stretch",
-    borderTopLeftRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-    borderTopRightRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-    padding: 24,
-    height: "60%",
   },
   container: {
-    paddingHorizontal: 0,
-    paddingVertical: 0,
-    paddingBottom: 0,
+    flex: 0,
+    height: "70%",
+    width: "100%",
+    marginTop: "auto",
+    backgroundColor: theme.colors.background,
+    justifyContent: "space-between",
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
+    paddingVertical: StyleConstants.PADDING_VERTICAL,
   },
   header: {
-    width: "100%",
-    marginBottom: StyleConstants.PADDING_VERTICAL / 2,
-    // backgroundColor: "red",
-    alignItems: "flex-start",
-  },
-  inputLabelContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // marginBottom: 12,
+    paddingBottom: 12,
+    marginBottom: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  buttonContainer: {
+    width: "100%",
+  },
+  notch: {
+    width: "12%",
+    height: 4,
+    borderRadius: 10,
+    backgroundColor: theme.colors.black,
+    alignSelf: "center",
+    marginBottom: 24,
+  },
+  contentSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: StyleConstants.PADDING_VERTICAL,
+  },
+  content: {
+    width: "100%",
+    flex: 1,
+  },
+  labelSelection: {
+    fontFamily: "nunitoBold",
+  },
+  listItemWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
   },
   inputLabel: {
     color: props.isDark ? theme.colors.black : theme.colors.primary,
     marginBottom: StyleConstants.PADDING_VERTICAL,
   },
+  scrollView: {},
 }));

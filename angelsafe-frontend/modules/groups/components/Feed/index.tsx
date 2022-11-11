@@ -3,7 +3,6 @@ import { View } from "react-native";
 import { Button, makeStyles, Text } from "@rneui/themed";
 import Card from "../Card";
 import { useGetPostListQuery } from "@/shared/api/post";
-import Modal from "react-native-modal";
 import AddPost from "../AddPost";
 import { StyleConstants } from "@/shared/styles";
 
@@ -33,7 +32,7 @@ const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
             <Button
               title="Type your thoughts..."
               onPress={handleNewPost}
-              style={styles.thoughtsButton}
+              containerStyle={styles.thoughtsButton}
             />
           ) : (
             <Text style={styles.joinText}>Join the group to add a post</Text>
@@ -43,14 +42,12 @@ const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
             <Card key={args.id} {...args} />
           ))}
         </View>
-        <Modal
+
+        <AddPost
+          groupId={groupId}
+          onClose={handleNewPost}
           isVisible={modalVisible}
-          style={styles.modalContainer}
-          onBackdropPress={handleNewPost}
-          avoidKeyboard
-        >
-          <AddPost onClose={handleNewPost} groupId={groupId} />
-        </Modal>
+        />
       </>
     );
   }

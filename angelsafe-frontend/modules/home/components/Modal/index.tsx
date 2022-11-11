@@ -2,8 +2,8 @@ import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { StyleConstants } from "@/shared/styles";
 import { Button, Icon, Image, makeStyles, Text, useTheme } from "@rneui/themed";
-import React, { useEffect, useState } from "react";
-import { View } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import { Animated, View } from "react-native";
 import Modal from "react-native-modal";
 import { moods } from "@/home/data";
 import { MoodsType } from "@/home/types";
@@ -22,12 +22,14 @@ interface IModalProps {
 }
 
 const index = (props: IModalProps) => {
+  const newEntryLoggedImage = require("../../../../assets/home/newEntry.png");
   const { mood, symptoms } = useAppSelector((state) => state.experience);
   const [createStat, createStatResponse] = useCreateStatMutation();
   const dispatch = useAppDispatch();
   const [selectedMood, setSelectedMood] = useState<MoodsType | null>(null);
   const [updated, setUpdated] = useState(false);
   const { theme } = useTheme();
+  const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     if (mood) {
@@ -62,9 +64,15 @@ const index = (props: IModalProps) => {
 
       if (status === 200) {
         setUpdated(true);
+        Animated.timing(animation, {
+          toValue: 1,
+          duration: 400,
+          useNativeDriver: true,
+        }).start();
         dispatch(setLastSubmitted(new Date().getTime()));
         dispatch(apiSlice.util.invalidateTags(["STAT"]));
         setTimeout(() => {
+          animation.setValue(0);
           handleClose();
         }, 4000);
       }
@@ -78,6 +86,7 @@ const index = (props: IModalProps) => {
     <Modal
       isVisible={props.isVisible}
       style={styles.wrapper}
+      useNativeDriverForBackdrop
       onBackdropPress={handleClose}
       avoidKeyboard
     >
@@ -133,7 +142,7 @@ const index = (props: IModalProps) => {
             <View style={styles.buttons}>
               <Button
                 title="Submit"
-                style={{ marginBottom: 24 }}
+                containerStyle={{ marginBottom: 24 }}
                 onPress={handleCreateStat}
                 loading={createStatResponse.isLoading}
                 disabled={invalid}
@@ -142,12 +151,20 @@ const index = (props: IModalProps) => {
             </View>
           </>
         ) : (
-          <View style={[styles.content, { justifyContent: "space-between" }]}>
+          <Animated.View
+            style={[
+              styles.content,
+              {
+                justifyContent: "space-between",
+                opacity: animation,
+              },
+            ]}
+          >
             <Text h2 style={{ textAlign: "center", marginBottom: 56 }}>
               New Entry Logged
             </Text>
             <Image
-              source={require("../../../../assets/home/newEntry.png")}
+              source={newEntryLoggedImage}
               resizeMode="contain"
               style={{
                 width: "100%",
@@ -172,7 +189,7 @@ const index = (props: IModalProps) => {
               </View>
               <Button title="Close" onPress={handleClose} />
             </View>
-          </View>
+          </Animated.View>
         )}
       </Container>
     </Modal>
@@ -205,6 +222,7 @@ const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
   contentSection: {
     flexDirection: "row",
     alignItems: "center",
+    minWidth: "100%",
     marginBottom: StyleConstants.PADDING_VERTICAL,
   },
   content: {
@@ -215,7 +233,7 @@ const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
     fontFamily: "nunitoBold",
   },
   buttons: {
-    width: "100%",
+    minWidth: "100%",
     flex: 1,
     justifyContent: props.isSuccess ? "center" : "flex-end",
   },

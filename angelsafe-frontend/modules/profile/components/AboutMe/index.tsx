@@ -1,11 +1,10 @@
-import { StyleSheet, View } from "react-native";
-import { Button, makeStyles, Text } from "@rneui/themed";
 import React from "react";
+import { View } from "react-native";
+import { Button, makeStyles, Text } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ProfileParamsList } from "@/profile/types";
 import { useAppSelector } from "@/shared/hooks";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 
 const AboutMeTab = () => {
   const navigation = useNavigation<NavigationProp<ProfileParamsList>>();
@@ -97,9 +96,11 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 0,
     marginBottom: 0,
     minWidth: 100,
+
+    borderRadius: 8,
+    overflow: "hidden",
   },
   button: {
     width: "100%",
-    // paddingBottom: StyleConstants.PADDING_HORIZONTAL,
   },
 }));

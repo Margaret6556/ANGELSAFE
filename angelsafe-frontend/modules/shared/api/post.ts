@@ -15,6 +15,11 @@ export type PostsType = {
   hearted: 0 | 1;
 };
 
+export type PostCommentType = Pick<
+  PostsType,
+  "ownerId" | "message" | "timestamp"
+>;
+
 const postApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getPostList: builder.query<
@@ -43,6 +48,34 @@ const postApiSlice = apiSlice.injectEndpoints({
         }
         return [tag];
       },
+    }),
+    getPostComments: builder.query<
+      BackendResponse<PostCommentType[]>,
+      { postId: string }
+    >({
+      query: (body) => ({
+        url: _API.POST.COMMENTS_LIST,
+        method: "POST",
+        body,
+      }),
+      providesTags: (res, _, { postId }) => {
+        const tag = { type: "POST" as const, id: "COMMENTS" };
+        if (res?.data) {
+          return [...res.data.map(() => ({ type: tag.type, id: postId }))];
+        }
+        return [tag];
+      },
+    }),
+    commentPost: builder.mutation<
+      BackendResponse<null>,
+      { postId: string; message: string }
+    >({
+      query: (body) => ({
+        url: _API.POST.COMMENT,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: (_, __, arg) => [{ type: "POST", id: arg.postId }],
     }),
     createPost: builder.mutation<
       BackendResponse<null>,
@@ -119,4 +152,6 @@ export const {
   useHeartPostMutation,
   useUnLikePostMutation,
   useUnHeartPostMutation,
+  useGetPostCommentsQuery,
+  useCommentPostMutation,
 } = postApiSlice;

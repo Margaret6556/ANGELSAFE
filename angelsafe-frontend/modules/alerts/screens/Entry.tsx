@@ -1,12 +1,11 @@
 import React from "react";
-import { View, TouchableOpacity } from "react-native";
+import { View, TouchableOpacity, FlatList } from "react-native";
 import { makeStyles, Text, useTheme } from "@rneui/themed";
 import { Container, Loading } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import { AlertParamsList } from "../types";
 import { StackScreenProps } from "@react-navigation/stack";
 import { Avatar } from "@rneui/base";
-import { FlatList } from "react-native-gesture-handler";
 import { useGetNotificationsListQuery } from "@/shared/api/alerts";
 import { CompositeScreenProps } from "@react-navigation/native";
 import timeSince from "@/shared/utils/timeSince";

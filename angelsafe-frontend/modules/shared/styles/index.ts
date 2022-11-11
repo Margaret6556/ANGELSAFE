@@ -19,7 +19,6 @@ export const containerStyle = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingVertical: StyleConstants.PADDING_VERTICAL,
-    // paddingBottom: StyleConstants.PADDING_VERTICAL,
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
   },
 });

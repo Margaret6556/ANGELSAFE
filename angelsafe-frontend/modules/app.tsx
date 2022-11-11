@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Auth from "./auth";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAppSelector } from "@/shared/hooks";
@@ -12,12 +12,12 @@ import { AppTabParamList, RootStackParamList } from "./shared/types";
 import { TabBarIcon, TransitionSlide } from "./shared/components";
 import useThemeMode from "./shared/hooks/useThemeMode";
 import { useGetNotificationsListQuery } from "./shared/api/alerts";
+import { Platform } from "react-native";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   useThemeMode();
-  const { isLoggedIn, user } = useAppSelector((state) => state.auth);
-  console.log(user?.token);
+  const { isLoggedIn } = useAppSelector((state) => state.auth);
 
   return (
     <RootStack.Navigator
@@ -53,7 +53,7 @@ const TabNavigator = () => {
       screenOptions={{
         header: () => null,
         tabBarStyle: {},
-        tabBarHideOnKeyboard: true,
+        tabBarHideOnKeyboard: Platform.OS === "android",
       }}
       initialRouteName="Home"
     >

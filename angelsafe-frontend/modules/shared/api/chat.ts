@@ -23,7 +23,7 @@ type CreateChatType = {
 
 type SingleChatResponse = {
   id: string;
-  timestamp: string;
+  timestamp: number;
   message: string;
   sender: UserType;
   receiver: UserType;

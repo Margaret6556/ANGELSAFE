@@ -19,18 +19,18 @@ import {
   useJoinGroupMutation,
   useUnjoinGroupMutation,
 } from "@/shared/api/groups";
-import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import GroupFeed from "../../components/Feed";
 import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
 import StatChart from "./StatChart";
+import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
 
 const deviceHeight = Dimensions.get("screen").height;
 
 enum RenderView {
   FEED = 1,
-  SYMPTOM_CHART,
+  MOOD_CHART,
 }
 
 const GroupDetailsScreen = ({
@@ -46,7 +46,6 @@ const GroupDetailsScreen = ({
   const { theme } = useTheme();
   const isDark = useDarkMode();
   const styles = useStyles({ isDark, isJoined: data?.data.joined || 0 });
-
   useSetSolidBackground();
 
   const handleGroupJoin = async () => {
@@ -119,7 +118,7 @@ const GroupDetailsScreen = ({
       case RenderView.FEED: {
         return <GroupFeed groupId={id} isJoined={!!data?.data.joined} />;
       }
-      case RenderView.SYMPTOM_CHART: {
+      case RenderView.MOOD_CHART: {
         return <StatChart groupId={id} />;
       }
       default:
@@ -220,7 +219,7 @@ const GroupDetailsScreen = ({
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={handleSetView(RenderView.SYMPTOM_CHART)}
+                  onPress={handleSetView(RenderView.MOOD_CHART)}
                   containerStyle={styles.tabButton}
                 >
                   <Text
@@ -228,13 +227,13 @@ const GroupDetailsScreen = ({
                       styles.tabText,
                       {
                         color:
-                          view === RenderView.SYMPTOM_CHART
+                          view === RenderView.MOOD_CHART
                             ? theme.colors.primary
                             : theme.colors.grey1,
                       },
                     ]}
                   >
-                    Symptom Chart
+                    Mood Chart
                   </Text>
                 </TouchableOpacity>
               </View>

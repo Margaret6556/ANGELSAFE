@@ -24,6 +24,7 @@ const initialState = {
   backgroundColor: "transparent",
   solidBackground: false,
   manualDarkMode: false,
+  safeAreaBg: "",
 };
 
 const themeSlice = createSlice({
@@ -45,6 +46,9 @@ const themeSlice = createSlice({
     setThemeFontSize: (state, action: PayloadAction<number>) => {
       state.fontSizeMultiplier = action.payload;
     },
+    setSafeAreaBg: (state, action: PayloadAction<string>) => {
+      state.safeAreaBg = action.payload;
+    },
   },
 });
 
@@ -55,4 +59,5 @@ export const {
   setManualDarkMode,
   setBackgroundImage,
   setThemeFontSize,
+  setSafeAreaBg,
 } = themeSlice.actions;
