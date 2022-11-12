@@ -197,6 +197,62 @@ module.exports = (config) => {
     }
   });
 
+  service.post('/wins', async (req, res, next) => {
+    const result = {
+      status: 400,
+      error: 'Invalid API',
+      message: 'Invalid API',
+    };
+    const data = {
+      ...req.query,
+      ...req.body,
+    };
+    try {
+      let token = req.headers.authorization ? req.headers.authorization.slice(7) : '';
+      let decodedAuth = null;
+      if (!token) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      try {
+        decodedAuth = jwt.verify(token.toString(), config.iamHash);
+      } catch (err) {
+        result.status = 401;
+        result.error = 'Unauthorized';
+        result.message = 'Invalid Login Credentials';
+        throw result;
+      }
+      let newData = [];
+      await Promise.all(data.map(async (obj) => {
+        await (async (obj)=>{
+          const winCount = await DBHelper.getCollection(config.statCollection).count({
+            ownerId: DB.getObjectId(obj.id),
+            $or: [{ stat: "1"}, { stat: "1"}]
+          });
+          const painCount = await DBHelper.getCollection(config.statCollection).count({
+            ownerId: DB.getObjectId(obj.id),
+            $or: [{ stat: "2"}, { stat: "3"}, { stat: "4"}, { stat: "5"}]
+          });
+          newData.push({
+            ...obj,
+            winCount: winCount?winCount:0,
+            painCount: painCount?painCount:0,
+          });
+        });
+      }));
+      log.debug(result);
+      result.status = 200;
+      result.error = null;
+      result.message = 'Getting Wins Successful';
+      result.data = newData;
+      return res.status(result.status).json(result);
+    } catch (err) {
+      return next(err);
+    }
+  });
+
   service.post('/create-post', async (req, res, next) => {
     const result = {
       status: 400,

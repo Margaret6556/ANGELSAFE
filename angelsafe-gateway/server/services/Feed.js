@@ -63,6 +63,19 @@ class FeedService {
     });
   }
 
+  async getProfileWins(req,data) {
+    const { ip, port } = await this.getService('angelsafe-feed');
+    return FeedService.callService({
+      method: 'post',
+      url: `http://${ip}:${port}/wins`,
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': req.headers.authorization
+      },
+    });
+  }
+
   async createPost(req, data) {
     const { ip, port } = await this.getService('angelsafe-feed');
     return FeedService.callService({

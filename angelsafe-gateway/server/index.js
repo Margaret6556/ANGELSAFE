@@ -227,6 +227,8 @@ async function processData(req, res) {
                 break;
               case 'POST':
                 result = await ProfileService.getProfiles(req, data);
+                let wins = await FeedService.getProfileWins(req, { ...result.data });
+                result.data = wins.data;
                 res.status(result.status).json(result);
                 break;
               default:
