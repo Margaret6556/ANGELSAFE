@@ -238,7 +238,13 @@ module.exports = (config) => {
         result.message = 'Invalid Data';
         throw result;
       }
-      data.message = data.message.toString().substring(0, 250);
+      if(!data.message.length){
+        result.status = 400;
+        result.error = 'Bad Request';
+	result.message = 'Invalid Data';
+	throw result;
+      }
+      data.message = data.message.toString().substring(0, 300);
       const insertResult = await DBHelper.getCollection(config.postCollection).insertOne({
         ownerId: DB.getObjectId(decodedAuth.data.id),
         groupId: DB.getObjectId(data.groupId),

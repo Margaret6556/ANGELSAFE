@@ -176,7 +176,7 @@ module.exports = (config) => {
           EmailHelper.sendMail(
             data.email, 
             'AngelSafe Registration', 
-            `Welcome to AngelSafe Community. Kindly validate your email by visiting this page, http://localhost:3001/verify-email/${code}`
+            `Welcome to AngelSafe Community. Kindly validate your email by visiting this page, http://mobile.angelsafe.co/verify-email/${code}`
           );
         } catch(err){
           log.debug(err);
