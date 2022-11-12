@@ -8,8 +8,8 @@ import {
   Dimensions,
   Alert,
 } from "react-native";
-import { Button, lightColors, makeStyles, Text, useTheme } from "@rneui/themed";
-import { Container, Loading } from "@/shared/components";
+import { Button, makeStyles, Text, useTheme } from "@rneui/themed";
+import { Container } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import { GroupDetailsParamList } from "../../types";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -25,6 +25,7 @@ import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
 import StatChart from "./StatChart";
 import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
+import GroupDetailPlaceholder from "@/groups/components/Skeleton/GroupDetailPlaceholder";
 
 const deviceHeight = Dimensions.get("screen").height;
 
@@ -130,10 +131,6 @@ const GroupDetailsScreen = ({
     if ("status" in error) {
       logger("groups", error.data.message);
     }
-  }
-
-  if (isLoading) {
-    return <Loading />;
   }
 
   if (data) {
@@ -245,7 +242,7 @@ const GroupDetailsScreen = ({
       </Container>
     );
   }
-  return null;
+  return <GroupDetailPlaceholder />;
 };
 
 export default GroupDetailsScreen;

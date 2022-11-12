@@ -7,6 +7,7 @@ import { StyleConstants } from "@/shared/styles";
 import timeSince from "@/shared/utils/timeSince";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GroupDetailsParamList } from "@/groups/types";
+import PostCommentsPlaceholder from "../Skeleton/PostCommentsPlaceholder";
 
 interface PostCommentProps {
   ownerId: string;
@@ -78,7 +79,7 @@ const PostComments = (props: PostCommentProps) => {
     );
   }
 
-  return null;
+  return <PostCommentsPlaceholder />;
 };
 
 export default PostComments;

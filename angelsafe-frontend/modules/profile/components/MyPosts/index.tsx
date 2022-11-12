@@ -1,9 +1,10 @@
 import React from "react";
 import { useGetMyPostsQuery } from "@/shared/api/post";
 import { makeStyles, Text } from "@rneui/themed";
-import { ErrorText, Loading } from "@/shared/components";
+import { ErrorText } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import PostCard from "./PostCard";
+import MyPostsPlaceholder from "../Skeleton/MyPostsPlaceholder";
 
 const MyPosts = () => {
   const styles = useStyles();
@@ -29,7 +30,12 @@ const MyPosts = () => {
     );
   }
 
-  return <Loading />;
+  return (
+    <>
+      <MyPostsPlaceholder />
+      <MyPostsPlaceholder />
+    </>
+  );
 };
 
 export default MyPosts;

@@ -26,10 +26,13 @@ const ViewProfile = ({
     if (data?.data[0]) {
       navigation.navigate("App", {
         screen: "More",
+        initial: true,
         params: {
           screen: "Chat",
+          initial: false,
           params: {
             screen: "ChatInterface",
+            initial: false,
             params: {
               id,
               username: data.data[0].username,

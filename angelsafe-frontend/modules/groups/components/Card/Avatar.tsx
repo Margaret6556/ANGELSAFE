@@ -6,6 +6,7 @@ import timeSince from "@/shared/utils/timeSince";
 import { useGetProfileQuery } from "@/shared/api/profile";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GroupDetailsParamList } from "@/groups/types";
+import PostAvatarPlacholder from "../Skeleton/PostAvatarPlacholder";
 
 interface AvatarCardProps {
   userId: string;
@@ -59,7 +60,8 @@ const AvatarCard = (props: AvatarCardProps) => {
       </View>
     );
   }
-  return null;
+
+  return <PostAvatarPlacholder />;
 };
 
 export default AvatarCard;

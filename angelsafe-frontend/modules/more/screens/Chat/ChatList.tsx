@@ -1,25 +1,27 @@
-import { View } from "react-native";
-import React from "react";
-import { makeStyles, Text } from "@rneui/themed";
+import { Animated, FlatList, StyleSheet, View } from "react-native";
+import React, { useRef } from "react";
+import { Divider, makeStyles, Text } from "@rneui/themed";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ChatParamsList } from "@/more/types";
-import { ScrollView } from "react-native-gesture-handler";
 import { useGetChatListQuery } from "@/shared/api/chat";
 import { useAppSelector } from "@/shared/hooks";
-import { ErrorText, Loading, SearchIcon } from "@/shared/components";
+import { ErrorText, SearchIcon } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import ChatPreview from "@/more/components/Chat/List/CardPreview";
 import AvatarChat from "@/more/components/Chat/List/Avatar";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import useDarkMode from "@/shared/hooks/useDarkMode";
+import ChatListMessagePlaceholder from "@/more/components/Skeleton/ChatListMessagePlaceholder";
+import ChatListAvatarPlaceholder from "@/more/components/Skeleton/ChatListAvatarPlaceholder";
 
 const ChatList = ({
   navigation,
 }: StackScreenProps<ChatParamsList, "ChatList">) => {
-  const { data, error, isLoading, isError } = useGetChatListQuery();
+  const { data, error, isError, isLoading } = useGetChatListQuery();
   const { user } = useAppSelector((state) => state.auth);
   const bottomTab = useBottomTabBarHeight();
   const isDark = useDarkMode();
+  const animation = useRef(new Animated.Value(0)).current;
   const styles = useStyles({
     tabBarHeight: bottomTab / 1.5,
     isDark,
@@ -39,79 +41,131 @@ const ChatList = ({
       });
     };
 
-  if (data?.data) {
-    return (
-      <View style={[styles.container, { paddingHorizontal: 0 }]}>
-        <View style={styles.header}>
-          <Text>{user?.username}</Text>
-          <View style={{ flexDirection: "row" }}>
-            {/* <SearchIcon /> */}
-            {/* <TouchableOpacity onPress={handleProfilePress}>
-              <Avatar
-                source={{
-                  uri: user?.profilePic,
-                }}
-                size={45}
-                rounded
-              />
-            </TouchableOpacity> */}
-          </View>
-        </View>
-        <View style={styles.contentContainer}>
-          <ScrollView
-            bounces={false}
-            contentContainerStyle={styles.scrollViewContainer}
-            showsVerticalScrollIndicator={false}
-          >
-            <ScrollView
-              horizontal
-              style={styles.scrollView}
-              showsHorizontalScrollIndicator={false}
-            >
-              {data.data.map((i) => {
-                if (i.receiver) {
-                  return (
-                    <AvatarChat
-                      key={i.receiver.id}
-                      profilePicture={i.receiver.profilePic ?? "1"}
-                      onPress={handleChatPerson({ ...i.receiver })}
-                    />
-                  );
-                }
-              })}
-            </ScrollView>
-            <View style={styles.chatListContainer}>
-              {data.data.length > 0 ? (
-                data.data.map((i) => {
-                  if (i.receiver) {
-                    return (
-                      <ChatPreview
-                        key={i.id}
-                        {...i}
-                        onPress={handleChatPerson({ ...i.receiver })}
-                      />
-                    );
-                  }
-                })
-              ) : (
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    flex: 1,
-                  }}
-                >
-                  <Text>No messages yet</Text>
-                </View>
-              )}
-            </View>
-          </ScrollView>
-        </View>
-      </View>
-    );
-  }
+  const chats = data?.data || [];
 
-  return <Loading />;
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text>{user?.username}</Text>
+        {/* <View style={{ flexDirection: "row" }}>
+          <SearchIcon />
+        </View> */}
+      </View>
+      <Animated.FlatList
+        data={chats}
+        horizontal
+        style={[
+          styles.scrollView,
+          {
+            opacity: animation.interpolate({
+              inputRange: [0, 70],
+              outputRange: [1, 0],
+            }),
+          },
+          {
+            transform: [
+              {
+                translateX: animation.interpolate({
+                  inputRange: [0, 200],
+                  outputRange: [0, -50],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          },
+        ]}
+        renderItem={({ item }) => {
+          if (item.receiver) {
+            return (
+              <AvatarChat
+                key={item.receiver.id}
+                profilePicture={item.receiver.profilePic ?? "1"}
+                onPress={handleChatPerson({ ...item.receiver })}
+              />
+            );
+          }
+
+          return null;
+        }}
+        ListFooterComponent={() =>
+          isLoading ? (
+            <View
+              style={{
+                paddingLeft: 12,
+                flexDirection: "row",
+                width: 68,
+              }}
+            >
+              {new Array(4).fill(0).map((_, idx) => (
+                <ChatListAvatarPlaceholder key={idx} />
+              ))}
+            </View>
+          ) : null
+        }
+      />
+      <Animated.FlatList
+        data={chats}
+        bounces={chats.length > 1}
+        style={[
+          styles.chatListContainer,
+          {
+            transform: [
+              {
+                translateY: animation.interpolate({
+                  inputRange: [0, 100],
+                  outputRange: [0, -80],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+            borderRadius: animation.interpolate({
+              inputRange: [0, 100],
+              outputRange: [50, 0],
+              extrapolate: "clamp",
+            }),
+          },
+        ]}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: { y: animation },
+              },
+            },
+          ],
+          {
+            useNativeDriver: true,
+          }
+        )}
+        renderItem={({ item }) => {
+          return (
+            <>
+              {item.receiver && (
+                <ChatPreview
+                  key={item.id}
+                  {...item}
+                  onPress={handleChatPerson({ ...item.receiver })}
+                />
+              )}
+              <Divider />
+            </>
+          );
+        }}
+        ListFooterComponent={() => (
+          <View style={styles.footer}>
+            {isLoading &&
+              new Array(4).fill(0).map((_, idx) => (
+                <View key={idx} style={styles.placeholderWrapper}>
+                  <ChatListMessagePlaceholder />
+                  <Divider style={{ paddingVertical: 4 }} />
+                </View>
+              ))}
+          </View>
+        )}
+      />
+    </View>
+  );
 };
 
 export default ChatList;
@@ -121,7 +175,7 @@ const useStyles = makeStyles(
     container: {
       padding: StyleConstants.PADDING_HORIZONTAL,
       paddingBottom: 0,
-      flex: 1,
+      paddingHorizontal: 0,
     },
     contentContainer: {},
     scrollViewContainer: {
@@ -129,23 +183,28 @@ const useStyles = makeStyles(
       justifyContent: "space-between",
     },
     scrollView: {
-      marginVertical: StyleConstants.PADDING_VERTICAL,
+      paddingVertical: theme.spacing.xl,
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
       paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.grey4,
+      borderBottomWidth: StyleSheet.hairlineWidth,
+      borderBottomColor: theme.colors.grey0,
       paddingBottom: 12,
     },
     chatListContainer: {
       backgroundColor: props.isDark ? theme.colors.grey5 : "#F3FBFF",
-      borderTopLeftRadius: 50,
-      borderTopRightRadius: 50,
       paddingVertical: 12,
-      minHeight: 600,
+      height: "100%",
+    },
+    placeholderWrapper: {
+      padding: 12,
+    },
+    footer: {
+      paddingTop: 12,
+      paddingBottom: 200,
     },
   })
 );

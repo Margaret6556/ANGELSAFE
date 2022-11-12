@@ -61,7 +61,12 @@ const postApiSlice = apiSlice.injectEndpoints({
       providesTags: (res, _, { postId }) => {
         const tag = { type: "POST" as const, id: "COMMENTS" };
         if (res?.data) {
-          return [...res.data.map(() => ({ type: tag.type, id: postId }))];
+          return [
+            ...res.data.map(() => ({
+              type: tag.type,
+              id: `postComments-${postId}`,
+            })),
+          ];
         }
         return [tag];
       },
@@ -75,7 +80,9 @@ const postApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: (_, __, arg) => [{ type: "POST", id: arg.postId }],
+      invalidatesTags: (_, __, arg) => [
+        { type: "POST", id: `postComments-${arg.postId}` },
+      ],
     }),
     createPost: builder.mutation<
       BackendResponse<null>,

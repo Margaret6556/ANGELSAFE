@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect } from "react";
-import { StyleSheet } from "react-native";
 import { ChildrenProps } from "@/shared/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MainStatusBar from "../MainStatusBar";
@@ -24,7 +23,7 @@ const Layout = ({ children, onLayout }: LayoutProps) => {
 
   useEffect(() => {
     dispatch(setThemeFontSize(fontSizeMultiplier));
-    // dispatch(setSafeAreaBg("transparent"));
+    dispatch(setSafeAreaBg("transparent"));
 
     updateTheme({
       components: {

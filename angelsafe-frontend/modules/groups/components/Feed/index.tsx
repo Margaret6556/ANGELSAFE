@@ -5,6 +5,7 @@ import Card from "../Card";
 import { useGetPostListQuery } from "@/shared/api/post";
 import AddPost from "../AddPost";
 import { StyleConstants } from "@/shared/styles";
+import PostsPlaceholder from "../Skeleton/PostsPlaceholder";
 
 interface GroupFeedProps {
   groupId: string;
@@ -52,7 +53,7 @@ const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
     );
   }
 
-  return null;
+  return <PostsPlaceholder />;
 };
 
 export default GroupFeed;

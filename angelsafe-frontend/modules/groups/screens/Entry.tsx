@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { StyleSheet } from "react-native";
-import { Container, ErrorText, Loading } from "@/shared/components";
+import { Container, ErrorText } from "@/shared/components";
 import { GroupParamsList } from "../types";
 import Groups from "../components/Groups";
 import { StackScreenProps } from "@react-navigation/stack";
@@ -8,6 +8,7 @@ import { _API } from "@/shared/config";
 import { useGetGroupsQuery } from "@/shared/api/groups";
 import SearchModal from "../components/SearchModal";
 import { useGroupsContext } from "../components/GroupsContext";
+import GroupListPlaceholder from "../components/Skeleton/GroupListPlaceholder";
 
 const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
   const { data, isError, error } = useGetGroupsQuery();
@@ -41,7 +42,7 @@ const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
     );
   }
 
-  return <Loading />;
+  return <GroupListPlaceholder />;
 };
 
 export default EntryScreen;

@@ -15,7 +15,6 @@ interface ChatPreviewProps extends ChatListResponse {
 }
 
 const ChatPreview = (props: ChatPreviewProps) => {
-  const { theme } = useTheme();
   const isDark = useDarkMode();
   const styles = useStyles({ isDark });
 

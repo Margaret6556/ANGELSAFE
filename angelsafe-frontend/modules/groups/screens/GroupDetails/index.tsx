@@ -13,7 +13,6 @@ const GroupDetailsStack = createStackNavigator<GroupDetailsParamList>();
 const GroupScreen = ({}: StackScreenProps<GroupParamsList, "GroupDetails">) => {
   return (
     <GroupDetailsStack.Navigator
-      initialRouteName="Details"
       screenOptions={{
         ...TransitionSlide,
       }}

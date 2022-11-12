@@ -1,6 +1,5 @@
 import React from "react";
 import { MoreParamsList } from "@/more/types";
-import { useAppDispatch } from "@/shared/hooks";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { StyleSheet, View } from "react-native";
 import Card from "../List/Card";

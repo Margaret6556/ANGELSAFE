@@ -12,7 +12,7 @@ export const _API = {
     REGISTER: "/profile/register",
     UPDATE: "/profile/update",
     UPDATE_PIC: "/profile/update-pic",
-    INFO: "/profile/info", // GET
+    INFO: "/profile/info",
   },
   GROUP: {
     UPDATE: "/group/update",

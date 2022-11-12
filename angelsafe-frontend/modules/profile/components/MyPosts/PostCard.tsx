@@ -1,18 +1,21 @@
 import React from "react";
 import { PostsType, useGetMyPostsQuery } from "@/shared/api/post";
 import { Avatar, Card, Divider, makeStyles, Text } from "@rneui/themed";
-import { Loading } from "@/shared/components";
+import { ErrorText, Loading } from "@/shared/components";
 import { useGetSingleGroupQuery } from "@/shared/api/groups";
 import { StyleConstants } from "@/shared/styles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AppTabParamList } from "@/shared/types";
 import { View } from "react-native";
+import MyPostsPlaceholder from "../Skeleton/MyPostsPlaceholder";
 
 const PostCard = (props: PostsType) => {
   const navigate = useNavigation<NavigationProp<AppTabParamList, "Groups">>();
   const styles = useStyles();
-  const { data, isError } = useGetSingleGroupQuery(props.groupId);
+  const { data, isError, error, isLoading } = useGetSingleGroupQuery(
+    props.groupId
+  );
 
   const handlePress = (id: string) => () => {
     navigate.navigate("Groups", {
@@ -26,8 +29,12 @@ const PostCard = (props: PostsType) => {
     });
   };
 
-  if (isError) {
-    return null;
+  if (isError || error) {
+    return <ErrorText />;
+  }
+
+  if (isLoading) {
+    return <MyPostsPlaceholder />;
   }
 
   return (
@@ -59,7 +66,8 @@ const useStyles = makeStyles((theme) => ({
   card: {
     backgroundColor: theme.colors.background,
     marginHorizontal: 0,
-    borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
+    borderRadius: 8,
+    borderColor: "transparent",
   },
   divider: {
     marginVertical: 12,
