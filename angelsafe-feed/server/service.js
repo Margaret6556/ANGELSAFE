@@ -177,13 +177,13 @@ module.exports = (config) => {
       end.setHours(23,59,59,999);
       const winCount = await DBHelper.getCollection(config.statCollection).count({
         ownerId: DB.getObjectId(decodedAuth.data.id),
-        $or: [{ stat: "1"}, { stat: "1"}]
+        $or: [{ stat: "1"}, { stat: "2"}]
       });
       const painCount = await DBHelper.getCollection(config.statCollection).count({
         ownerId: DB.getObjectId(decodedAuth.data.id),
-        $or: [{ stat: "2"}, { stat: "3"}, { stat: "4"}, { stat: "5"}]
+        $or: [{ stat: "3"}, { stat: "4"}, { stat: "5"}]
       });
-      log.debug(result);
+      log.debug(winCount, painCount);
       result.status = 200;
       result.error = null;
       result.message = 'Getting Wins Successful';
@@ -225,24 +225,22 @@ module.exports = (config) => {
         throw result;
       }
       let newData = [];
-      await Promise.all(data.map(async (obj) => {
-        await (async (obj)=>{
-          const winCount = await DBHelper.getCollection(config.statCollection).count({
-            ownerId: DB.getObjectId(obj.id),
-            $or: [{ stat: "1"}, { stat: "1"}]
-          });
-          const painCount = await DBHelper.getCollection(config.statCollection).count({
-            ownerId: DB.getObjectId(obj.id),
-            $or: [{ stat: "2"}, { stat: "3"}, { stat: "4"}, { stat: "5"}]
-          });
-          newData.push({
-            ...obj,
-            winCount: winCount?winCount:0,
-            painCount: painCount?painCount:0,
-          });
-        });
-      }));
-      log.debug(result);
+	for(let i =0; i < Object.keys(data).length; i++){
+		const winCount = await DBHelper.getCollection(config.statCollection).count({
+			ownerId: DB.getObjectId(data[i].id),
+			$or: [{stat: "1"}, {stat: "2"}]
+		});
+		const  painCount = await DBHelper.getCollection(config.statCollection).count({
+			ownerId: DB.getObjectId(data[i].id),
+			$or: [{stat: "3"}, {stat: "4"}, {stat: "5"}]
+		});
+		newData.push({
+			...data[i],
+			winCount: winCount?winCount:0,
+			painCount: painCount?painCount: 0,
+		});
+	}
+      log.debug(newData);
       result.status = 200;
       result.error = null;
       result.message = 'Getting Wins Successful';
@@ -732,7 +730,7 @@ module.exports = (config) => {
         _id: DB.getObjectId(data.postId)
       },{
         $addToSet: {
-          comments: { message: data.message.toString().substring(0, 150), ownerId: DB.getObjectId(decodedAuth.data.id), timestamp: new Date().valueOf() }
+          comments: { message: data.message.toString().substring(0, 200), ownerId: DB.getObjectId(decodedAuth.data.id), timestamp: new Date().valueOf() }
         }
       });
       log.debug(updatedResult);

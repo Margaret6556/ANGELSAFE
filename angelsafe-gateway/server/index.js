@@ -227,7 +227,7 @@ async function processData(req, res) {
                 break;
               case 'POST':
                 result = await ProfileService.getProfiles(req, data);
-                let wins = await FeedService.getProfileWins(req, { ...result.data });
+                let wins = await FeedService.getProfileWins(req, result.data);
                 result.data = wins.data;
                 res.status(result.status).json(result);
                 break;
@@ -376,6 +376,7 @@ async function processData(req, res) {
             switch (req.method) {
               case 'POST':
                 result = await ChatService.create(req, data);
+		console.log(result.data.receiverId, clients.indexOf(result.data.receiverId), result.status, clientSockets.length, clients.length);
                 if(result.status == 200){
                   const clientIndex = clients.indexOf(result.data.receiverId);
                   if(clientIndex > -1)
@@ -669,8 +670,10 @@ io.on('connection', client => {
   client.on('disconnect', () => { 
     clientSockets = clientSockets.filter(e => e !== clientSockets[clients.indexOf(client.userId)]);
     clients = clients.filter(e => e !== client.userId);
+	console.log(clientSockets.length, clients.length);
   });
   clientSockets.push(client);
+	console.log(clientSockets.length, clients.length);
 });
 server.listen(config.serverPort);
 module.export = app;

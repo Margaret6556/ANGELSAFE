@@ -319,6 +319,7 @@ module.exports = (config) => {
       result.message = 'Getting Group Successful';
       result.data = {
         id: isExisting._id.toString(),
+	ownerId: isExisting.ownerId.toString(),
         groupname: isExisting.groupname,
         profilePic: isExisting.profilePic,
         description: isExisting.description,
