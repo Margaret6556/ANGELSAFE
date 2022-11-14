@@ -668,8 +668,9 @@ io.on('connection', client => {
   clients.push(client.userId);
   client.on('event', data => { /* … */ });
   client.on('disconnect', () => { 
-    clientSockets = clientSockets.filter(e => e !== clientSockets[clients.indexOf(client.userId)]);
-    clients = clients.filter(e => e !== client.userId);
+    let index = clients.indexOf(client.userId);
+    clientSockets = clientSockets.filter(e => e !== clientSockets[index]);
+    clients = clients.filter(e => e !== clients[index]);
 	console.log(clientSockets.length, clients.length);
   });
   clientSockets.push(client);
