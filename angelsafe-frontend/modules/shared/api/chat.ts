@@ -73,5 +73,9 @@ const chatApiSlice = apiSlice.injectEndpoints({
   overrideExisting: true,
 });
 
-export const { useGetChatListQuery, useCreateChatMutation, useViewChatQuery } =
-  chatApiSlice;
+export const {
+  useGetChatListQuery,
+  useCreateChatMutation,
+  useViewChatQuery,
+  useLazyViewChatQuery,
+} = chatApiSlice;

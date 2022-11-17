@@ -4,7 +4,11 @@ import { ChatParamsList } from "@/more/types";
 import { Container, Loading } from "@/shared/components";
 import { GiftedChat, IMessage, User } from "react-native-gifted-chat";
 import { makeStyles } from "@rneui/themed";
-import { useCreateChatMutation, useViewChatQuery } from "@/shared/api/chat";
+import {
+  useCreateChatMutation,
+  useLazyViewChatQuery,
+  useViewChatQuery,
+} from "@/shared/api/chat";
 import { useAppSelector } from "@/shared/hooks";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import logger from "@/shared/utils/logger";
@@ -16,90 +20,138 @@ const ChatInterface = ({
 }: StackScreenProps<ChatParamsList, "ChatInterface">) => {
   const receiverId = route.params.id;
   const [messages, setMessages] = useState<IMessage[]>([]);
-  const { data, isError, isLoading, isSuccess } = useViewChatQuery({
-    receiverId,
-    skip: "50",
-  });
+  const [isReady, setIsReady] = useState(false);
+  // const { data, isError, isLoading, isSuccess } = useViewChatQuery({
+  //   receiverId,
+  //   // skip: "50",
+  // });
+  const [fetchChat, fetchChatResponse] = useLazyViewChatQuery();
   const [createChat, createChatResponse] = useCreateChatMutation();
   const { user } = useAppSelector((state) => state.auth);
   const styles = useStyles();
   const { handleSetCb } = useSocketContext();
+
   useEffect(() => {
-    if (!isLoading && !!data?.data.length && isSuccess && user) {
-      const copy = [...data.data].reverse(); // make newest 0
-      const isSender = copy[0].sender.id === user.id;
-      // const swapped = copy.map(i => ({
-      //   ...i,
-      //   receiver: i.receiver.id
-      // }))
+    if (!user) return;
 
-      const aaa = {
-        receiver: {
-          ...copy[0].receiver,
-          profilePic: "",
-          hobbies: "",
-          movies: "",
-          music: "",
-          bio: "",
-        },
-        sender: {
-          ...copy[0].sender,
-          profilePic: "",
-          hobbies: "",
-          movies: "",
-          music: "",
-          bio: "",
-        },
-      };
+    const getChat = async () => {
+      try {
+        let ch = [];
+        let skip = 0;
 
-      // console.log(
-      //   `
+        while (true) {
+          const chats = await fetchChat({
+            receiverId,
+            skip: String(skip),
+          }).unwrap();
 
-      //   `,
-      //   { sender: aaa.sender },
-      //   `
+          if (!!!chats.data.length) {
+            break;
+          }
 
-      //   `,
-      //   {
-      //     receiver: aaa.receiver,
-      //   },
-      //   `
+          ch.push(...chats.data);
+          skip = skip + 20;
+        }
 
-      //   `,
-      //   { user: user.id, receiverId, msgId: copy[0].id },
-      //   `
+        const copy = ch.reverse();
 
-      //   `
-      // );
+        const isSender = copy[0].sender.id === user.id;
 
-      if (isSender) {
-        logger("chat", `i am sender, ${user.id}`);
-        logger("chat", `receiver id, ${aaa.receiver.id}`);
-      } else {
-        logger("chat", `i am receiver, ${user?.id}`);
-        logger("chat", `sender id, ${aaa.sender.id}`);
+        const mappedObject: IMessage[] = copy.map((i) => ({
+          _id: i.id,
+          text: i.message,
+          createdAt: new Date(i.timestamp),
+          user: {
+            _id: isSender ? i.sender.id : i.receiver.id,
+            name: isSender ? i.sender.username : i.receiver.username,
+            avatar: isSender ? i.sender.profilePic : i.receiver.profilePic,
+          },
+        }));
+        setMessages(mappedObject);
+        setIsReady(true);
+      } catch (e) {
+        console.log({ e });
       }
-      logger("chat", `the message: ${copy[0].message}`);
+    };
+    getChat();
+  }, []);
 
-      const mappedObject: IMessage[] = copy.map((i) => ({
-        _id: i.id,
-        text: i.message,
-        createdAt: new Date(i.timestamp),
-        user: {
-          _id: isSender ? i.sender.id : i.receiver.id,
-          name: isSender ? i.sender.username : i.receiver.username,
-          avatar: isSender ? i.sender.profilePic : i.receiver.profilePic,
-        },
-      }));
-      setMessages(mappedObject);
-    }
-  }, [data]);
+  // useEffect(() => {
+  //   if (!isLoading && !!data?.data.length && isSuccess && user) {
+  //     const copy = [...data.data].reverse(); // make newest 0
+  //     const isSender = copy[0].sender.id === user.id;
+  //     // const swapped = copy.map(i => ({
+  //     //   ...i,
+  //     //   receiver: i.receiver.id
+  //     // }))
 
-  if (isError) {
+  //     const aaa = {
+  //       receiver: {
+  //         ...copy[0].receiver,
+  //         profilePic: "",
+  //         hobbies: "",
+  //         movies: "",
+  //         music: "",
+  //         bio: "",
+  //       },
+  //       sender: {
+  //         ...copy[0].sender,
+  //         profilePic: "",
+  //         hobbies: "",
+  //         movies: "",
+  //         music: "",
+  //         bio: "",
+  //       },
+  //     };
+
+  //     // console.log(
+  //     //   `
+
+  //     //   `,
+  //     //   { sender: aaa.sender },
+  //     //   `
+
+  //     //   `,
+  //     //   {
+  //     //     receiver: aaa.receiver,
+  //     //   },
+  //     //   `
+
+  //     //   `,
+  //     //   { user: user.id, receiverId, msgId: copy[0].id },
+  //     //   `
+
+  //     //   `
+  //     // );
+
+  //     if (isSender) {
+  //       logger("chat", `i am sender, ${user.id}`);
+  //       logger("chat", `receiver id, ${aaa.receiver.id}`);
+  //     } else {
+  //       logger("chat", `i am receiver, ${user?.id}`);
+  //       logger("chat", `sender id, ${aaa.sender.id}`);
+  //     }
+  //     logger("chat", `the message: ${copy[0].message}`);
+
+  //     const mappedObject: IMessage[] = copy.map((i) => ({
+  //       _id: i.id,
+  //       text: i.message,
+  //       createdAt: new Date(i.timestamp),
+  //       user: {
+  //         _id: isSender ? i.sender.id : i.receiver.id,
+  //         name: isSender ? i.sender.username : i.receiver.username,
+  //         avatar: isSender ? i.sender.profilePic : i.receiver.profilePic,
+  //       },
+  //     }));
+  //     setMessages(mappedObject);
+  //   }
+  // }, [data]);
+
+  if (fetchChatResponse.isError) {
     return null;
   }
 
-  if (isLoading) {
+  if (fetchChatResponse.isLoading || !isReady) {
     return <Loading solidBg={true} />;
   }
 

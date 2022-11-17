@@ -13,7 +13,7 @@ interface NumberInputProps {
 
 const NumberInput = ({ control }: NumberInputProps) => {
   const styles = useStyles();
-  const { errors } = control._formState;
+
   return (
     <Controller
       control={control}
@@ -21,12 +21,11 @@ const NumberInput = ({ control }: NumberInputProps) => {
       rules={{
         required: "This is a required field",
       }}
-      render={({ field }) => {
-        const hasErrors = !!errors.mobile ? styles.inputError : {};
+      render={({ field, fieldState: { error } }) => {
+        const hasErrors = !!error ? styles.inputError : {};
         return (
           <>
             <PhoneInput
-              {...field}
               defaultCode="US"
               onChangeFormattedText={field.onChange}
               containerStyle={[styles.inputContainer, hasErrors]}
@@ -36,9 +35,7 @@ const NumberInput = ({ control }: NumberInputProps) => {
                 countryCodes: ["US", "CA", "PH"],
               }}
             />
-            {!!errors.mobile && (
-              <Text style={styles.errorText}>{errors.mobile.message}</Text>
-            )}
+            {!!error && <Text style={styles.errorText}>{error.message}</Text>}
           </>
         );
       }}
@@ -69,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
   },
   errorText: {
     textAlign: "right",
-    color: "red",
+    color: theme.colors.error,
     marginVertical: theme.spacing.sm,
     fontSize: sizing.FONT.sm,
   },

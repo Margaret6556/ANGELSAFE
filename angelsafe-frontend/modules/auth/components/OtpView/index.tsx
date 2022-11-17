@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Platform } from "react-native";
 import { Text, Button, Icon, makeStyles } from "@rneui/themed";
 import { Auth, _API } from "@/shared/config";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -16,6 +16,7 @@ import logger from "@/shared/utils/logger";
 import useLoginFetchProfileStats from "@/shared/hooks/useLoginFetchProfileStats";
 import { moderateScale } from "react-native-size-matters";
 import { sizing } from "@/shared/providers/ThemeProvider";
+import useIsKeyboardShowing from "@/shared/hooks/useIsKeyboardShowing";
 
 interface IOtpViewProps {
   mobile: string;
@@ -35,6 +36,7 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
   const styles = useStyles();
   const dispatch = useDispatch();
   const loginAndFetchProfile = useLoginFetchProfileStats();
+  const { keyboardIsShown } = useIsKeyboardShowing();
 
   const handleVerify = async () => {
     try {
@@ -102,6 +104,8 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
     <KeyboardAwareScrollView
       contentContainerStyle={styles.wrapper}
       extraHeight={moderateScale(200)}
+      enableOnAndroid
+      enableAutomaticScroll={Platform.OS === "ios"}
     >
       <View style={styles.container}>
         <Icon
@@ -159,7 +163,12 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
         </View>
       </View>
 
-      <View style={[styles.button]}>
+      <View
+        style={[
+          styles.button,
+          Platform.OS === "android" && keyboardIsShown ? { opacity: 0 } : {},
+        ]}
+      >
         <Button
           title="Verify"
           disabled={!otpCode || otpExpired}
@@ -197,7 +206,7 @@ export default OtpView;
 const useStyles = makeStyles((theme) => ({
   wrapper: {
     justifyContent: "space-between",
-    padding: StyleConstants.PADDING_HORIZONTAL,
+    padding: theme.spacing.lg,
     flex: 1,
   },
   container: {
@@ -214,7 +223,7 @@ const useStyles = makeStyles((theme) => ({
     marginVertical: moderateScale(48),
   },
   otp: {
-    height: moderateScale(100),
+    // height: moderateScale(100),
     justifyContent: "space-between",
     width: "100%",
   },
@@ -229,5 +238,6 @@ const useStyles = makeStyles((theme) => ({
   button: {
     justifyContent: "flex-end",
     width: "100%",
+    flex: 1,
   },
 }));
