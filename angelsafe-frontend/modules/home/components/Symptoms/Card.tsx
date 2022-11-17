@@ -4,6 +4,7 @@ import { StyleConstants } from "@/shared/styles";
 import { makeStyles } from "@rneui/themed";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { setSymptoms } from "@/shared/state/reducers/experience";
+import { moderateScale } from "react-native-size-matters";
 
 interface ISymptomsCard {
   title: string;
@@ -12,9 +13,7 @@ interface ISymptomsCard {
 const SymptomsCard = ({ title }: ISymptomsCard) => {
   const [isChecked, setChecked] = useState(false);
   const dispatch = useAppDispatch();
-  const { symptoms, isEditableToday } = useAppSelector(
-    (state) => state.experience
-  );
+  const { symptoms } = useAppSelector((state) => state.experience);
   const includedSymptom = symptoms.includes(title);
   const styles = useStyles({
     includedSymptom: !!!symptoms.length ? "empty" : includedSymptom,
@@ -48,8 +47,9 @@ const useStyles = makeStyles(
     }
   ) => ({
     container: {
-      borderRadius: 12,
+      borderRadius: theme.spacing.md,
       opacity: props.includedSymptom ? 1 : 0.6,
+      minHeight: moderateScale(50, 0.5),
     },
     content: {
       flexDirection: "row",
@@ -57,7 +57,7 @@ const useStyles = makeStyles(
       alignItems: "center",
     },
     checkbox: {
-      marginRight: StyleConstants.PADDING_HORIZONTAL,
+      marginRight: theme.spacing.lg,
     },
   })
 );

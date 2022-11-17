@@ -1,34 +1,33 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import React from "react";
-import { Divider, Icon, Text } from "@rneui/themed";
-import { StyleConstants } from "@/shared/styles";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { SearchIcon } from "@/shared/components";
+import { Divider, makeStyles, Text, useTheme } from "@rneui/themed";
 
 type Props = {};
 
 const Header = (props: Props) => {
+  const styles = useStyles();
+  const { theme } = useTheme();
   return (
     <View style={styles.wrapper}>
       <View style={styles.container}>
-        <Text h3>Alerts</Text>
+        <Text h2>Alerts</Text>
         {/* <View style={styles.icons}>
           <TouchableOpacity activeOpacity={0.5}>
             <SearchIcon />
           </TouchableOpacity>
         </View> */}
       </View>
-      <Divider style={{ marginTop: 12 }} />
+      <Divider />
     </View>
   );
 };
 
 export default Header;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {},
   container: {
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
+    padding: theme.spacing.lg,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -38,4 +37,4 @@ const styles = StyleSheet.create({
 
     justifyContent: "space-between",
   },
-});
+}));

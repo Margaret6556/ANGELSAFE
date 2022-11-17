@@ -1,4 +1,4 @@
-import { View } from "react-native";
+import { Dimensions, View } from "react-native";
 import React from "react";
 import {
   Fade,
@@ -7,9 +7,11 @@ import {
   PlaceholderMedia,
 } from "rn-placeholder";
 import { makeStyles } from "@rneui/themed";
+import { scale } from "react-native-size-matters";
 
 const GroupListPlaceholder = () => {
   const styles = useStyles();
+  const isTablet = Dimensions.get("window").width > 500;
 
   return (
     <Placeholder
@@ -20,18 +22,12 @@ const GroupListPlaceholder = () => {
     >
       {new Array(4).fill(0).map((_, idx) => (
         <View key={idx} style={styles.wrapper}>
-          <View>
-            <PlaceholderMedia isRound size={76} style={styles.media} />
-            <PlaceholderLine height={16} />
-          </View>
-          <View>
-            <PlaceholderMedia isRound size={76} style={styles.media} />
-            <PlaceholderLine height={16} />
-          </View>
-          <View>
-            <PlaceholderMedia isRound size={76} style={styles.media} />
-            <PlaceholderLine height={16} />
-          </View>
+          {new Array(isTablet ? 4 : 3).fill(0).map((_, iidx) => (
+            <View key={iidx}>
+              <PlaceholderMedia isRound size={scale(64)} style={styles.media} />
+              <PlaceholderLine height={scale(16)} />
+            </View>
+          ))}
         </View>
       ))}
     </Placeholder>
@@ -43,8 +39,7 @@ export default GroupListPlaceholder;
 const useStyles = makeStyles((theme) => ({
   container: {
     height: "100%",
-    padding: 24,
-    paddingHorizontal: 32,
+    padding: theme.spacing.lg,
   },
   wrapper: {
     flexDirection: "row",
@@ -53,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
   },
   media: {
-    marginBottom: 8,
+    marginBottom: theme.spacing.md,
   },
   fade: {
     backgroundColor: theme.colors.grey4,

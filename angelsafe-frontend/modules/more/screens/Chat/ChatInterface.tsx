@@ -8,6 +8,7 @@ import { useCreateChatMutation, useViewChatQuery } from "@/shared/api/chat";
 import { useAppSelector } from "@/shared/hooks";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import logger from "@/shared/utils/logger";
+import { useSocketContext } from "@/shared/providers/SocketProvider";
 
 const ChatInterface = ({
   navigation,
@@ -17,16 +18,20 @@ const ChatInterface = ({
   const [messages, setMessages] = useState<IMessage[]>([]);
   const { data, isError, isLoading, isSuccess } = useViewChatQuery({
     receiverId,
-    skip: "10",
+    skip: "50",
   });
   const [createChat, createChatResponse] = useCreateChatMutation();
   const { user } = useAppSelector((state) => state.auth);
   const styles = useStyles();
-
+  const { handleSetCb } = useSocketContext();
   useEffect(() => {
     if (!isLoading && !!data?.data.length && isSuccess && user) {
       const copy = [...data.data].reverse(); // make newest 0
       const isSender = copy[0].sender.id === user.id;
+      // const swapped = copy.map(i => ({
+      //   ...i,
+      //   receiver: i.receiver.id
+      // }))
 
       const aaa = {
         receiver: {
@@ -47,31 +52,34 @@ const ChatInterface = ({
         },
       };
 
-      console.log(
-        `
-      
-        `,
-        { sender: aaa.sender },
-        `
-        
-        `,
-        {
-          receiver: aaa.receiver,
-        },
-        `
-        
-        `,
-        { user: user.id, receiverId, msgId: copy[0].id },
-        `
-        
-        `
-      );
+      // console.log(
+      //   `
+
+      //   `,
+      //   { sender: aaa.sender },
+      //   `
+
+      //   `,
+      //   {
+      //     receiver: aaa.receiver,
+      //   },
+      //   `
+
+      //   `,
+      //   { user: user.id, receiverId, msgId: copy[0].id },
+      //   `
+
+      //   `
+      // );
 
       if (isSender) {
         logger("chat", `i am sender, ${user.id}`);
+        logger("chat", `receiver id, ${aaa.receiver.id}`);
       } else {
         logger("chat", `i am receiver, ${user?.id}`);
+        logger("chat", `sender id, ${aaa.sender.id}`);
       }
+      logger("chat", `the message: ${copy[0].message}`);
 
       const mappedObject: IMessage[] = copy.map((i) => ({
         _id: i.id,
@@ -130,6 +138,7 @@ const ChatInterface = ({
               name: user.username,
               avatar: user.profilePic,
             }}
+            messagesContainerStyle={{}}
             wrapInSafeArea={false}
             renderAvatarOnTop
             // forceGetKeyboardHeight

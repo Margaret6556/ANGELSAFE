@@ -1,17 +1,18 @@
 import { StyleSheet } from "react-native";
+import { scale } from "react-native-size-matters";
 
 export const buttomBottomPosition = 48;
 
-export enum StyleConstants {
-  PADDING_HORIZONTAL = 12,
-  PADDING_VERTICAL = 20,
-  BUTTON_BOTTOM_POSITION = 48,
-  GAP_BOTTOM = 12,
-  GAP_VERTICAL = 8,
-  MIN_HEIGHT = 700,
-  HEADER_TEXT_HEIGHT = 64,
-  BUTTON_HEIGHT = 50,
-}
+export const StyleConstants = {
+  PADDING_HORIZONTAL: scale(12),
+  PADDING_VERTICAL: scale(20),
+  BUTTON_BOTTOM_POSITION: 48,
+  GAP_BOTTOM: 12,
+  GAP_VERTICAL: 8,
+  HEADER_TEXT_HEIGHT: 64,
+  // BUTTON_HEIGHT : scale(50),
+  BUTTON_HEIGHT: 50,
+};
 
 export const containerStyle = StyleSheet.create({
   container: {

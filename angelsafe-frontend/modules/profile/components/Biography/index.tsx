@@ -19,7 +19,11 @@ const BioComponent = (props: Props) => {
       ) : (
         <Text style={styles.bioPlaceholder}>Update profile to add bio</Text>
       )}
-      <Trend style={{ marginTop: 24 }} />
+      <Trend
+        style={{ marginTop: 24 }}
+        winCount={user?.winCount || 0}
+        painCount={user?.painCount || 0}
+      />
     </View>
   );
 };

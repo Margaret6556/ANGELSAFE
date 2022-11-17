@@ -3,6 +3,8 @@ import React from "react";
 import { Icon } from "@rneui/themed";
 import { makeStyles } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { moderateScale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface SocialIconProps {
   iconProps: {
@@ -30,7 +32,7 @@ const SocialIcon = (props: SocialIconProps) => {
         <Icon
           type={props.enabled ? props.isEnabledIcon.type : props.iconProps.type}
           name={props.enabled ? props.isEnabledIcon.name : props.iconProps.name}
-          size={18}
+          size={moderateScale(16)}
           color={props.enabled ? props.enabledColor : ""}
         />
         <Text style={styles.label}>{props.label}</Text>
@@ -45,12 +47,11 @@ const useStyles = makeStyles((theme) => ({
   socialIconContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 12,
+    marginTop: theme.spacing.lg,
   },
   label: {
-    fontSize: 16,
-    marginLeft: 4,
+    fontSize: moderateScale(14),
+    marginLeft: theme.spacing.sm,
     color: theme.colors.black,
-    // marginTop: 4,
   },
 }));

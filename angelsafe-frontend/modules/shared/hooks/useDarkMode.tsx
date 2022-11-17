@@ -1,29 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
+import { useEffect, useRef } from "react";
+import { useTheme } from "@rneui/themed";
 import { useAppDispatch } from ".";
+import { createDynamicTheme } from "../providers/ThemeProvider";
 import {
   setBackgroundColor,
   setSolidBackground,
 } from "../state/reducers/theme";
+import useIsDark from "./useIsDark";
 
 const useDarkMode = () => {
-  const [isDark, setIsDark] = useState(false);
-  const colorScheme = useColorScheme();
+  const isDark = useIsDark();
+  const prev = useRef(isDark);
+  const { replaceTheme } = useTheme();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (colorScheme === "dark") {
-      setIsDark(true);
-      dispatch(setBackgroundColor("#000"));
-      dispatch(setSolidBackground(true));
-    } else {
-      setIsDark(false);
-      dispatch(setBackgroundColor("transparent"));
-      dispatch(setSolidBackground(false));
+    if (prev.current !== isDark) {
+      const newTheme = createDynamicTheme(isDark);
+      replaceTheme(newTheme);
+      dispatch(setBackgroundColor(isDark ? "#000" : "transparent"));
+      prev.current = isDark;
     }
-  }, [colorScheme]);
-
-  return isDark;
+  }, [isDark, setBackgroundColor]);
 };
 
 export default useDarkMode;

@@ -10,6 +10,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { useRegisterMutation } from "@/shared/api/auth";
 import logger from "@/shared/utils/logger";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 type FieldType = {
   mobile: string;
@@ -105,16 +106,12 @@ const useStyles = makeStyles((theme) => ({
   input: {
     width: "100%",
   },
-  image: {
-    width: 180,
-    height: 180,
-  },
   textContainer: {
     justifyContent: "space-between",
     marginBottom: 40,
   },
   text: {
-    fontSize: 14,
+    fontSize: sizing.FONT.sm,
     color: theme.colors.grey1,
   },
 }));

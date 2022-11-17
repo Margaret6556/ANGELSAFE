@@ -1,22 +1,22 @@
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Icon, ListItem, makeStyles, useTheme } from "@rneui/themed";
+import React from "react";
+import { View } from "react-native";
+import { ListItem, makeStyles, useTheme } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
-// import { IMoreData } from "@/more/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Avatar, Text } from "@rneui/themed";
-import { color } from "@rneui/base";
-import { UserType } from "@/shared/types";
 import { ChatListResponse } from "@/shared/api/chat";
-import useDarkMode from "@/shared/hooks/useDarkMode";
+import useIsDark from "@/shared/hooks/useIsDark";
+import { moderateScale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface ChatPreviewProps extends ChatListResponse {
   onPress: () => void;
 }
 
 const ChatPreview = (props: ChatPreviewProps) => {
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
   const styles = useStyles({ isDark });
+  const { theme } = useTheme();
 
   const handlePress = () => {
     props.onPress && props.onPress();
@@ -31,9 +31,9 @@ const ChatPreview = (props: ChatPreviewProps) => {
               source={{
                 uri: props.receiver.profilePic,
               }}
-              containerStyle={{ marginRight: 12 }}
-              size={45}
+              containerStyle={{ marginRight: theme.spacing.md }}
               rounded
+              size={moderateScale(50)}
             />
             <View style={{ justifyContent: "flex-end" }}>
               <Text style={styles.textPrimary}>{props.receiver.username}</Text>
@@ -56,32 +56,32 @@ export default ChatPreview;
 
 const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   container: {
-    minHeight: 50,
+    minHeight: moderateScale(50),
     padding: 0,
-    paddingVertical: 16,
+    paddingVertical: theme.spacing.lg,
     backgroundColor: "transparent",
   },
   content: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
+    paddingHorizontal: theme.spacing.lg,
   },
   checkbox: {
-    marginRight: StyleConstants.PADDING_HORIZONTAL,
+    marginRight: theme.spacing.lg,
   },
   title: {
     color: props.isDark ? theme.colors.grey0 : theme.colors.primary,
   },
   textContainer: {
-    height: 40,
+    height: moderateScale(40),
     justifyContent: "center",
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
   },
   textPrimary: {
     fontFamily: "nunitoMedium",
-    fontSize: 18,
+    fontSize: sizing.FONT.sm,
     color: theme.colors.primary,
   },
   textSecondary: {
@@ -89,14 +89,13 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
     color: theme.colors.grey1,
   },
   lastOnlineContainer: {
-    //   alignSelf: "flex-start",
     alignItems: "flex-end",
-    height: 40,
+    height: moderateScale(40),
     justifyContent: "space-between",
   },
   lastOnlineText: {
     fontFamily: "nunitoLight",
-    fontSize: 10,
+    fontSize: sizing.FONT.xs,
     color: theme.colors.grey1,
   },
 }));

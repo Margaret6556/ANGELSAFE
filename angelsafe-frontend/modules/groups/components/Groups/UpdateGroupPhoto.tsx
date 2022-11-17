@@ -1,14 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  ImageSourcePropType,
-  Modal,
-  StyleProp,
-  StyleSheet,
-  View,
-  ViewStyle,
-} from "react-native";
-import { Avatar, Icon, makeStyles, Text, useTheme } from "@rneui/themed";
-import { useAppDispatch, useAppSelector } from "@/shared/hooks";
+import { Modal, View } from "react-native";
+import { Avatar, Icon, makeStyles, useTheme } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { BackendResponse, BackendErrorResponse } from "@/shared/types";
 import {
@@ -16,30 +8,22 @@ import {
   manipulateAsync,
   SaveFormat,
 } from "expo-image-manipulator";
-import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
-import { useUpdateProfilePictureMutation } from "@/shared/api/profile";
 import { Loading } from "@/shared/components";
 import { BlurView } from "expo-blur";
 import { setUser } from "@/shared/state/reducers/auth";
 import logger from "@/shared/utils/logger";
+import { useUpdateGroupPhotoMutation } from "@/shared/api/groups";
 import { moderateScale } from "react-native-size-matters";
 
-interface IAvatarProps {
-  source?: ImageSourcePropType;
-  containerStyle?: StyleProp<ViewStyle>;
+interface GroupDisplayPhotoProps {
+  profilePic: string;
+  groupId: string;
 }
 
-enum Identification {
-  Male = "He/Him",
-  Female = "She/Her",
-}
-
-const AvatarComponent = (props: IAvatarProps) => {
-  const { user } = useAppSelector((state) => state.auth);
+const GroupDisplayPhoto = (props: GroupDisplayPhotoProps) => {
   const [image, setImage] = useState<ImageResult>();
-  const [updatePhoto, updatePhotoResponse] = useUpdateProfilePictureMutation();
-  const dispatch = useAppDispatch();
+  const [updatePhoto, updatePhotoResponse] = useUpdateGroupPhotoMutation();
   const { theme } = useTheme();
   const styles = useStyles();
 
@@ -96,13 +80,8 @@ const AvatarComponent = (props: IAvatarProps) => {
       const profilePic = `data:image/png;base64,${image?.base64}`;
       const { data, status } = await updatePhoto({
         profilePic,
+        groupId: props.groupId,
       }).unwrap();
-
-      dispatch(
-        setUser({
-          profilePic,
-        })
-      );
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
       logger("profile", err);
@@ -111,7 +90,7 @@ const AvatarComponent = (props: IAvatarProps) => {
 
   return (
     <>
-      <View style={[styles.container, props.containerStyle]}>
+      <View style={[styles.container]}>
         <TouchableOpacity
           style={styles.avatarWithUpload}
           activeOpacity={0.4}
@@ -121,7 +100,7 @@ const AvatarComponent = (props: IAvatarProps) => {
             size={moderateScale(64)}
             rounded
             source={{
-              uri: user?.profilePic,
+              uri: image?.uri || props.profilePic,
             }}
             containerStyle={{ backgroundColor: "blue", zIndex: 1 }}
           />
@@ -134,11 +113,6 @@ const AvatarComponent = (props: IAvatarProps) => {
             color={theme.colors.secondary}
           />
         </TouchableOpacity>
-        <View style={styles.text}>
-          <Text h4>{user?.username}</Text>
-          <Text>{user?.member}</Text>
-          <Text>{user?.gender && Identification[user.gender]}</Text>
-        </View>
       </View>
       <Modal
         visible={updatePhotoResponse.isLoading}
@@ -160,7 +134,7 @@ const AvatarComponent = (props: IAvatarProps) => {
   );
 };
 
-export default AvatarComponent;
+export default GroupDisplayPhoto;
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -177,11 +151,11 @@ const useStyles = makeStyles((theme) => ({
   iconContainer: {
     zIndex: 10,
     backgroundColor: theme.colors.background,
+    borderRadius: 50,
     top: moderateScale(-18),
     height: moderateScale(25),
     width: moderateScale(25),
     left: moderateScale(40),
-    borderRadius: 50,
     alignItems: "center",
     justifyContent: "center",
   },

@@ -6,11 +6,13 @@ import Details from "./Details";
 import Members from "./Members";
 import ViewProfile from "./ViewProfile";
 import Comments from "./Comments";
-import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
+import EditGroup from "./EditGroup";
+import { useTheme } from "@rneui/themed";
 
 const GroupDetailsStack = createStackNavigator<GroupDetailsParamList>();
 
 const GroupScreen = ({}: StackScreenProps<GroupParamsList, "GroupDetails">) => {
+  const { theme } = useTheme();
   return (
     <GroupDetailsStack.Navigator
       screenOptions={{
@@ -43,7 +45,14 @@ const GroupScreen = ({}: StackScreenProps<GroupParamsList, "GroupDetails">) => {
         name="PostComments"
         component={Comments}
         options={{
-          headerTitle: "",
+          header: () => null,
+        }}
+      />
+      <GroupDetailsStack.Screen
+        name="EditGroup"
+        component={EditGroup}
+        options={{
+          header: () => null,
         }}
       />
     </GroupDetailsStack.Navigator>

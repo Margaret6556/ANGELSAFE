@@ -7,6 +7,8 @@ import {
   PlaceholderLine,
   PlaceholderMedia,
 } from "rn-placeholder";
+import { scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const PostCommentsPlaceholder = () => {
   const styles = useStyles();
@@ -15,15 +17,15 @@ const PostCommentsPlaceholder = () => {
       <View>
         <View style={styles.wrapper}>
           <View style={{ width: "10%" }}>
-            <PlaceholderMedia isRound size={35} />
+            <PlaceholderMedia isRound size={scale(36)} />
           </View>
           <Card containerStyle={styles.cardContainer}>
-            <PlaceholderLine height={8} width={30} />
-            <View style={{ marginTop: 8 }}>
-              <PlaceholderLine width={60} />
-              <PlaceholderLine width={90} />
-              <PlaceholderLine width={100} />
-              <PlaceholderLine width={80} noMargin />
+            <PlaceholderLine height={scale(10)} width={30} />
+            <View style={{ marginTop: scale(8) }}>
+              <PlaceholderLine height={scale(8)} width={60} />
+              <PlaceholderLine height={scale(8)} width={90} />
+              <PlaceholderLine height={scale(8)} width={100} />
+              <PlaceholderLine height={scale(8)} width={80} noMargin />
             </View>
           </Card>
         </View>
@@ -37,7 +39,7 @@ export default PostCommentsPlaceholder;
 const useStyles = makeStyles((theme) => ({
   wrapper: {
     flexDirection: "row",
-    marginBottom: 24,
+    marginBottom: theme.spacing.lg,
   },
   fade: {
     backgroundColor: theme.colors.grey4,
@@ -45,9 +47,9 @@ const useStyles = makeStyles((theme) => ({
   cardContainer: {
     width: "88%",
     marginLeft: "2%",
-    borderRadius: 8,
+    borderRadius: sizing.BORDER_RADIUS,
     margin: 0,
     borderColor: "transparent",
-    padding: 8,
+    padding: theme.spacing.md,
   },
 }));

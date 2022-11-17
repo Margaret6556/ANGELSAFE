@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { Dimensions, View } from "react-native";
-import { Divider, makeStyles, Text } from "@rneui/themed";
+import { Animated, Dimensions, ScrollViewProps, View } from "react-native";
+import { Divider, makeStyles, Text, useTheme } from "@rneui/themed";
 import { useGetGroupChartQuery } from "@/shared/api/stats";
-import { Loading } from "@/shared/components";
+import { Container, Loading } from "@/shared/components";
 import { PieChart } from "react-native-chart-kit";
 import { Moods } from "@/shared/state/reducers/experience";
+import { moderateScale, scale } from "react-native-size-matters";
 
 interface StatChartProps {
   groupId: string;
+  animation: Animated.Value;
 }
 
-const StatChart = ({ groupId }: StatChartProps) => {
+const StatChart = (props: StatChartProps) => {
   const styles = useStyles();
+  const { theme } = useTheme();
   const [legends, setLegends] = useState<any[]>([]);
   const { data, isLoading } = useGetGroupChartQuery({
-    groupId,
+    groupId: props.groupId,
   });
 
   useEffect(() => {
@@ -23,36 +26,44 @@ const StatChart = ({ groupId }: StatChartProps) => {
         {
           name: Moods.HAPPY,
           color: MoodColors.HAPPY,
-          data: 40,
+          data: data.data[1],
         },
         {
           name: Moods.CALM,
           color: MoodColors.CALM,
-          data: 30,
+          data: data.data[2],
         },
         {
           name: Moods.SAD,
           color: MoodColors.SAD,
-          data: 10,
+          data: data.data[3],
         },
         {
           name: Moods.SICK,
           color: MoodColors.SICK,
-          data: 5,
+          data: data.data[4],
         },
         {
           name: Moods.ANGRY,
           color: MoodColors.ANGRY,
-          data: 15,
+          data: data.data[5],
         },
       ];
-
       setLegends(legend);
     }
   }, [data]);
 
   if (isLoading) {
-    return <Loading />;
+    return (
+      <View
+        style={{
+          flex: 0,
+          height: Dimensions.get("screen").height / 2,
+        }}
+      >
+        <Loading />
+      </View>
+    );
   }
 
   if (data) {
@@ -85,31 +96,31 @@ const StatChart = ({ groupId }: StatChartProps) => {
         case "1": {
           obj.name = Moods.HAPPY;
           obj.color = MoodColors.HAPPY;
-          obj.data = 40;
+          obj.data = moods[i];
           break;
         }
         case "2": {
           obj.name = Moods.CALM;
           obj.color = MoodColors.CALM;
-          obj.data = 30;
+          obj.data = moods[i];
           break;
         }
         case "3": {
           obj.name = Moods.SAD;
           obj.color = MoodColors.SAD;
-          obj.data = 10;
+          obj.data = moods[i];
           break;
         }
         case "4": {
           obj.name = Moods.SICK;
           obj.color = MoodColors.SICK;
-          obj.data = 5;
+          obj.data = moods[i];
           break;
         }
         case "5": {
           obj.name = Moods.ANGRY;
           obj.color = MoodColors.ANGRY;
-          obj.data = 15;
+          obj.data = moods[i];
           break;
         }
         default:
@@ -117,31 +128,46 @@ const StatChart = ({ groupId }: StatChartProps) => {
       }
       return {
         ...obj,
-        // data: moods[i as keyof typeof moods],
       };
     });
 
     return (
-      <View style={styles.chartContainer}>
+      <AnimatedScrollContainer
+        contentContainerStyle={styles.container}
+        scrollEventThrottle={16}
+        showsVerticalScrollIndicator={false}
+        onScroll={Animated.event(
+          [
+            {
+              nativeEvent: {
+                contentOffset: {
+                  y: props.animation,
+                },
+              },
+            },
+          ],
+          {
+            useNativeDriver: true,
+          }
+        )}
+      >
         <PieChart
           data={mapped}
-          height={220}
-          width={Dimensions.get("screen").width - 50}
+          height={moderateScale(220)}
+          width={Dimensions.get("screen").width}
           style={{
             alignItems: "center",
             maxWidth: "100%",
           }}
-          center={[75, 0]}
+          center={[Dimensions.get("window").width / 4, 0]}
           chartConfig={{
             color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            style: {
-              borderRadius: 16,
-            },
+            style: {},
           }}
           hasLegend={false}
           accessor="data"
           backgroundColor="transparent"
-          paddingLeft="12"
+          paddingLeft="0"
         />
         <View style={styles.legends}>
           {legends.map((l) => (
@@ -151,13 +177,12 @@ const StatChart = ({ groupId }: StatChartProps) => {
                   flexDirection: "row",
                   alignItems: "center",
                   minWidth: "25%",
-                  // backgroundColor: "red",
                 }}
               >
                 <View
                   style={{
-                    width: 24,
-                    height: 24,
+                    width: scale(24),
+                    height: scale(24),
                     backgroundColor: l.color,
                     borderRadius: 50,
                     marginRight: 8,
@@ -179,7 +204,7 @@ const StatChart = ({ groupId }: StatChartProps) => {
             </View>
           ))}
         </View>
-      </View>
+      </AnimatedScrollContainer>
     );
   }
 
@@ -189,19 +214,17 @@ const StatChart = ({ groupId }: StatChartProps) => {
 export default StatChart;
 
 const useStyles = makeStyles((theme) => ({
-  chartContainer: {
-    width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingTop: 24,
+  container: {
+    justifyContent: "flex-start",
+    minHeight: Dimensions.get("window").height * 1.4,
   },
   legends: {
-    marginTop: 12,
+    marginTop: theme.spacing.lg,
   },
   legendWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    marginBottom: theme.spacing.lg,
     justifyContent: "space-between",
   },
 }));
@@ -213,3 +236,16 @@ enum MoodColors {
   SICK = "#FA9153",
   ANGRY = "#FD524F",
 }
+
+class ScrollContainer extends React.Component<ScrollViewProps> {
+  render() {
+    return (
+      <Container type="scroll" containerProps={{ ...this.props }}>
+        {this.props.children}
+      </Container>
+    );
+  }
+}
+
+const AnimatedScrollContainer =
+  Animated.createAnimatedComponent(ScrollContainer);

@@ -15,10 +15,10 @@ import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useRegisterEmailMutation } from "@/shared/api/auth";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { setUser } from "@/shared/state/reducers/auth";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
+import useIsDark from "@/shared/hooks/useIsDark";
 
 type FormType = {
   email: string;
@@ -35,7 +35,7 @@ const AccountSecurity = ({
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const { theme } = useTheme();
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
   const styles = useStyles({ isDark });
 
   const {

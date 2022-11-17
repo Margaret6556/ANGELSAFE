@@ -5,11 +5,11 @@ import { useAppSelector } from "@/shared/hooks";
 
 interface ITrendComponentProps {
   style?: StyleProp<ViewStyle>;
+  winCount: number;
+  painCount: number;
 }
 
 const TrendComponent = (props: ITrendComponentProps) => {
-  const { user } = useAppSelector((state) => state.auth);
-
   return (
     <View style={[styles.container, props.style]}>
       <View style={styles.iconContainer}>
@@ -18,9 +18,8 @@ const TrendComponent = (props: ITrendComponentProps) => {
           name="trending-up"
           color="green"
           style={{ marginRight: 12 }}
-          size={32}
         />
-        <Text>{user?.winCount} Wins</Text>
+        <Text>{props.winCount} Wins</Text>
       </View>
       <View style={styles.iconContainer}>
         <Icon
@@ -28,9 +27,8 @@ const TrendComponent = (props: ITrendComponentProps) => {
           name="trending-down"
           color="maroon"
           style={{ marginRight: 12 }}
-          size={32}
         />
-        <Text>{user?.painCount} Pains</Text>
+        <Text>{props.painCount} Pains</Text>
       </View>
     </View>
   );

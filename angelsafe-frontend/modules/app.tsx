@@ -10,13 +10,17 @@ import MoreStack from "./more";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AppTabParamList, RootStackParamList } from "./shared/types";
 import { TabBarIcon, TransitionSlide } from "./shared/components";
-import useThemeMode from "./shared/hooks/useThemeMode";
 import { useGetNotificationsListQuery } from "./shared/api/alerts";
 import { Platform } from "react-native";
+import {
+  moderateScale,
+  moderateVerticalScale,
+  scale,
+} from "react-native-size-matters";
+import { sizing } from "./shared/providers/ThemeProvider";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
-  useThemeMode();
   const { isLoggedIn } = useAppSelector((state) => state.auth);
 
   return (
@@ -52,7 +56,13 @@ const TabNavigator = () => {
     <BottomTab.Navigator
       screenOptions={{
         header: () => null,
-        tabBarStyle: {},
+        tabBarStyle: {
+          height: moderateVerticalScale(72),
+          // backgroundColor: "red",
+        },
+        tabBarLabelStyle: {
+          fontSize: sizing.FONT.xs,
+        },
         tabBarHideOnKeyboard: Platform.OS === "android",
       }}
       initialRouteName="Home"

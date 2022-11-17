@@ -25,8 +25,7 @@ const GroupScreen = ({}: BottomTabScreenProps<AppTabParamList, "Groups">) => {
           component={GroupDetailsScreen}
           options={{
             ...TransitionSlide,
-            headerTitle: "",
-            headerBackTitleVisible: false,
+            header: () => null,
           }}
         />
         <GroupStack.Screen

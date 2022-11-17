@@ -18,6 +18,8 @@ import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import DropDownInput from "@/shared/components/DropDownInput";
 import _countries from "@/shared/config/countries";
 import logger from "@/shared/utils/logger";
+import { moderateScale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const mappedCountries = _countries.map((c) => ({
   label: c,
@@ -146,7 +148,7 @@ const SignUp = ({
             <Text
               style={{
                 color: "red",
-                fontSize: 14,
+                fontSize: sizing.FONT.sm,
                 marginTop: 12,
               }}
             >
@@ -163,6 +165,7 @@ const SignUp = ({
                   name: "person",
                   type: "ionicon",
                   color: "#546AF1",
+                  size: moderateScale(32),
                 }}
                 label="Choose your username:"
                 inputStyle={styles.input}
@@ -197,6 +200,7 @@ const SignUp = ({
                   name: "calendar",
                   type: "entypo",
                   color: "#546AF1",
+                  size: moderateScale(32),
                 }}
                 keyboardType="number-pad"
                 label="What year were you born?"
@@ -279,23 +283,20 @@ const useStyles = makeStyles((theme) => ({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    padding: theme.spacing.lg,
   },
   image: {
-    width: 180,
-    height: 180,
+    width: moderateScale(180),
+    height: moderateScale(180),
   },
   viewInput: {
     width: "100%",
   },
   input: { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 },
-  text: {
-    // marginBottom: StyleConstants.PADDING_VERTICAL,
-  },
-  subtitleh4: { color: theme.colors.primary, marginBottom: 12 },
+  text: {},
+  subtitleh4: { color: theme.colors.primary, marginBottom: theme.spacing.lg },
   subtitle: {
-    fontSize: 18,
+    fontSize: sizing.FONT.sm,
     color: "#333",
   },
 }));

@@ -16,7 +16,7 @@ interface LayoutProps extends ChildrenProps {}
 
 const ImageBackgroundContainer = ({ children }: LayoutProps) => {
   const colorScheme = useColorScheme();
-  const { backgroundColor, solidBackground, backgroundImage } = useAppSelector(
+  const { backgroundColor, backgroundImage } = useAppSelector(
     (state) => state.theme
   );
 
@@ -36,14 +36,14 @@ const ImageBackgroundContainer = ({ children }: LayoutProps) => {
         return BackgroundImageThemes.DEFAULT;
     }
   }, []);
-
+  // console.log("image", Math.round(Math.random() * 10));
   return (
     <ImageBackground
       source={handleSetBg(backgroundImage)}
       style={[styles.container, { backgroundColor }]}
       resizeMode="cover"
       imageStyle={{
-        opacity: solidBackground || colorScheme === "dark" ? 0 : 1,
+        opacity: colorScheme === "dark" ? 0 : 1,
       }}
     >
       {children}

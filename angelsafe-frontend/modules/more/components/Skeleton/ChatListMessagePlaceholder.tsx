@@ -7,16 +7,17 @@ import {
   PlaceholderLine,
   PlaceholderMedia,
 } from "rn-placeholder";
+import { moderateScale, scale } from "react-native-size-matters";
 
 const ChatListMessagePlaceholder = () => {
   const styles = useStyles();
   return (
     <Placeholder Animation={(props) => <Fade {...props} style={styles.fade} />}>
       <View style={styles.container}>
-        <PlaceholderMedia isRound size={45} />
+        <PlaceholderMedia isRound size={moderateScale(50)} />
         <View style={styles.wrapper}>
-          <PlaceholderLine width={100} />
-          <PlaceholderLine width={60} />
+          <PlaceholderLine height={scale(8)} width={100} />
+          <PlaceholderLine height={scale(8)} width={60} />
         </View>
       </View>
     </Placeholder>
@@ -34,6 +35,6 @@ const useStyles = makeStyles((theme) => ({
   },
   wrapper: {
     minWidth: "40%",
-    marginLeft: theme.spacing.lg,
+    marginLeft: theme.spacing.md,
   },
 }));

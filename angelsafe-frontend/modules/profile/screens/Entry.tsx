@@ -1,40 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   View,
-  StyleSheet,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Dimensions,
   TouchableOpacity,
-  ScrollView,
-  useColorScheme,
+  Animated,
 } from "react-native";
-import { Button, Divider, makeStyles, Text, useTheme } from "@rneui/themed";
+import { Divider, makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import { ProfileParamsList } from "../types";
 import { Avatar, Biography } from "../components";
 import { StackScreenProps } from "@react-navigation/stack";
-import useChangeTopBarBg from "@/shared/hooks/useChangeTopBarBg";
 import AboutMeTab from "../components/AboutMe";
 import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import MyPosts from "../components/MyPosts";
-
-const deviceHeight = Dimensions.get("window").height;
+import useIsDark from "@/shared/hooks/useIsDark";
+import { moderateScale, scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 enum ProfileView {
   ABOUT_ME,
   POST,
 }
 
-const EntryScreen = ({
-  navigation,
-}: StackScreenProps<ProfileParamsList, "Entry">) => {
+const EntryScreen = ({}: StackScreenProps<ProfileParamsList, "Entry">) => {
   const [bounces, setBounces] = useState(false);
   const [view, setView] = useState(ProfileView.ABOUT_ME);
-  // const { theme } = useTheme();
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
+  const animateAboutMe = useRef(new Animated.Value(0)).current;
+  const animatePosts = useRef(new Animated.Value(0)).current;
 
   const styles = useStyles({ isDark });
 
@@ -42,21 +37,26 @@ const EntryScreen = ({
 
   const handleScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const y = e.nativeEvent.contentOffset.y;
-
-    if (y > deviceHeight - (deviceHeight - 200)) {
-      setBounces(true);
-    } else {
-      setBounces(false);
-    }
+    setBounces(y > 100);
   };
 
   const handleSelection = (selection: ProfileView) => () => {
     setView(selection);
   };
 
+  const animate = useCallback((animation: Animated.Value, toValue: number) => {
+    Animated.timing(animation, {
+      toValue,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const renderView = () => {
     switch (view) {
       case ProfileView.ABOUT_ME: {
+        animate(animatePosts, 0);
+        animate(animateAboutMe, 2);
         return (
           <View style={styles.contentWrapper}>
             <AboutMeTab />
@@ -64,6 +64,8 @@ const EntryScreen = ({
         );
       }
       case ProfileView.POST: {
+        animate(animateAboutMe, 0);
+        animate(animatePosts, 2);
         return (
           <View style={styles.contentWrapper}>
             <MyPosts />
@@ -82,7 +84,7 @@ const EntryScreen = ({
       containerProps={{
         style: styles.wrapper,
         imageStyle: {
-          opacity: isDark ? 0 : 1,
+          opacity: +!isDark,
         },
       }}
     >
@@ -98,11 +100,7 @@ const EntryScreen = ({
       >
         <View style={styles.containerTop}>
           <Text h2>Profile</Text>
-          <Avatar
-            containerStyle={{
-              marginVertical: 24,
-            }}
-          />
+          <Avatar containerStyle={styles.avatarContainer} />
           <Biography />
         </View>
 
@@ -116,6 +114,7 @@ const EntryScreen = ({
               onPress={handleSelection(ProfileView.ABOUT_ME)}
             >
               <Text style={styles.tabLabel}>About Me</Text>
+              <ActiveViewBorder animatedValue={animateAboutMe} />
             </TouchableOpacity>
             <TouchableOpacity
               style={[
@@ -125,6 +124,7 @@ const EntryScreen = ({
               onPress={handleSelection(ProfileView.POST)}
             >
               <Text style={styles.tabLabel}>My Posts</Text>
+              <ActiveViewBorder animatedValue={animatePosts} />
             </TouchableOpacity>
           </View>
 
@@ -137,7 +137,26 @@ const EntryScreen = ({
   );
 };
 
-export default EntryScreen;
+const ActiveViewBorder = (props: { animatedValue: Animated.Value }) => {
+  const styles = useStyles();
+  return (
+    <Animated.View
+      style={[
+        styles.activeViewBorder,
+        {
+          transform: [
+            {
+              scaleX: props.animatedValue.interpolate({
+                inputRange: [0, 2],
+                outputRange: [0, 1],
+              }),
+            },
+          ],
+        },
+      ]}
+    />
+  );
+};
 
 const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   wrapper: {
@@ -146,32 +165,31 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
     justifyContent: "flex-start",
     backgroundColor: props.isDark ? theme.colors.white : "transparent",
   },
+  avatarContainer: {
+    marginVertical: theme.spacing.lg,
+  },
   containerTop: {
     backgroundColor: theme.colors.background,
     minWidth: "100%",
-    borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
-    borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    borderBottomLeftRadius: theme.spacing.lg,
+    borderBottomRightRadius: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.xl,
   },
   containerBottom: {
-    paddingVertical: 12,
-    paddingHorizontal: 0,
+    paddingHorizontal: theme.spacing.lg,
     width: "100%",
   },
-  divider: { top: -14, zIndex: 1 },
+  divider: { top: scale(-13), zIndex: 1 },
   tab: {
     flexDirection: "row",
     paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
   },
   tabLabelContainer: {
-    borderBottomWidth: 4,
     zIndex: 2,
-    minWidth: 100,
-    paddingBottom: 8,
-    marginVertical: 12,
-    marginRight: 12,
-    borderColor: "transparent",
+    minWidth: moderateScale(100),
+    marginVertical: theme.spacing.lg,
+    marginRight: theme.spacing.lg,
   },
   tabLabelActive: {
     borderColor: theme.colors.primary,
@@ -179,12 +197,18 @@ const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   tabLabel: {
     fontFamily: "nunitoBold",
     textAlign: "center",
-    fontSize: 18,
+    fontSize: sizing.FONT.sm,
     color: theme.colors.black,
   },
   contentWrapper: {
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: 12,
-    flex: 1,
+    paddingBottom: theme.spacing.lg,
+  },
+  activeViewBorder: {
+    height: moderateScale(4),
+    minWidth: moderateScale(40),
+    borderRadius: moderateScale(10),
+    backgroundColor: theme.colors.primary,
   },
 }));
+
+export default EntryScreen;

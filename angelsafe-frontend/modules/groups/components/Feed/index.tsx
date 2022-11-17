@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import { View } from "react-native";
+import { Animated, Dimensions, View } from "react-native";
 import { Button, makeStyles, Text } from "@rneui/themed";
 import Card from "../Card";
 import { useGetPostListQuery } from "@/shared/api/post";
 import AddPost from "../AddPost";
 import { StyleConstants } from "@/shared/styles";
 import PostsPlaceholder from "../Skeleton/PostsPlaceholder";
+import { GroupDetailsType } from "@/groups/types";
 
-interface GroupFeedProps {
-  groupId: string;
-  isJoined: boolean;
+interface GroupFeedProps extends Pick<GroupDetailsType, "joined" | "id"> {
+  animation: Animated.Value;
 }
 
-const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
-  const { data, isError } = useGetPostListQuery({ groupId });
+const GroupFeed = (props: GroupFeedProps) => {
+  const { data, isError } = useGetPostListQuery({ groupId: props.id });
   const [modalVisible, setModalVisible] = useState(false);
   const styles = useStyles();
   const handleNewPost = () => {
@@ -28,24 +28,46 @@ const GroupFeed = ({ groupId, isJoined }: GroupFeedProps) => {
     const { data: posts } = data;
     return (
       <>
-        <View>
-          {isJoined ? (
-            <Button
-              title="Type your thoughts..."
-              onPress={handleNewPost}
-              containerStyle={styles.thoughtsButton}
-            />
-          ) : (
-            <Text style={styles.joinText}>Join the group to add a post</Text>
+        <Animated.FlatList
+          data={posts}
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    y: props.animation,
+                  },
+                },
+              },
+            ],
+            {
+              useNativeDriver: true,
+            }
           )}
-
-          {posts.map((args) => (
-            <Card key={args.id} {...args} />
-          ))}
-        </View>
-
+          ListHeaderComponent={
+            !!props.joined ? (
+              <Button
+                title="Type your thoughts..."
+                onPress={handleNewPost}
+                containerStyle={styles.thoughtsButton}
+              />
+            ) : (
+              <Text style={styles.joinText}>Join the group to add a post</Text>
+            )
+          }
+          renderItem={({ item }) => {
+            return <Card {...item} />;
+          }}
+          ListFooterComponent={
+            <View
+              style={{ paddingBottom: Dimensions.get("screen").height / 2 }}
+            />
+          }
+        />
         <AddPost
-          groupId={groupId}
+          groupId={props.id}
           onClose={handleNewPost}
           isVisible={modalVisible}
         />

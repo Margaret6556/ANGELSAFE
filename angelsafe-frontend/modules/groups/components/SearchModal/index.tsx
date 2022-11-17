@@ -8,17 +8,21 @@ import {
   GestureResponderEvent,
   StyleSheet,
 } from "react-native";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import { StyleConstants } from "@/shared/styles";
 import { Input, ListItem, makeStyles, Text } from "@rneui/themed";
 import Modal from "react-native-modal";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { GroupDetailsParamList, GroupParamsList } from "@/groups/types";
+import {
+  GroupDetailsParamList,
+  GroupParamsList,
+  GroupsType,
+} from "@/groups/types";
+import useIsDark from "@/shared/hooks/useIsDark";
 
 interface IModalProps {
   isVisible: boolean;
   onCancel: () => void;
-  groups: { groupname: string; id: string }[];
+  groups: GroupsType[];
 }
 
 const HEIGHT = Dimensions.get("window").height;
@@ -28,7 +32,7 @@ const SearchModal = (props: IModalProps) => {
   const [filteredGroups, setFilteredGroups] = useState(props.groups);
   const navigation =
     useNavigation<NavigationProp<GroupParamsList, "GroupDetails">>();
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
   const styles = useStyles();
 
   const handleClose = () => {
@@ -52,13 +56,11 @@ const SearchModal = (props: IModalProps) => {
     }).start();
   };
 
-  const handleNavigate = (id: string) => () => {
+  const handleNavigate = (params: GroupsType) => () => {
     handleClose();
     navigation.navigate("GroupDetails", {
       screen: "Details",
-      params: {
-        id,
-      },
+      params,
     });
   };
 
@@ -128,7 +130,7 @@ const SearchModal = (props: IModalProps) => {
             renderItem={({ item }) => (
               <TouchableOpacity
                 activeOpacity={0.5}
-                onPress={handleNavigate(item.id)}
+                onPress={handleNavigate(item)}
               >
                 <ListItem bottomDivider>
                   <View style={styles.listItemWrapper}>

@@ -9,43 +9,36 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { GroupParamsList } from "@/groups/types";
 import { SearchIcon } from "@/shared/components";
 import { useGroupsContext } from "../GroupsContext";
+import { moderateScale, scale } from "react-native-size-matters";
 
-type Props = {};
-
-const Header = (props: Props) => {
+const Header = () => {
   const navigation = useNavigation<StackNavigationProp<GroupParamsList>>();
   const styles = useStyles();
+  const { theme } = useTheme();
   const { handleToggleSearchModal } = useGroupsContext();
 
   const handleAddGroup = async () => {
     navigation.push("Add Group");
   };
 
-  const handlePress = () => {};
-
   return (
-    <>
-      <View style={styles.wrapper}>
-        <View style={styles.container}>
-          <Text h3>Groups</Text>
-          <View style={styles.icons}>
-            <SearchIcon onPress={handleToggleSearchModal} />
-            <TouchableOpacity activeOpacity={0.5} onPress={handleAddGroup}>
-              <Icon
-                type="antdesign"
-                name="plus"
-                iconProps={{
-                  size: 22,
-                  name: "plus",
-                }}
-                containerStyle={styles.iconContainer}
-              />
-            </TouchableOpacity>
-          </View>
+    <View style={styles.wrapper}>
+      <View style={styles.container}>
+        <Text h2>Groups</Text>
+        <View style={styles.icons}>
+          <SearchIcon onPress={handleToggleSearchModal} />
+          <TouchableOpacity activeOpacity={0.5} onPress={handleAddGroup}>
+            <Icon
+              type="antdesign"
+              name="plus"
+              size={moderateScale(24)}
+              containerStyle={styles.iconContainer}
+            />
+          </TouchableOpacity>
         </View>
-        <Divider style={{ marginTop: 12 }} />
       </View>
-    </>
+      <Divider />
+    </View>
   );
 };
 
@@ -54,7 +47,7 @@ export default Header;
 const useStyles = makeStyles((theme) => ({
   wrapper: {},
   container: {
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
+    padding: theme.spacing.lg,
     flexDirection: "row",
     justifyContent: "space-between",
   },
@@ -65,11 +58,11 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-between",
   },
   iconContainer: {
-    marginLeft: 20,
+    marginLeft: theme.spacing.lg,
     backgroundColor: theme.colors.white,
     borderRadius: 50,
-    height: 45,
-    width: 45,
+    height: moderateScale(42),
+    width: moderateScale(42),
     justifyContent: "center",
     alignItems: "center",
   },

@@ -1,24 +1,24 @@
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Dimensions, TouchableOpacity, View } from "react-native";
 import React from "react";
-import { Avatar, Text } from "@rneui/themed";
+import { Avatar, makeStyles, Text } from "@rneui/themed";
 import { FlatList } from "react-native-gesture-handler";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GroupParamsList, GroupsType } from "@/groups/types";
 import { _API } from "@/shared/config";
+import { scale, moderateScale } from "react-native-size-matters";
 
 interface GroupProps {
   data: GroupsType[];
 }
 const Groups = ({ data }: GroupProps) => {
+  const styles = useStyles();
   const navigation =
     useNavigation<NavigationProp<GroupParamsList, "GroupDetails">>();
 
-  const handlePress = (id: string) => () => {
+  const handlePress = (params: GroupsType) => () => {
     navigation.navigate("GroupDetails", {
       screen: "Details",
-      params: {
-        id,
-      },
+      params,
     });
   };
 
@@ -26,21 +26,18 @@ const Groups = ({ data }: GroupProps) => {
     <View style={styles.wrapper}>
       <FlatList
         data={data}
-        numColumns={3}
-        contentContainerStyle={styles.container}
-        ListHeaderComponent={() => null}
+        numColumns={Dimensions.get("window").width > 500 ? 4 : 3}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          flex: 1,
+        }}
         renderItem={({ item }) => (
           <View style={styles.avatarContainer}>
-            <TouchableOpacity
-              activeOpacity={0.5}
-              onPress={handlePress(item.id)}
-            >
+            <TouchableOpacity activeOpacity={0.5} onPress={handlePress(item)}>
               <Avatar
                 source={{ uri: item.profilePic }}
                 rounded
-                avatarStyle={styles.avatar}
-                size={76}
+                size={scale(64)}
               />
             </TouchableOpacity>
             <Text style={styles.textGroupName}>{item.groupname}</Text>
@@ -53,25 +50,20 @@ const Groups = ({ data }: GroupProps) => {
 
 export default Groups;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     width: "100%",
-    flex: 1,
-    justifyContent: "flex-start",
+    height: "100%",
   },
-  container: {},
-  avatar: {},
   avatarContainer: {
     alignItems: "center",
-    justifyContent: "flex-start",
     flex: 1,
     margin: 1,
-    minHeight: 150,
-    paddingTop: 36,
+    paddingTop: theme.spacing.xl,
   },
   textGroupName: {
-    fontSize: 14,
+    fontSize: moderateScale(14),
     textAlign: "center",
-    marginTop: 4,
+    marginTop: theme.spacing.sm,
   },
-});
+}));

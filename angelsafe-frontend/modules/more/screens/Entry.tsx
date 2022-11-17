@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Text } from "@rneui/themed";
+import { makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { MoreParamsList } from "../types";
 import SettingsComponent from "../components/Settings";
@@ -11,6 +11,7 @@ import { StackScreenProps } from "@react-navigation/stack";
 const EntryScreen = ({
   navigation,
 }: StackScreenProps<MoreParamsList, "Entry">) => {
+  const styles = useStyles();
   return (
     <Container
       type="scroll"
@@ -37,13 +38,12 @@ const EntryScreen = ({
 
 export default EntryScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     justifyContent: "flex-start",
-    minHeight: 800,
   },
   container: {
     width: "100%",
-    marginBottom: 24,
+    marginBottom: theme.spacing.lg,
   },
-});
+}));

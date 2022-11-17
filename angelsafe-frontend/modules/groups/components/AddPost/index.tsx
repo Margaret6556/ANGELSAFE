@@ -6,26 +6,16 @@ import {
   Dimensions,
   GestureResponderEvent,
   StyleSheet,
-  ScrollView,
 } from "react-native";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import { StyleConstants } from "@/shared/styles";
-import {
-  Button,
-  Icon,
-  Input,
-  ListItem,
-  makeStyles,
-  Text,
-  useTheme,
-} from "@rneui/themed";
+import { Button, Icon, Input, makeStyles, Text, useTheme } from "@rneui/themed";
 import Modal from "react-native-modal";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { Controller, useForm } from "react-hook-form";
 import { useCreatePostMutation } from "@/shared/api/post";
 import { BackendResponse, BackendErrorResponse } from "@/shared/types";
 import logger from "@/shared/utils/logger";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import useIsDark from "@/shared/hooks/useIsDark";
 
 interface IModalProps {
   isVisible: boolean;
@@ -38,14 +28,14 @@ type FieldType = {
 };
 
 const HEIGHT = Dimensions.get("window").height;
-const MAX_POST_LENGTH = 250;
+const MAX_POST_LENGTH = 300;
 
 const AddPostModal = (props: IModalProps) => {
   const animation = useRef(new Animated.Value(0)).current;
   const [multilineHeight, setMultiLineHeight] = useState(0);
   const { theme } = useTheme();
   const [createPost, createPostResponse] = useCreatePostMutation();
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
   const styles = useStyles({ isDark });
   const {
     control,
@@ -134,12 +124,7 @@ const AddPostModal = (props: IModalProps) => {
           <View style={styles.wrapper}>
             <View style={styles.header}>
               <TouchableOpacity onPress={handleClose}>
-                <Icon
-                  type="entypo"
-                  name="cross"
-                  color={theme.colors.grey3}
-                  size={32}
-                />
+                <Icon type="entypo" name="cross" color={theme.colors.grey3} />
               </TouchableOpacity>
               <Button
                 title={createPostResponse.isSuccess ? "Success" : "Post"}

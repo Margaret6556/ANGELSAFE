@@ -1,16 +1,15 @@
-import { StyleSheet, View } from "react-native";
-import React, { useEffect, useState } from "react";
+import { View } from "react-native";
+import React, { useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { AddGroupParamList } from "../../types";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { StyleConstants } from "@/shared/styles";
-import { Input, Button, Text, useTheme, makeStyles } from "@rneui/themed";
+import { Input, Button, Text, makeStyles } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
-import { useAppDispatch, useKeyboardShowing } from "@/shared/hooks";
-// import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import { useKeyboardShowing } from "@/shared/hooks";
 import { useAddGroupMutation } from "@/shared/api/groups";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
+import useIsDark from "@/shared/hooks/useIsDark";
 
 type FieldsType = {
   groupname: string;
@@ -23,7 +22,7 @@ const AddGroup = ({
   const [multilineHeight, setMultiLineHeight] = useState(0);
   const { keyboardIsShowing } = useKeyboardShowing();
   const [addGroup, addGroupResponse] = useAddGroupMutation();
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
 
   const styles = useStyles({ isDark });
 
@@ -77,7 +76,7 @@ const AddGroup = ({
           name="groupname"
           rules={{
             max: 20,
-            min: 7
+            min: 7,
           }}
           render={({ field }) => (
             <View>

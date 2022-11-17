@@ -1,9 +1,6 @@
 import { apiSlice } from ".";
 import { _API } from "../config";
 import { BackendResponse, UserType } from "../types";
-import { io } from "socket.io-client";
-import logger from "../utils/logger";
-import store from "../state";
 
 export type GroupsType = {
   description: string;
@@ -16,6 +13,7 @@ export type GroupDetailsType = {
   members: string;
   online: number;
   joined: 0 | 1;
+  ownerId: string;
 } & GroupsType;
 
 const groupsApiSlice = apiSlice.injectEndpoints({
@@ -80,7 +78,7 @@ const groupsApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body,
       }),
-      invalidatesTags: [{ type: "GROUPS", id: "LIST" }],
+      invalidatesTags: (_, __, arg) => [{ type: "GROUPS", id: arg.groupId }],
     }),
     joinGroup: builder.mutation<BackendResponse<{}>, { groupId: string }>({
       query: (body) => ({

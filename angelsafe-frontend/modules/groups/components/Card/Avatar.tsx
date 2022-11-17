@@ -1,12 +1,14 @@
 import { StyleSheet, View, TouchableOpacity } from "react-native";
 import React from "react";
-import { Avatar, Text } from "@rneui/themed";
+import { Avatar, makeStyles, Text, useTheme } from "@rneui/themed";
 import { useAppSelector } from "@/shared/hooks";
 import timeSince from "@/shared/utils/timeSince";
-import { useGetProfileQuery } from "@/shared/api/profile";
+import { useViewProfileQuery } from "@/shared/api/profile";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GroupDetailsParamList } from "@/groups/types";
 import PostAvatarPlacholder from "../Skeleton/PostAvatarPlacholder";
+import { moderateScale, scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface AvatarCardProps {
   userId: string;
@@ -14,15 +16,16 @@ interface AvatarCardProps {
 }
 
 const AvatarCard = (props: AvatarCardProps) => {
+  const styles = useStyles();
+  const { theme } = useTheme();
   const { user } = useAppSelector((state) => state.auth);
-  const { data, isError } = useGetProfileQuery(props.userId);
+  const { data, isError } = useViewProfileQuery({ ids: [props.userId] });
   const navigation =
     useNavigation<NavigationProp<GroupDetailsParamList, "Details">>();
-
   const handleOnViewProfile = () => {
-    if (data?.data.id) {
+    if (data?.data[0].id) {
       navigation.navigate("ViewProfile", {
-        id: data.data.id,
+        id: data.data[0].id,
       });
     }
   };
@@ -32,14 +35,16 @@ const AvatarCard = (props: AvatarCardProps) => {
   }
 
   if (data) {
-    const { data: profile } = data;
+    const {
+      data: [profile],
+    } = data;
     return (
       <View style={styles.container}>
         <Avatar
           source={{
             uri: profile.profilePic,
           }}
-          size={35}
+          size={moderateScale(36)}
           rounded
         />
         <View style={styles.text}>
@@ -51,9 +56,7 @@ const AvatarCard = (props: AvatarCardProps) => {
           </View>
           {props.userId !== user.id && (
             <TouchableOpacity onPress={handleOnViewProfile}>
-              <Text style={{ color: "#898989", fontSize: 14 }}>
-                View Profile
-              </Text>
+              <Text style={styles.textMemberSecondary}>View Profile</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -66,23 +69,22 @@ const AvatarCard = (props: AvatarCardProps) => {
 
 export default AvatarCard;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   text: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
   },
-  textMember: { paddingHorizontal: 12 },
+  textMember: { paddingHorizontal: theme.spacing.lg },
   textMemberPrimary: {
-    fontSize: 14,
-    fontWeight: "800",
+    fontSize: sizing.FONT.sm,
   },
   textMemberSecondary: {
-    fontSize: 14,
-    color: "#898989",
+    fontSize: sizing.FONT.xs,
+    color: theme.colors.grey2,
   },
-});
+}));

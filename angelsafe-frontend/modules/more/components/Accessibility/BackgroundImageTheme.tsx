@@ -1,6 +1,6 @@
 import { TouchableOpacity, View } from "react-native";
 import React from "react";
-import theme from "@/shared/providers/theme";
+import theme, { sizing } from "@/shared/providers/ThemeProvider";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import {
   setBackgroundImage,
@@ -8,6 +8,7 @@ import {
   BackgroundImage,
 } from "@/shared/state/reducers/theme";
 import { Text, makeStyles, Image, useTheme } from "@rneui/themed";
+import { moderateScale } from "react-native-size-matters";
 
 const BackgroundImageTheme = () => {
   const { backgroundImage } = useAppSelector((state) => state.theme);
@@ -20,7 +21,7 @@ const BackgroundImageTheme = () => {
   };
 
   return (
-    <View style={{ marginBottom: 36 }}>
+    <View style={{ marginBottom: theme.spacing.xl }}>
       <Text style={styles.title}>Theme</Text>
       <View style={styles.themes}>
         {ImageBackgrounds.map((i) => (
@@ -57,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "flex-start",
   },
   title: {
-    marginBottom: 12,
+    marginBottom: theme.spacing.lg,
     color: theme.colors.primary,
     fontFamily: "nunitoBold",
   },
@@ -65,10 +66,10 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
   },
   image: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    marginRight: 12,
+    width: moderateScale(50),
+    height: moderateScale(50),
+    borderRadius: sizing.BORDER_RADIUS,
+    marginRight: theme.spacing.sm,
     borderWidth: 2,
     borderColor: theme.colors.primary,
   },

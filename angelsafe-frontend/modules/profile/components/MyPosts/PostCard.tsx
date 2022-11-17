@@ -1,14 +1,16 @@
 import React from "react";
-import { PostsType, useGetMyPostsQuery } from "@/shared/api/post";
+import { PostsType } from "@/shared/api/post";
 import { Avatar, Card, Divider, makeStyles, Text } from "@rneui/themed";
 import { ErrorText, Loading } from "@/shared/components";
 import { useGetSingleGroupQuery } from "@/shared/api/groups";
-import { StyleConstants } from "@/shared/styles";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AppTabParamList } from "@/shared/types";
 import { View } from "react-native";
 import MyPostsPlaceholder from "../Skeleton/MyPostsPlaceholder";
+import { PartialGroupsType } from "@/groups/types";
+import { moderateScale, scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const PostCard = (props: PostsType) => {
   const navigate = useNavigation<NavigationProp<AppTabParamList, "Groups">>();
@@ -17,14 +19,12 @@ const PostCard = (props: PostsType) => {
     props.groupId
   );
 
-  const handlePress = (id: string) => () => {
+  const handlePress = (params: PartialGroupsType) => () => {
     navigate.navigate("Groups", {
       screen: "GroupDetails",
       params: {
         screen: "Details",
-        params: {
-          id,
-        },
+        params,
       },
     });
   };
@@ -39,11 +39,16 @@ const PostCard = (props: PostsType) => {
 
   return (
     <Card containerStyle={styles.card}>
-      <TouchableOpacity onPress={handlePress(props.groupId)}>
+      <TouchableOpacity
+        onPress={handlePress({
+          id: props.groupId,
+        })}
+      >
         <View style={styles.avatarWrapper}>
           <Avatar
             source={{ uri: data?.data.profilePic }}
-            containerStyle={{ marginRight: 12 }}
+            containerStyle={styles.avatarContainer}
+            size={scale(32)}
             rounded
           />
           <View>
@@ -66,23 +71,25 @@ const useStyles = makeStyles((theme) => ({
   card: {
     backgroundColor: theme.colors.background,
     marginHorizontal: 0,
-    borderRadius: 8,
+    borderRadius: sizing.BORDER_RADIUS,
     borderColor: "transparent",
   },
   divider: {
-    marginVertical: 12,
+    marginVertical: theme.spacing.md,
   },
   avatarWrapper: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
+  },
+  avatarContainer: {
+    marginRight: theme.spacing.md,
   },
   title: {
     fontFamily: "nunitoBold",
     color: theme.colors.primary,
-    lineHeight: 24,
   },
   date: {
-    fontSize: 12,
+    fontSize: sizing.FONT.xs,
     color: theme.colors.grey1,
   },
   noPost: {

@@ -1,8 +1,16 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { ChildrenProps } from "../types";
 import { io, Socket } from "socket.io-client";
 import { useAppSelector } from "../hooks";
 import logger from "../utils/logger";
+import { AppState } from "react-native";
 
 interface SocketProviderProps extends ChildrenProps {}
 
@@ -20,12 +28,14 @@ const MESSAGE = "new-message";
 const SocketProvider = ({ children }: SocketProviderProps) => {
   const { user } = useAppSelector((state) => state.auth);
   const [cb, setCb] = useState<CallbackType>(() => () => {});
-  const [socket] = useState<Socket>(() =>
-    io("http://mobile.angelsafe.co", {
-      extraHeaders: {
-        token: user?.token || "",
-      },
-    })
+  const socket = useMemo(
+    () =>
+      io("http://mobile.angelsafe.co", {
+        extraHeaders: {
+          token: user?.token || "",
+        },
+      }),
+    []
   );
 
   useEffect(() => {
@@ -46,6 +56,10 @@ const SocketProvider = ({ children }: SocketProviderProps) => {
         logger("chat", "new message received");
       });
     }
+
+    return () => {
+      socket.disconnect();
+    };
   }, [user?.token]);
 
   const handleSetCb = (cb: CallbackType) => {

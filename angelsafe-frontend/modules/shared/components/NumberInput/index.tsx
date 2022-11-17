@@ -2,6 +2,7 @@ import { Controller, Control } from "react-hook-form";
 import { StyleSheet } from "react-native";
 import PhoneInput from "react-native-phone-number-input";
 import { makeStyles, Text } from "@rneui/themed";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 type NumberInputFieldType = {
   mobile: string;
@@ -29,6 +30,7 @@ const NumberInput = ({ control }: NumberInputProps) => {
               defaultCode="US"
               onChangeFormattedText={field.onChange}
               containerStyle={[styles.inputContainer, hasErrors]}
+              textInputStyle={styles.inputStyle}
               textContainerStyle={styles.inputTextContainer}
               countryPickerProps={{
                 countryCodes: ["US", "CA", "PH"],
@@ -47,25 +49,29 @@ const NumberInput = ({ control }: NumberInputProps) => {
 const useStyles = makeStyles((theme) => ({
   inputContainer: {
     width: "100%",
-    borderRadius: 10,
+    borderRadius: sizing.BORDER_RADIUS,
     padding: 0,
     borderWidth: 1,
     borderColor: theme.colors.background,
+    height: sizing.BUTTON,
   },
   inputTextContainer: {
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
+    borderTopRightRadius: sizing.BORDER_RADIUS,
+    borderBottomRightRadius: sizing.BORDER_RADIUS,
     padding: 0,
   },
   inputError: {
     borderColor: "red",
     borderWidth: 1,
   },
+  inputStyle: {
+    fontSize: sizing.FONT.md,
+  },
   errorText: {
     textAlign: "right",
     color: "red",
-    marginVertical: 4,
-    fontSize: 12,
+    marginVertical: theme.spacing.sm,
+    fontSize: sizing.FONT.sm,
   },
 }));
 

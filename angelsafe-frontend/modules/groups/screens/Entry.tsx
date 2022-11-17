@@ -19,10 +19,7 @@ const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
   }
 
   if (data) {
-    const groupNames = data.data.map(({ groupname, id }) => ({
-      groupname,
-      id,
-    }));
+    const groupNames = data.data.map((details) => details);
 
     return (
       <>
@@ -42,7 +39,11 @@ const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
     );
   }
 
-  return <GroupListPlaceholder />;
+  return (
+    <Container containerProps={{ style: styles.wrapper }}>
+      <GroupListPlaceholder />
+    </Container>
+  );
 };
 
 export default EntryScreen;

@@ -6,17 +6,19 @@ import {
   PlaceholderMedia,
   PlaceholderLine,
 } from "rn-placeholder";
-import { makeStyles } from "@rneui/themed";
+import { makeStyles, useTheme } from "@rneui/themed";
+import { moderateScale, scale } from "react-native-size-matters";
 
 const PostAvatarPlacholder = () => {
   const styles = useStyles();
+  const { theme } = useTheme();
   return (
     <Placeholder Animation={(props) => <Fade {...props} style={styles.fade} />}>
       <View style={{ flexDirection: "row" }}>
-        <PlaceholderMedia isRound size={35} />
-        <View style={{ minWidth: "40%", marginLeft: 12 }}>
-          <PlaceholderLine height={8} width={100} />
-          <PlaceholderLine height={8} width={70} />
+        <PlaceholderMedia isRound size={moderateScale(36)} />
+        <View style={{ minWidth: "40%", marginLeft: theme.spacing.md }}>
+          <PlaceholderLine height={scale(8)} width={100} />
+          <PlaceholderLine height={scale(8)} width={70} />
         </View>
       </View>
     </Placeholder>

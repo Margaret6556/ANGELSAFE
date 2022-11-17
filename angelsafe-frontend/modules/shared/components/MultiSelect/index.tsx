@@ -1,9 +1,11 @@
-import useDarkMode from "@/shared/hooks/useDarkMode";
-import { StyleConstants } from "@/shared/styles";
+import useIsDark from "@/shared/hooks/useIsDark";
+import { useTraceUpdate } from "@/shared/hooks/useTraceUpdate";
+import { sizing } from "@/shared/providers/ThemeProvider";
 import { useTheme, Text } from "@rneui/themed";
 import React from "react";
 import { View } from "react-native";
 import MultiSelect, { MultiSelectProps } from "react-native-multiple-select";
+import { moderateScale, scale } from "react-native-size-matters";
 
 interface CustomMultiSelectProps extends MultiSelectProps {
   label?: string;
@@ -12,7 +14,8 @@ interface CustomMultiSelectProps extends MultiSelectProps {
 const CustomMultiSelect = React.forwardRef<MultiSelect, CustomMultiSelectProps>(
   (props, ref) => {
     const { theme } = useTheme();
-    const isDark = useDarkMode();
+    const isDark = useIsDark();
+    useTraceUpdate(props);
     return (
       <View>
         <Text
@@ -35,47 +38,48 @@ const CustomMultiSelect = React.forwardRef<MultiSelect, CustomMultiSelectProps>(
           tagTextColor={theme.colors.primary}
           selectedItemFontFamily="nunitoRegular"
           styleMainWrapper={{
-            paddingBottom: 4,
-            marginBottom: 24,
+            paddingBottom: theme.spacing.xs,
+            marginBottom: theme.spacing.lg,
           }}
           styleInputGroup={{
             backgroundColor: theme.colors.background,
-            height: 50,
-            borderTopLeftRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-            borderTopRightRadius: StyleConstants.PADDING_HORIZONTAL / 2,
+            height: moderateScale(50),
+            borderTopLeftRadius: sizing.BORDER_RADIUS,
+            borderTopRightRadius: sizing.BORDER_RADIUS,
           }}
           styleDropdownMenu={{
-            height: StyleConstants.BUTTON_HEIGHT,
+            height: sizing.BUTTON,
           }}
           itemTextColor={theme.colors.grey1}
           textInputProps={{
             style: {
               fontFamily: "nunitoRegular",
+              fontSize: sizing.FONT.md,
               flex: 1,
             },
           }}
           styleDropdownMenuSubsection={{
-            borderRadius: StyleConstants.PADDING_HORIZONTAL / 2,
+            borderRadius: sizing.BORDER_RADIUS,
             backgroundColor: theme.colors.white,
             borderColor: theme.colors.white,
           }}
           styleTextDropdownSelected={{
-            paddingLeft: StyleConstants.PADDING_HORIZONTAL / 2,
-          }}
-          styleTextDropdown={{
-            paddingLeft: StyleConstants.PADDING_HORIZONTAL / 2,
-            fontFamily: "nunitoRegular",
+            paddingLeft: theme.spacing.lg,
+            fontSize: sizing.FONT.sm,
             color: theme.colors.grey0,
           }}
-          styleListContainer={{}}
-          styleSelectorContainer={{}}
-          styleRowList={{
-            paddingVertical: 4,
+          styleTextDropdown={{
+            paddingLeft: theme.spacing.lg,
+            fontFamily: "nunitoRegular",
+            color: theme.colors.grey0,
+            fontSize: sizing.FONT.md,
           }}
-          searchInputStyle={{}}
+          styleRowList={{
+            paddingVertical: theme.spacing.xs,
+          }}
           styleItemsContainer={{
-            borderBottomEndRadius: StyleConstants.PADDING_HORIZONTAL / 2,
-            borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL / 2,
+            borderBottomEndRadius: sizing.BORDER_RADIUS,
+            borderBottomLeftRadius: sizing.BORDER_RADIUS,
             backgroundColor: theme.colors.white,
           }}
           itemFontFamily="nunitoRegular"

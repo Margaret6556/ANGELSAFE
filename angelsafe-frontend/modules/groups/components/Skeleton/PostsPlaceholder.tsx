@@ -7,44 +7,48 @@ import {
   Placeholder,
   Fade,
 } from "rn-placeholder";
-import { makeStyles } from "@rneui/themed";
+import { makeStyles, useTheme } from "@rneui/themed";
+import { moderateScale, scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const PostsPlaceholder = () => {
   const styles = useStyles();
+  const { theme } = useTheme();
+
   return (
     <Placeholder
       Animation={(props) => <Fade {...props} style={styles.fade} />}
       style={styles.container}
     >
-      <View style={{ marginVertical: 24 }}>
-        <PlaceholderLine height={50} noMargin />
+      <View style={{ marginVertical: theme.spacing.lg }}>
+        <PlaceholderLine height={moderateScale(50)} noMargin />
       </View>
       {new Array(2).fill(0).map((_, idx) => (
         <Card
           key={idx}
           containerStyle={{
-            borderRadius: 8,
+            borderRadius: sizing.BORDER_RADIUS,
             marginHorizontal: 0,
             marginTop: 0,
-            marginBottom: 24,
+            marginBottom: theme.spacing.lg,
           }}
         >
           <View
             style={{
               flexDirection: "row",
               width: "100%",
-              marginBottom: 24,
+              marginBottom: theme.spacing.lg,
             }}
           >
-            <PlaceholderMedia isRound size={35} />
-            <View style={{ minWidth: "40%", marginLeft: 8 }}>
-              <PlaceholderLine width={100} height={10} />
-              <PlaceholderLine width={60} height={10} />
+            <PlaceholderMedia isRound size={moderateScale(36)} />
+            <View style={{ minWidth: "40%", marginLeft: theme.spacing.sm }}>
+              <PlaceholderLine width={100} height={scale(8)} />
+              <PlaceholderLine width={60} height={scale(8)} />
             </View>
           </View>
-          <PlaceholderLine width={80} />
-          <PlaceholderLine width={100} />
-          <PlaceholderLine width={70} />
+          <PlaceholderLine height={scale(8)} width={80} />
+          <PlaceholderLine height={scale(8)} width={100} />
+          <PlaceholderLine height={scale(8)} width={70} />
         </Card>
       ))}
     </Placeholder>
@@ -55,7 +59,7 @@ export default PostsPlaceholder;
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    marginBottom: 12,
+    marginBottom: theme.spacing.lg,
   },
   fade: {
     backgroundColor: theme.colors.grey4,

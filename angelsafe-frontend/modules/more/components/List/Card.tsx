@@ -4,6 +4,8 @@ import { CardProps } from "@/more/types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Icon } from "@rneui/themed";
 import { makeStyles } from "@rneui/base";
+import { sizing } from "@/shared/providers/ThemeProvider";
+import { moderateScale } from "react-native-size-matters";
 
 const MoreCard = ({ label, onPress, icon }: CardProps) => {
   const handlePress = () => {
@@ -17,7 +19,7 @@ const MoreCard = ({ label, onPress, icon }: CardProps) => {
       <ListItem containerStyle={styles.container}>
         <ListItem.Content style={styles.content}>
           <Text>{label}</Text>
-          <Icon size={20} color={theme.colors.grey0} {...icon} />
+          <Icon size={moderateScale(20)} color={theme.colors.grey0} {...icon} />
         </ListItem.Content>
       </ListItem>
     </TouchableOpacity>
@@ -28,8 +30,8 @@ export default MoreCard;
 
 const useStyles = makeStyles((theme) => ({
   container: {
-    borderRadius: 12,
-    minHeight: 50,
+    borderRadius: sizing.BORDER_RADIUS,
+    minHeight: sizing.BUTTON,
   },
   content: {
     flexDirection: "row",

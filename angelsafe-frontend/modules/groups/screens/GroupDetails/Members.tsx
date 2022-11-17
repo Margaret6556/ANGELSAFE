@@ -3,11 +3,13 @@ import { StyleSheet, View, FlatList, TouchableOpacity } from "react-native";
 import { useGetGroupMembersQuery } from "@/shared/api/groups";
 import { StackScreenProps } from "@react-navigation/stack";
 import { GroupDetailsParamList } from "@/groups/types";
-import { Avatar, ListItem, makeStyles, Text } from "@rneui/themed";
+import { Avatar, ListItem, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { ListItemContent } from "@rneui/base/dist/ListItem/ListItem.Content";
 import { StyleConstants } from "@/shared/styles";
 import { ListItemChevron } from "@rneui/base/dist/ListItem/ListItem.Chevron";
+import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
+import { moderateScale } from "react-native-size-matters";
 
 const Members = ({
   navigation,
@@ -16,6 +18,8 @@ const Members = ({
   const { data, isError } = useGetGroupMembersQuery({
     groupId: route.params.groupId,
   });
+  const { theme } = useTheme();
+  useSetSolidBackground();
 
   const handlePress = (id: string) => () => {
     navigation.push("ViewProfile", {
@@ -49,8 +53,9 @@ const Members = ({
                         source={{
                           uri: item.profilePic,
                         }}
+                        size={moderateScale(36)}
                         rounded
-                        containerStyle={{ marginRight: 12 }}
+                        containerStyle={{ marginRight: theme.spacing.md }}
                       />
                       <Text>{item.username}</Text>
                     </View>
@@ -59,7 +64,6 @@ const Members = ({
                 </ListItem>
               </TouchableOpacity>
             );
-            // return <Text>{item.id}</Text>;
           }}
         />
       </Container>

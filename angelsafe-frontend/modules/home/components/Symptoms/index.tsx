@@ -1,6 +1,6 @@
-import { StyleConstants } from "@/shared/styles";
+import { makeStyles } from "@rneui/themed";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import Card from "./Card";
 
 interface ISymptomsComponent {
@@ -8,6 +8,7 @@ interface ISymptomsComponent {
 }
 
 const SymptomsComponent = ({ symptoms }: ISymptomsComponent) => {
+  const styles = useStyles();
   return (
     <>
       {symptoms.map((i) => (
@@ -21,8 +22,8 @@ const SymptomsComponent = ({ symptoms }: ISymptomsComponent) => {
 
 export default SymptomsComponent;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
-    marginVertical: StyleConstants.GAP_VERTICAL,
+    marginVertical: theme.spacing.md,
   },
-});
+}));

@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useRef } from "react";
 import { AuthParamList } from "@/auth/types";
-import { View, StyleSheet, Animated } from "react-native";
-import { Button } from "@rneui/themed";
+import { View, Animated } from "react-native";
+import { Button, makeStyles } from "@rneui/themed";
 import { Container, Logo } from "@/shared/components";
 import { StackScreenProps } from "@react-navigation/stack";
-import { StyleConstants } from "@/shared/styles";
+import { moderateScale } from "react-native-size-matters";
 
 const LoginScreen = ({
   navigation,
 }: StackScreenProps<AuthParamList, "Entry">) => {
   const animation = useRef(new Animated.Value(0)).current;
+  const styles = useStyles();
 
   useEffect(() => {
     Animated.timing(animation, {
@@ -26,7 +27,7 @@ const LoginScreen = ({
         {
           translateY: animation.interpolate({
             inputRange: [0, 1],
-            outputRange: [val, 0],
+            outputRange: [moderateScale(val), 0],
           }),
         },
       ],
@@ -48,10 +49,12 @@ const LoginScreen = ({
       </Animated.View>
       <View style={styles.buttonGroup}>
         <Animated.View
-          style={{
-            marginBottom: StyleConstants.PADDING_VERTICAL,
-            ...createAnimation(100),
-          }}
+          style={[
+            styles.marginBottom,
+            {
+              ...createAnimation(100),
+            },
+          ]}
         >
           <Button
             title="Login"
@@ -63,7 +66,6 @@ const LoginScreen = ({
         <Animated.View style={createAnimation(200)}>
           <Button
             title="Sign Up"
-            color="#333"
             type="outline"
             onPress={() => {
               navigation.setOptions({});
@@ -78,13 +80,16 @@ const LoginScreen = ({
 
 export default LoginScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   buttonGroup: {
     width: "100%",
     justifyContent: "space-between",
+  },
+  marginBottom: {
+    marginBottom: theme.spacing.lg,
   },
   imageContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}));

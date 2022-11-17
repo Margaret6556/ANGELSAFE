@@ -6,6 +6,7 @@ import useDarkMode from "@/shared/hooks/useDarkMode";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { makeStyles, useTheme } from "@rneui/themed";
 import { setSafeAreaBg, setThemeFontSize } from "@/shared/state/reducers/theme";
+import { moderateScale } from "react-native-size-matters";
 
 interface LayoutProps extends ChildrenProps {
   onLayout: () => Promise<void>;
@@ -44,7 +45,8 @@ const Layout = ({ children, onLayout }: LayoutProps) => {
   }, [fontSizeMultiplier]);
 
   const generateFontSize = useCallback(
-    (initial: number) => Math.round(initial * (0.9 + fontSizeMultiplier / 10)),
+    (initial: number) =>
+      moderateScale(Math.round(initial * (0.9 + fontSizeMultiplier / 10))),
     [fontSizeMultiplier]
   );
 

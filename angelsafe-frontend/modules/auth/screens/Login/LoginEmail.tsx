@@ -1,18 +1,16 @@
 import { Keyboard, Pressable, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
-import { AuthLoginParamsList, AuthParamList } from "@/auth/types";
-import { Button, Image, Input } from "@rneui/themed";
+import { AuthLoginParamsList } from "@/auth/types";
+import { Button, Image, Input, makeStyles } from "@rneui/themed";
 import { Controller, useForm } from "react-hook-form";
-import { StyleConstants } from "@/shared/styles";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import { useLoginMutation } from "@/shared/api/auth";
-import { useAppDispatch } from "@/shared/hooks";
 import { useLazyGetProfileQuery } from "@/shared/api/profile";
 import emailRegex from "@/shared/utils/emailRegex";
 import logger from "@/shared/utils/logger";
-import { useLazyViewStatQuery } from "@/shared/api/stats";
 import useLoginFetchProfileStats from "@/shared/hooks/useLoginFetchProfileStats";
+import { scale } from "react-native-size-matters";
 
 type Props = {};
 
@@ -28,10 +26,9 @@ const LoginEmail = ({}: StackScreenProps<
   const [error, setError] = useState("");
   const [login, loginResponse] = useLoginMutation();
   const [secureTextEntry, setSecureTextEntry] = useState(true);
-  const dispatch = useAppDispatch();
   const [getProfile, getProfileResponse] = useLazyGetProfileQuery();
-  const [getStats, getStatsResponse] = useLazyViewStatQuery();
   const loginAndFetchProfile = useLoginFetchProfileStats();
+  const styles = useStyles();
   const {
     control,
     formState: { errors },
@@ -61,10 +58,6 @@ const LoginEmail = ({}: StackScreenProps<
 
       if (status === 200) {
         await loginAndFetchProfile(token);
-        // const { data } = await getProfile(`Bearer ${token}`).unwrap();
-        // dispatch(setUser({ ...data, token }));
-        // await setItemAsync(Auth.KEY, token);
-        // dispatch(setLoggedIn(true));
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;
@@ -78,28 +71,11 @@ const LoginEmail = ({}: StackScreenProps<
   };
   return (
     <Pressable style={styles.container} onPress={Keyboard.dismiss}>
-      <View
-        style={{
-          width: "100%",
-          height: 200,
-          alignItems: "flex-end",
-        }}
-      >
-        <Image
-          source={require("../../../../assets/auth/Saly-2.png")}
-          style={{
-            // backgroundColor: "blue",
-            width: 200,
-            height: 200,
-          }}
-          containerStyle={{
-            aspectRatio: 1,
-            flex: 1,
-          }}
-          // resizeMethod="auto"
-          resizeMode="contain"
-        />
-      </View>
+      <Image
+        source={require("../../../../assets/auth/Saly-2.png")}
+        style={styles.image}
+        containerStyle={styles.imageContainer}
+      />
       <View style={styles.inputs}>
         <Text style={{ color: "red", opacity: error ? 1 : 0, minHeight: 24 }}>
           {error}
@@ -148,6 +124,7 @@ const LoginEmail = ({}: StackScreenProps<
                   name: secureTextEntry ? "eye-outline" : "eye-off-outline",
                   onPress: handleSetSecureText,
                   color: "#333",
+                  size: scale(24),
                 }}
                 inputStyle={{
                   borderTopRightRadius: 0,
@@ -171,15 +148,26 @@ const LoginEmail = ({}: StackScreenProps<
 
 export default LoginEmail;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   container: {
     justifyContent: "space-between",
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.xl,
     flex: 1,
   },
   inputs: {
     width: "100%",
-    top: -200,
+    marginTop: theme.spacing.xl,
   },
-});
+  image: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
+  },
+  imageContainer: {
+    width: scale(200),
+    height: scale(200),
+    position: "absolute",
+    right: 0,
+  },
+}));

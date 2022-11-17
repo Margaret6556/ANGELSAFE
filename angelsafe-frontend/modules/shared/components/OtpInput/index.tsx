@@ -1,6 +1,8 @@
 import { StyleSheet, View, TextInput, Pressable, Keyboard } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Text, useTheme } from "@rneui/themed";
+import { makeStyles, Text, useTheme } from "@rneui/themed";
+import { moderateScale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface IOtpInputFieldProps {
   isError: boolean;
@@ -14,12 +16,7 @@ const OtpInputField = ({ isError, onComplete }: IOtpInputFieldProps) => {
   const textInputRef = useRef<TextInput>(null);
   const [_inputContainerIsFocused, setInputContainerIsFocused] =
     useState(false);
-  const { theme } = useTheme();
-
-  const styles = makeStyles({
-    primary: isError ? theme.colors.error : theme.colors.primary,
-    secondary: isError ? "hsla(0, 60%, 50%, 0.2)" : "hsla(200, 60%, 70%, 0.4)",
-  });
+  const styles = useStyles({ isError });
 
   const codeDigitsArray = new Array(maxLength).fill(0);
 
@@ -93,35 +90,35 @@ const OtpInputField = ({ isError, onComplete }: IOtpInputFieldProps) => {
 
 export default OtpInputField;
 
-const makeStyles = (theme: { [key: string]: any }) =>
-  StyleSheet.create({
-    container: {},
-    otpContainer: {
-      flexDirection: "row",
-      justifyContent: "space-between",
-      width: "80%",
-      alignSelf: "center",
-      // width: "10%",
-    },
-    input: {
-      height: 1,
-      width: 1,
-      opacity: 0,
-    },
-    otpInputBoxFocused: {
-      backgroundColor: theme.secondary,
-    },
-    otpInputBox: {
-      borderColor: theme.primary,
-      borderRadius: 5,
-      borderWidth: 1,
-      width: 35,
-      height: 46,
-      justifyContent: "center",
-      alignItems: "center",
-    },
-    otpInputText: {
-      fontSize: 20,
-      color: theme.primary,
-    },
-  });
+const useStyles = makeStyles((theme, props: { isError: boolean }) => ({
+  container: {},
+  otpContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    alignSelf: "center",
+  },
+  input: {
+    height: 1,
+    width: 1,
+    opacity: 0,
+  },
+  otpInputBoxFocused: {
+    backgroundColor: props.isError
+      ? theme.colors.error
+      : theme.colors.secondary,
+  },
+  otpInputBox: {
+    borderColor: props.isError ? theme.colors.error : theme.colors.primary,
+    borderRadius: sizing.BORDER_RADIUS,
+    borderWidth: 1,
+    width: moderateScale(35),
+    height: moderateScale(46),
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  otpInputText: {
+    fontSize: sizing.FONT.lg,
+    color: props.isError ? theme.colors.error : theme.colors.primary,
+  },
+}));

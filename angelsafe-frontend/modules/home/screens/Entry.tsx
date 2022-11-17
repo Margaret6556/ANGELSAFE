@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { HomeParamsList } from "@/home/types";
 import { Animated, StyleSheet, View, ViewStyle } from "react-native";
-import { Avatar, makeStyles, Text } from "@rneui/themed";
+import { Avatar, Button, ButtonProps, makeStyles, Text } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import {
@@ -19,6 +19,8 @@ import { AppTabParamList } from "@/shared/types";
 import store from "@/shared/state";
 import { useDebouncedCallback } from "use-debounce";
 import { useViewStatQuery } from "@/shared/api/stats";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import UpdateStatsButton from "../components/UpdateStatsButton";
 // import {
 //   setLastSubmitted,
 //   setMood,
@@ -29,6 +31,7 @@ const EntryScreen = ({
   navigation,
 }: StackScreenProps<HomeParamsList, "Entry">) => {
   const animation = useRef(new Animated.Value(0)).current;
+  const btnAnimation = useRef(new Animated.Value(0)).current;
   const [modalVisible, setModalVisible] = useState(false);
   const [addSymptomsModalVis, setSymptomsModalVisible] = useState(false);
   const {
@@ -41,15 +44,18 @@ const EntryScreen = ({
       hasCancelled,
     },
   } = useAppSelector((state) => state);
-  // const dispatch = useAppDispatch();
   const { navigate } = useNavigation<NavigationProp<AppTabParamList>>();
   const styles = useStyles();
-  // const statQuery = useViewStatQuery();
+
   const debouncedOpenModal = useDebouncedCallback(() => {
     if (!lastSubmitted || !hasCancelled) {
-      handleToggleSubmitModalVisibility(true);
+      Animated.spring(btnAnimation, {
+        toValue: 50,
+        useNativeDriver: true,
+        bounciness: 20,
+      }).start();
     }
-  }, 4500);
+  }, 800);
 
   /**
    * After a successful user registration, if user presses on "GO TO GROUPS",
@@ -74,34 +80,19 @@ const EntryScreen = ({
   }, []);
 
   useEffect(() => {
-    const handleModal = () => {
-      const {
-        experience: { mood, symptoms, lastSubmitted },
-      } = store.getState();
-
-      if (mood && !!symptoms.length && !lastSubmitted && !hasCancelled) {
-        handleToggleSubmitModalVisibility();
-      }
-    };
-
-    const unsubscribe = navigation.addListener("blur", handleModal);
-
-    return () => unsubscribe();
-  }, []);
-
-  useEffect(() => {
     if (mood && !!symptoms.length) {
       debouncedOpenModal();
     }
-  }, [mood, symptoms, lastSubmitted]);
 
-  const handleToggleSubmitModalVisibility = (bool?: boolean) => {
-    setModalVisible(bool || !modalVisible);
-  };
-
-  const handleToggleAddSymptomsModal = (bool?: boolean) => {
-    setSymptomsModalVisible(bool || !addSymptomsModalVis);
-  };
+    if (!!lastSubmitted && !modalVisible) {
+      Animated.timing(btnAnimation, {
+        toValue: 0,
+        delay: 350,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [mood, symptoms, lastSubmitted, modalVisible]);
 
   const createAnimation = useCallback(
     (initialTranslateY: number): Animated.WithAnimatedObject<ViewStyle> => ({
@@ -117,13 +108,24 @@ const EntryScreen = ({
           scale: animation.interpolate({
             inputRange: [0, 1],
             outputRange: [0.9, 1],
-            // extrapolate: "clamp",
           }),
         },
       ],
     }),
     [animation]
   );
+
+  const handleToggleSubmitModalVisibility = (bool?: boolean) => {
+    setModalVisible(bool || !modalVisible);
+  };
+
+  const handleToggleAddSymptomsModal = (bool?: boolean) => {
+    setSymptomsModalVisible(bool || !addSymptomsModalVis);
+  };
+
+  const handleNext = () => {
+    handleToggleSubmitModalVisibility(true);
+  };
 
   return (
     <>
@@ -147,7 +149,6 @@ const EntryScreen = ({
                 uri: user?.profilePic,
               }}
               rounded
-              size={45}
               containerStyle={{
                 marginRight: 4,
               }}
@@ -157,7 +158,7 @@ const EntryScreen = ({
             <MoodsComponent moods={moods} />
           </Animated.View>
           <Animated.View style={createAnimation(100)}>
-            <View style={[styles.title, {}]}>
+            <View style={styles.title}>
               <Text style={styles.experiencing}>
                 What are you experiencing?
               </Text>
@@ -169,6 +170,7 @@ const EntryScreen = ({
           </Animated.View>
         </View>
       </Container>
+      <UpdateStatsButton animation={btnAnimation} onPress={handleNext} />
       {moods && !!symptoms.length && (
         <Modal
           isVisible={modalVisible}

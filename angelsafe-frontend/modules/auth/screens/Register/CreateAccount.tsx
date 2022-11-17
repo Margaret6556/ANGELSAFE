@@ -1,10 +1,12 @@
 import React from "react";
 import { AuthRegisterParamList } from "@/auth/types";
-import { View, Image, StyleSheet, ImageBackground } from "react-native";
+import { View, StyleSheet, ImageBackground } from "react-native";
 import { useAppDispatch } from "@/shared/hooks";
-import { Text, Button, makeStyles } from "@rneui/themed";
+import { Text, Button, Image, makeStyles } from "@rneui/themed";
 import { Container } from "@/shared/components";
 import { StackScreenProps } from "@react-navigation/stack";
+import { sizing } from "@/shared/providers/ThemeProvider";
+import { moderateScale } from "react-native-size-matters";
 
 const CreateAccount = ({
   navigation,
@@ -13,11 +15,14 @@ const CreateAccount = ({
   return (
     <Container>
       <Image
-        style={styles.image}
+        style={{ width: moderateScale(180), height: moderateScale(180) }}
+        containerStyle={styles.image}
         source={require("../../../../assets/auth/Saly-31.png")}
       />
       <View style={styles.text}>
-        <Text h4>Join the AngelSafe community.</Text>
+        <Text h4 style={{ textAlign: "center" }}>
+          Join the AngelSafe community.
+        </Text>
         <Text style={styles.subtitle}>
           You have come to the right place to feel less lonely and improve your
           health!
@@ -41,19 +46,19 @@ export default CreateAccount;
 const useStyles = makeStyles((theme) => ({
   button: {
     width: "100%",
-    height: 100,
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    flex: 1,
   },
   image: {
-    width: 180,
-    height: 180,
+    flex: 1,
   },
   text: {
-    height: 72,
-    justifyContent: "space-between",
+    justifyContent: "flex-start",
+    flex: 1,
   },
   subtitle: {
-    fontSize: 14,
+    textAlign: "center",
+    fontSize: sizing.FONT.sm,
     color: theme.colors.grey1,
   },
 }));

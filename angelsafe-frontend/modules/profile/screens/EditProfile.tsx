@@ -24,10 +24,12 @@ import {
   movieGenres,
   musicGenres,
 } from "@/shared/config/profileStaticData";
-import { FlatList, ScrollView } from "react-native-gesture-handler";
+import { FlatList } from "react-native-gesture-handler";
 import { StyleConstants } from "@/shared/styles";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import logger from "@/shared/utils/logger";
+import useIsDark from "@/shared/hooks/useIsDark";
+import { scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const mappedHobbies = hobbies.map((hobby) => ({
   id: hobby,
@@ -60,23 +62,21 @@ const EditProfile = ({
   const { user } = useAppSelector((state) => state.auth);
   const [updateProfile, updateProfileResponse] = useUpdateProfileMutation();
   const [multilineHeight, setMultiLineHeight] = useState(0);
-  const [buttonMargin, setButtonMargin] = useState(20);
+  // const [buttonMargin, setButtonMargin] = useState(scale(20));
   const { keyboardIsShowing } = useKeyboardShowing();
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
 
   const dispatch = useAppDispatch();
-  const styles = useStyles({
-    buttonMargin,
-  });
+  const styles = useStyles();
   const { theme } = useTheme();
 
-  useEffect(() => {
-    if (keyboardIsShowing) {
-      setButtonMargin(100);
-    } else {
-      setButtonMargin(20);
-    }
-  }, [keyboardIsShowing]);
+  // useEffect(() => {
+  //   if (keyboardIsShowing) {
+  //     setButtonMargin(scale(8));
+  //   } else {
+  //     setButtonMargin(scale(2));
+  //   }
+  // }, [keyboardIsShowing]);
 
   const {
     handleSubmit,
@@ -165,7 +165,7 @@ const EditProfile = ({
             backgroundColor: isDark ? theme.colors.background : "transparent",
           },
           imageStyle: {
-            opacity: isDark ? 0 : 1,
+            opacity: +!isDark,
           },
         }}
       >
@@ -192,7 +192,6 @@ const EditProfile = ({
                           color: isDark
                             ? theme.colors.grey1
                             : theme.colors.primary,
-                          fontSize: 16,
                         }}
                       >
                         Enter Biography
@@ -205,6 +204,7 @@ const EditProfile = ({
                   multiline
                   inputStyle={{
                     height: Math.max(100, multilineHeight),
+                    color: "red",
                   }}
                   errorStyle={{ textAlign: "right" }}
                   errorMessage={errors.bio?.message}
@@ -213,9 +213,14 @@ const EditProfile = ({
                     setMultiLineHeight(event.nativeEvent.contentSize.height);
                   }}
                   onChangeText={field.onChange}
-                  labelStyle={{ fontSize: 16 }}
                   maxLength={bioMaxLength}
-                  placeholder={user?.bio}
+                  placeholder={
+                    user?.bio
+                      ? user?.bio?.length > 100
+                        ? `${user?.bio?.substring(0, 100)}...`
+                        : user?.bio
+                      : "Enter your bio"
+                  }
                   style={{ backgroundColor: theme.colors.white }}
                   placeholderTextColor={theme.colors.grey0}
                 />
@@ -301,19 +306,18 @@ const useStyles = makeStyles((theme, props: { buttonMargin: number }) => ({
   },
   bioLength: {
     textAlign: "right",
-    fontSize: 12,
+    fontSize: sizing.FONT.xs,
     color: theme.colors.black,
   },
   inputLabelContainer: {
     marginTop: StyleConstants.PADDING_VERTICAL,
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
   button: {
     width: "100%",
-    marginVertical: props.buttonMargin,
   },
   inputFieldsWrapper: {
     width: "100%",

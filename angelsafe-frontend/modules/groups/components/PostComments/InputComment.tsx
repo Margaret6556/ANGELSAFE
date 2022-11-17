@@ -8,6 +8,8 @@ import { Controller, useForm } from "react-hook-form";
 import { useCommentPostMutation } from "@/shared/api/post";
 import logger from "@/shared/utils/logger";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
+import { moderateScale, scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface InputCommentProps {
   postId: string;
@@ -57,7 +59,7 @@ const InputComment = (props: InputCommentProps) => {
     <KeyboardAvoidingView
       style={styles.inputComment}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={a + b.top}
+      keyboardVerticalOffset={a + b.top * 0.6}
     >
       <Controller
         name="comment"
@@ -77,8 +79,7 @@ const InputComment = (props: InputCommentProps) => {
               placeholder="Write a comment"
               inputStyle={{
                 backgroundColor: theme.colors.grey5,
-                height: Math.max(24, multilineHeight),
-                // marginBottom: StyleConstants.PADDING_VERTICAL / 2,
+                height: Math.max(scale(24), multilineHeight),
               }}
               errorMessage={error?.message}
               maxLength={MAX_COMMENT_LENGTH}
@@ -93,11 +94,11 @@ const InputComment = (props: InputCommentProps) => {
                 name: "send",
                 onPress: handleSubmit(handlePostComment),
                 color: theme.colors.secondary,
+                size: scale(18),
                 containerStyle: {
-                  paddingLeft: 8,
+                  paddingLeft: theme.spacing.sm,
                 },
                 disabled: postCommentResponse.isLoading,
-                onPressIn(event) {},
               }}
             />
           </>
@@ -115,19 +116,19 @@ const useStyles = makeStyles((theme) => ({
     bottom: 0,
     backgroundColor: theme.colors.background,
     width: "100%",
-    padding: StyleConstants.PADDING_HORIZONTAL,
+    padding: theme.spacing.lg,
     shadowOffset: {
-      height: 10,
-      width: 10,
+      height: moderateScale(10),
+      width: moderateScale(10),
     },
     shadowColor: theme.colors.grey1,
     shadowOpacity: 1,
-    shadowRadius: 10,
-    elevation: 10,
+    shadowRadius: moderateScale(10),
+    elevation: moderateScale(10),
   },
   commentLength: {
     textAlign: "right",
-    fontSize: 10,
+    fontSize: sizing.FONT.xs,
     color: theme.colors.grey0,
   },
 }));

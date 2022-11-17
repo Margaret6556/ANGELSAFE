@@ -1,9 +1,10 @@
 import { StyleSheet, View } from "react-native";
 import React from "react";
 import { Container } from "@/shared/components";
-import { Icon, Text, Button } from "@rneui/themed";
+import { Icon, Text, Button, makeStyles } from "@rneui/themed";
 import { useNavigation } from "@react-navigation/native";
 import { StyleConstants } from "@/shared/styles";
+import { moderateScale } from "react-native-size-matters";
 
 type Props = { current: number; title: string };
 
@@ -12,15 +13,10 @@ const index = (props: Props) => {
   const handleBack = () => {
     goBack();
   };
+  const styles = useStyles();
   return (
     <View style={styles.wrapper}>
       <View style={styles.controls}>
-        {/* <Button
-          onPress={handleBack}
-          icon={<Icon type="ionicon" name="chevron-back" color="#192A60" />}
-          style={{ backgroundColor: "transparent" }}
-          buttonStyle={styles.backButtonContainer}
-        /> */}
         <Text style={styles.title}>{props.title}</Text>
       </View>
 
@@ -30,7 +26,12 @@ const index = (props: Props) => {
           return (
             <View key={i} style={styles.textContainer}>
               {props.current + 1 > i ? (
-                <Icon type="antdesign" name="checkcircle" color="#192A60" />
+                <Icon
+                  type="antdesign"
+                  name="checkcircle"
+                  color="#192A60"
+                  size={moderateScale(28)}
+                />
               ) : (
                 <Text style={styles.label}>{i}</Text>
               )}
@@ -44,7 +45,7 @@ const index = (props: Props) => {
 
 export default index;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     flex: 0,
     borderBottomColor: "#ccc",
@@ -60,17 +61,16 @@ const styles = StyleSheet.create({
   backButtonContainer: {
     backgroundColor: "transparent",
     padding: 0,
-    width: 40,
+    width: moderateScale(40),
   },
   title: {
     flex: 1,
     textAlign: "center",
-    // marginLeft: -20,
   },
   horizontalLine: {
     height: 2,
     width: "80%",
-    top: 14,
+    top: moderateScale(14),
     position: "absolute",
     backgroundColor: "#192A60",
   },
@@ -80,8 +80,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   textContainer: {
-    width: 30,
-    height: 30,
+    width: moderateScale(32),
+    height: moderateScale(32),
     backgroundColor: "#E1C1FF",
     borderColor: "#192A60",
     borderWidth: 2,
@@ -94,4 +94,4 @@ const styles = StyleSheet.create({
     color: "#192A60",
     fontWeight: "bold",
   },
-});
+}));

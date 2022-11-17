@@ -1,6 +1,6 @@
 import { Animated, FlatList, StyleSheet, View } from "react-native";
 import React, { useRef } from "react";
-import { Divider, makeStyles, Text } from "@rneui/themed";
+import { Divider, makeStyles, Text, useTheme } from "@rneui/themed";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ChatParamsList } from "@/more/types";
 import { useGetChatListQuery } from "@/shared/api/chat";
@@ -10,9 +10,10 @@ import { StyleConstants } from "@/shared/styles";
 import ChatPreview from "@/more/components/Chat/List/CardPreview";
 import AvatarChat from "@/more/components/Chat/List/Avatar";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import ChatListMessagePlaceholder from "@/more/components/Skeleton/ChatListMessagePlaceholder";
 import ChatListAvatarPlaceholder from "@/more/components/Skeleton/ChatListAvatarPlaceholder";
+import useIsDark from "@/shared/hooks/useIsDark";
+import { moderateScale, scale } from "react-native-size-matters";
 
 const ChatList = ({
   navigation,
@@ -20,8 +21,9 @@ const ChatList = ({
   const { data, error, isError, isLoading } = useGetChatListQuery();
   const { user } = useAppSelector((state) => state.auth);
   const bottomTab = useBottomTabBarHeight();
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
   const animation = useRef(new Animated.Value(0)).current;
+  const { theme } = useTheme();
   const styles = useStyles({
     tabBarHeight: bottomTab / 1.5,
     isDark,
@@ -42,6 +44,10 @@ const ChatList = ({
     };
 
   const chats = data?.data || [];
+  const a = chats.map((i) => ({
+    ...i.receiver,
+    profilePic: "",
+  }));
 
   return (
     <View style={styles.container}>
@@ -54,8 +60,8 @@ const ChatList = ({
       <Animated.FlatList
         data={chats}
         horizontal
+        contentContainerStyle={styles.scrollView}
         style={[
-          styles.scrollView,
           {
             opacity: animation.interpolate({
               inputRange: [0, 70],
@@ -91,9 +97,9 @@ const ChatList = ({
           isLoading ? (
             <View
               style={{
-                paddingLeft: 12,
+                paddingLeft: theme.spacing.md,
                 flexDirection: "row",
-                width: 68,
+                width: scale(64),
               }}
             >
               {new Array(4).fill(0).map((_, idx) => (
@@ -112,15 +118,15 @@ const ChatList = ({
             transform: [
               {
                 translateY: animation.interpolate({
-                  inputRange: [0, 100],
-                  outputRange: [0, -80],
+                  inputRange: [0, moderateScale(100)],
+                  outputRange: [0, moderateScale(-80)],
                   extrapolate: "clamp",
                 }),
               },
             ],
             borderRadius: animation.interpolate({
-              inputRange: [0, 100],
-              outputRange: [50, 0],
+              inputRange: [0, moderateScale(100)],
+              outputRange: [moderateScale(50), 0],
               extrapolate: "clamp",
             }),
           },
@@ -155,7 +161,7 @@ const ChatList = ({
         ListFooterComponent={() => (
           <View style={styles.footer}>
             {isLoading &&
-              new Array(4).fill(0).map((_, idx) => (
+              new Array(40).fill(0).map((_, idx) => (
                 <View key={idx} style={styles.placeholderWrapper}>
                   <ChatListMessagePlaceholder />
                   <Divider style={{ paddingVertical: 4 }} />
@@ -173,37 +179,34 @@ export default ChatList;
 const useStyles = makeStyles(
   (theme, props: { tabBarHeight: number; isDark: boolean }) => ({
     container: {
-      padding: StyleConstants.PADDING_HORIZONTAL,
+      padding: theme.spacing.lg,
       paddingBottom: 0,
       paddingHorizontal: 0,
     },
-    contentContainer: {},
-    scrollViewContainer: {
-      paddingBottom: props.tabBarHeight,
-      justifyContent: "space-between",
-    },
     scrollView: {
+      paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.xl,
+      justifyContent: "center",
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       alignItems: "center",
-      paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
+      paddingHorizontal: theme.spacing.md,
       borderBottomWidth: StyleSheet.hairlineWidth,
       borderBottomColor: theme.colors.grey0,
-      paddingBottom: 12,
+      paddingBottom: theme.spacing.md,
     },
     chatListContainer: {
       backgroundColor: props.isDark ? theme.colors.grey5 : "#F3FBFF",
-      paddingVertical: 12,
+      paddingVertical: theme.spacing.md,
       height: "100%",
     },
     placeholderWrapper: {
-      padding: 12,
+      padding: theme.spacing.md,
     },
     footer: {
-      paddingTop: 12,
+      padding: theme.spacing.sm,
       paddingBottom: 200,
     },
   })

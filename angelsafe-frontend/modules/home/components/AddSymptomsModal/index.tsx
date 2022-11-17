@@ -8,21 +8,14 @@ import {
   GestureResponderEvent,
 } from "react-native";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
-import useDarkMode from "@/shared/hooks/useDarkMode";
 import {
   setAdditionalSymptoms,
   setInitialSymptoms,
 } from "@/shared/state/reducers/experience";
-import { StyleConstants } from "@/shared/styles";
-import {
-  Button,
-  CheckBox,
-  Input,
-  ListItem,
-  makeStyles,
-  Text,
-} from "@rneui/themed";
+import { Button, Input, ListItem, makeStyles, Text } from "@rneui/themed";
 import Modal from "react-native-modal";
+import { sizing } from "@/shared/providers/ThemeProvider";
+import useIsDark from "@/shared/hooks/useIsDark";
 
 interface IModalProps {
   isVisible: boolean;
@@ -32,7 +25,7 @@ interface IModalProps {
 const HEIGHT = Dimensions.get("window").height;
 const AddSymptomsModal = (props: IModalProps) => {
   const animation = useRef(new Animated.Value(0)).current;
-  const isDark = useDarkMode();
+  const isDark = useIsDark();
   const [customSymptoms, setCustomSymptoms] = useState("");
   const styles = useStyles();
   const { initialSymptoms, additionalSymptoms } = useAppSelector(
@@ -102,7 +95,7 @@ const AddSymptomsModal = (props: IModalProps) => {
       >
         <View style={styles.content}>
           <View style={styles.notch} />
-          <Text h2 style={{ textAlign: "center", marginBottom: 36 }}>
+          <Text h2 style={styles.title}>
             Add Symptoms
           </Text>
           <Input
@@ -115,7 +108,7 @@ const AddSymptomsModal = (props: IModalProps) => {
               type: "ionicon",
               name: "add",
               onPress: handleAddCustomSymptom,
-              containerStyle: styles.inputIconContainerStyle,
+              size: sizing.ICON,
             }}
             onChangeText={handleInputChange}
             {...(isDark && {
@@ -132,11 +125,15 @@ const AddSymptomsModal = (props: IModalProps) => {
               <TouchableOpacity
                 activeOpacity={0.5}
                 onPress={handleAddSymptom(item)}
+                style={styles.row}
               >
                 <ListItem bottomDivider>
                   <View style={styles.listItemWrapper}>
                     <Text>{item}</Text>
-                    <CheckBox checked={initialSymptoms.includes(item)} />
+                    <ListItem.CheckBox
+                      checked={initialSymptoms.includes(item)}
+                      onPress={handleAddSymptom(item)}
+                    />
                   </View>
                 </ListItem>
               </TouchableOpacity>
@@ -145,9 +142,9 @@ const AddSymptomsModal = (props: IModalProps) => {
           <Button
             title="Done"
             onPress={handleSubmit}
-            containerStyle={{
-              marginBottom: 24,
-            }}
+            // containerStyle={{
+            //   marginBottom: 24,
+            // }}
           />
         </View>
       </Animated.View>
@@ -163,32 +160,26 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
   },
   container: {
-    flex: 0,
     height: "90%",
     width: "100%",
     marginTop: "auto",
     backgroundColor: theme.colors.background,
     justifyContent: "space-between",
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    borderTopLeftRadius: theme.spacing.lg,
+    borderTopRightRadius: theme.spacing.lg,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.xl,
   },
   buttonContainer: {
     width: "100%",
   },
   notch: {
     width: "12%",
-    height: 4,
-    borderRadius: 10,
+    height: theme.spacing.sm,
+    borderRadius: theme.spacing.xl,
     backgroundColor: theme.colors.black,
     alignSelf: "center",
-    marginBottom: 24,
-  },
-  contentSection: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: StyleConstants.PADDING_VERTICAL,
+    marginBottom: theme.spacing.xl,
   },
   content: {
     width: "100%",
@@ -206,9 +197,8 @@ const useStyles = makeStyles((theme) => ({
   input: {
     backgroundColor: theme.colors.grey5,
   },
-  inputIconContainerStyle: {
-    // height: "100%",
-    // backgroundColor: theme.colors.grey1,
-    // justifyContent: "center",
+  row: {
+    paddingVertical: theme.spacing.sm,
   },
+  title: { textAlign: "center", marginBottom: theme.spacing.lg },
 }));

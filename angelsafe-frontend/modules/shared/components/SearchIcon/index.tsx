@@ -2,6 +2,7 @@ import React from "react";
 import { StyleProp, ViewStyle } from "react-native";
 import { Icon, makeStyles } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { moderateScale } from "react-native-size-matters";
 
 interface SearchIconProps {
   style?: StyleProp<ViewStyle>;
@@ -19,10 +20,7 @@ const SearchIcon = ({ style, onPress }: SearchIconProps) => {
         <Icon
           type="entypo"
           name="magnifying-glass"
-          iconProps={{
-            size: 22,
-            name: "magnifying-glass",
-          }}
+          size={moderateScale(24)}
           containerStyle={[styles.containerStyle, style]}
         />
       </TouchableOpacity>
@@ -35,9 +33,9 @@ export default SearchIcon;
 const useStyles = makeStyles((theme) => ({
   containerStyle: {
     backgroundColor: theme.colors.white,
-    height: 45,
     borderRadius: 50,
-    width: 45,
+    height: moderateScale(42),
+    width: moderateScale(42),
     justifyContent: "center",
   },
 }));

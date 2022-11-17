@@ -5,6 +5,7 @@ import { StyleConstants } from "@/shared/styles";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { ProfileParamsList } from "@/profile/types";
 import { useAppSelector } from "@/shared/hooks";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const AboutMeTab = () => {
   const navigation = useNavigation<NavigationProp<ProfileParamsList>>();
@@ -80,7 +81,7 @@ const AboutMeTab = () => {
 export default AboutMeTab;
 
 const useStyles = makeStyles((theme) => ({
-  content: { marginBottom: StyleConstants.PADDING_VERTICAL * 1.5 },
+  content: { marginBottom: theme.spacing.xl },
   hobbyContainer: {
     flexWrap: "wrap",
     flexDirection: "row",
@@ -90,14 +91,13 @@ const useStyles = makeStyles((theme) => ({
     color: theme.colors.black,
   },
   hobby: {
-    padding: 10,
+    padding: theme.spacing.md,
+    margin: theme.spacing.md,
     backgroundColor: theme.colors.background,
-    margin: 10,
     marginLeft: 0,
     marginBottom: 0,
-    minWidth: 100,
 
-    borderRadius: 8,
+    borderRadius: sizing.BORDER_RADIUS,
     overflow: "hidden",
   },
   button: {

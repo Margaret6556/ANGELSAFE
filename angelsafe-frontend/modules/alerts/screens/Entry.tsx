@@ -1,12 +1,5 @@
 import React, { useRef } from "react";
-import {
-  View,
-  TouchableOpacity,
-  FlatList,
-  Animated,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import { View, TouchableOpacity, Animated, StyleSheet } from "react-native";
 import { Divider, makeStyles, Text, useTheme } from "@rneui/themed";
 import { Container, Loading } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
@@ -18,6 +11,8 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import timeSince from "@/shared/utils/timeSince";
 import { RootStackParamList } from "@/shared/types";
 import ChatListMessagePlaceholder from "@/more/components/Skeleton/ChatListMessagePlaceholder";
+import { sizing } from "@/shared/providers/ThemeProvider";
+import { moderateScale, scale } from "react-native-size-matters";
 
 const EntryScreen = ({
   navigation,
@@ -60,14 +55,14 @@ const EntryScreen = ({
           styles.title,
           {
             opacity: animation.interpolate({
-              inputRange: [0, 75],
+              inputRange: [0, moderateScale(75)],
               outputRange: [1, 0],
             }),
             transform: [
               {
                 translateX: animation.interpolate({
-                  inputRange: [0, 200],
-                  outputRange: [0, -100],
+                  inputRange: [0, moderateScale(200)],
+                  outputRange: [0, moderateScale(-100)],
                   extrapolate: "clamp",
                 }),
               },
@@ -85,15 +80,15 @@ const EntryScreen = ({
             transform: [
               {
                 translateY: animation.interpolate({
-                  inputRange: [0, 100],
-                  outputRange: [0, -69],
+                  inputRange: [0, moderateScale(100)],
+                  outputRange: [0, moderateScale(-55)],
                   extrapolate: "clamp",
                 }),
               },
             ],
             borderRadius: animation.interpolate({
-              inputRange: [0, 100],
-              outputRange: [24, 0],
+              inputRange: [0, moderateScale(100)],
+              outputRange: [moderateScale(24), 0],
               extrapolate: "clamp",
             }),
           },
@@ -128,14 +123,16 @@ const EntryScreen = ({
               activeOpacity={0.5}
             >
               <View style={styles.notification}>
-                <Avatar
-                  source={{
-                    uri: item.profilePic,
-                  }}
-                  containerStyle={styles.notificationIconContainer}
-                  rounded
-                  size={56}
-                />
+                <View style={styles.notificationIconContainer}>
+                  <Avatar
+                    source={{
+                      uri: item.profilePic,
+                    }}
+                    containerStyle={{}}
+                    rounded
+                    size={moderateScale(56)}
+                  />
+                </View>
                 <View style={styles.labels}>
                   <Text style={styles.since}>
                     {timeSince(item.timestamp)} ago
@@ -147,15 +144,15 @@ const EntryScreen = ({
           );
         }}
         ListFooterComponent={
-          <View style={{ paddingBottom: 100 }}>
+          <View style={{ paddingBottom: scale(80) }}>
             {isLoading && (
               <>
                 {new Array(8).fill(0).map((_, idx) => (
-                  <View style={{ paddingVertical: 4 }} key={idx}>
-                    <View style={{ paddingHorizontal: 12 }}>
+                  <View style={{ paddingVertical: theme.spacing.lg }} key={idx}>
+                    <View style={{ paddingHorizontal: theme.spacing.lg }}>
                       <ChatListMessagePlaceholder />
                     </View>
-                    <Divider style={{ marginVertical: 8 }} />
+                    <Divider style={{ marginVertical: theme.spacing.md }} />
                   </View>
                 ))}
               </>
@@ -178,13 +175,12 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     width: "100%",
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    padding: theme.spacing.lg,
   },
   container: {
     width: "100%",
     backgroundColor: theme.colors.background,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    paddingVertical: theme.spacing.lg,
     height: "100%",
   },
   notification: {
@@ -201,7 +197,7 @@ const useStyles = makeStyles((theme) => ({
   },
   labels: { width: "82%" },
   since: {
-    fontSize: 12,
+    fontSize: sizing.FONT.xs,
     color: theme.colors.grey1,
   },
 }));

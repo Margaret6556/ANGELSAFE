@@ -14,6 +14,8 @@ import { useLazyGetProfileQuery } from "@/shared/api/profile";
 import CountdownTimer from "../Countdown";
 import logger from "@/shared/utils/logger";
 import useLoginFetchProfileStats from "@/shared/hooks/useLoginFetchProfileStats";
+import { moderateScale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface IOtpViewProps {
   mobile: string;
@@ -99,14 +101,14 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
   return (
     <KeyboardAwareScrollView
       contentContainerStyle={styles.wrapper}
-      extraHeight={240}
+      extraHeight={moderateScale(200)}
     >
       <View style={styles.container}>
         <Icon
           type="foundation"
           name="lock"
           containerStyle={styles.lockContainer}
-          iconProps={{ name: "lock", size: 64, color: "#fff" }}
+          iconProps={{ name: "lock", size: moderateScale(64), color: "#fff" }}
         />
         <View style={styles.otp}>
           {errorMessage ? (
@@ -204,15 +206,15 @@ const useStyles = makeStyles((theme) => ({
   },
   lockContainer: {
     backgroundColor: theme.colors.primary,
-    height: 100,
-    width: 100,
+    height: moderateScale(100),
+    width: moderateScale(100),
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 100,
-    marginVertical: 48,
+    marginVertical: moderateScale(48),
   },
   otp: {
-    height: 200,
+    height: moderateScale(100),
     justifyContent: "space-between",
     width: "100%",
   },
@@ -221,7 +223,7 @@ const useStyles = makeStyles((theme) => ({
   },
   textResendOtp: { color: theme.colors.primary },
   subtitle: {
-    fontSize: 14,
+    fontSize: sizing.FONT.sm,
     textAlign: "center",
   },
   button: {

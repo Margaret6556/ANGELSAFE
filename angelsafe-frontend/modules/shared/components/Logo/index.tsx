@@ -1,15 +1,16 @@
 import { useTheme } from "@rneui/themed";
 import * as React from "react";
 import Svg, { Path, SvgProps } from "react-native-svg";
+import { scale } from "react-native-size-matters";
 
 const SvgComponent = (props: SvgProps) => {
   const { theme } = useTheme();
   return (
     <Svg
       {...props}
-      viewBox={"0 0 288 280"}
-      width={props.width || 180}
-      height={props.height || 180}
+      viewBox={`0 0 288 280`}
+      width={props.width || scale(180)}
+      height={props.height || scale(180)}
       fill="none"
     >
       <Path

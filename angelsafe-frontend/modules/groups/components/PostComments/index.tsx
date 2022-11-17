@@ -8,6 +8,8 @@ import timeSince from "@/shared/utils/timeSince";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GroupDetailsParamList } from "@/groups/types";
 import PostCommentsPlaceholder from "../Skeleton/PostCommentsPlaceholder";
+import { sizing } from "@/shared/providers/ThemeProvider";
+import { moderateScale, scale } from "react-native-size-matters";
 
 interface PostCommentProps {
   ownerId: string;
@@ -48,11 +50,19 @@ const PostComments = (props: PostCommentProps) => {
             width: "10%",
           }}
         >
-          <Avatar source={{ uri: profile.profilePic }} rounded />
+          <Avatar
+            source={{ uri: profile.profilePic }}
+            rounded
+            size={scale(36)}
+          />
         </TouchableOpacity>
         <View style={styles.content}>
           <View
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              marginBottom: theme.spacing.sm,
+            }}
           >
             <TouchableOpacity
               activeOpacity={0.5}
@@ -66,7 +76,7 @@ const PostComments = (props: PostCommentProps) => {
                 {
                   color: theme.colors.grey0,
                   fontFamily: "nunitoRegular",
-                  fontSize: 12,
+                  fontSize: sizing.FONT.xs,
                 },
               ]}
             >
@@ -92,15 +102,15 @@ const useStyles = makeStyles((theme) => ({
   content: {
     width: "88%",
     marginLeft: "2%",
-    padding: 8,
+    padding: theme.spacing.md,
     backgroundColor: theme.mode === "light" ? "#fafafa" : theme.colors.grey5,
-    borderRadius: StyleConstants.PADDING_VERTICAL / 2,
+    borderRadius: sizing.BORDER_RADIUS,
     borderWidth: 1,
     borderColor: theme.colors.grey5,
   },
   subtitle: {
     fontFamily: "nunitoBold",
-    fontSize: 14,
+    fontSize: sizing.FONT.sm,
     color: theme.colors.primary,
   },
 }));

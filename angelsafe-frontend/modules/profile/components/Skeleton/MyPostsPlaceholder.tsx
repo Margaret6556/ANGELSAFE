@@ -7,6 +7,8 @@ import {
   PlaceholderMedia,
 } from "rn-placeholder";
 import { Card, Divider, makeStyles } from "@rneui/themed";
+import { scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const MyPostsPlaceholder = () => {
   const styles = useStyles();
@@ -14,17 +16,17 @@ const MyPostsPlaceholder = () => {
     <Placeholder Animation={(props) => <Fade {...props} style={styles.fade} />}>
       <Card containerStyle={styles.cardContainer}>
         <View style={{ flexDirection: "row" }}>
-          <PlaceholderMedia isRound size={35} />
-          <View style={{ minWidth: "40%", marginLeft: 8 }}>
-            <PlaceholderLine height={8} width={100} />
-            <PlaceholderLine height={8} width={60} />
+          <PlaceholderMedia isRound size={scale(32)} />
+          <View style={styles.wrapper}>
+            <PlaceholderLine height={scale(8)} width={100} />
+            <PlaceholderLine height={scale(8)} width={60} />
           </View>
         </View>
         <Divider style={styles.divider} />
         <View>
-          <PlaceholderLine width={60} />
-          <PlaceholderLine width={100} />
-          <PlaceholderLine width={80} />
+          <PlaceholderLine height={scale(8)} width={60} />
+          <PlaceholderLine height={scale(8)} width={100} />
+          <PlaceholderLine height={scale(8)} width={80} />
         </View>
       </Card>
     </Placeholder>
@@ -37,13 +39,14 @@ const useStyles = makeStyles((theme) => ({
   cardContainer: {
     backgroundColor: theme.colors.background,
     marginHorizontal: 0,
-    borderRadius: 8,
+    borderRadius: sizing.BORDER_RADIUS,
     borderColor: "transparent",
   },
+  wrapper: { minWidth: "40%", marginLeft: theme.spacing.md },
   fade: {
     backgroundColor: theme.colors.grey4,
   },
   divider: {
-    marginVertical: 12,
+    marginVertical: theme.spacing.md,
   },
 }));

@@ -1,16 +1,13 @@
-import { StyleSheet, View } from "react-native";
 import React from "react";
-import { Button, Icon } from "@rneui/themed";
-import { Text } from "@rneui/base";
+import { Icon, makeStyles, Text } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { useNavigation } from "@react-navigation/native";
 
 type IAddSymptomProps = {
   onPress: () => void;
 };
 
 const AddNewSymptomButton = (props: IAddSymptomProps) => {
-  const { navigate } = useNavigation<any>();
+  const styles = useStyles();
   const handlePress = () => {
     props.onPress();
   };
@@ -20,14 +17,7 @@ const AddNewSymptomButton = (props: IAddSymptomProps) => {
       onPress={handlePress}
       activeOpacity={0.6}
     >
-      <Icon
-        type="entypo"
-        name="squared-plus"
-        iconProps={{
-          size: 32,
-          name: "squared-plus",
-        }}
-      />
+      <Icon type="entypo" name="squared-plus" />
       <Text style={styles.text}>Add new symptoms</Text>
     </TouchableOpacity>
   );
@@ -35,17 +25,15 @@ const AddNewSymptomButton = (props: IAddSymptomProps) => {
 
 export default AddNewSymptomButton;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   button: {
-    marginVertical: 12,
-    justifyContent: "space-between",
+    marginVertical: theme.spacing.lg,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 8,
   },
   text: {
-    color: "#333",
-    marginLeft: 10,
-    flex: 1,
+    color: theme.colors.grey1,
+    marginLeft: theme.spacing.md,
+    fontSize: theme.spacing.lg,
   },
-});
+}));

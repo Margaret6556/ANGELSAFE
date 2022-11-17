@@ -15,6 +15,7 @@ import logger from "@/shared/utils/logger";
 import { PostsType } from "@/shared/api/post";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { GroupDetailsParamList } from "@/groups/types";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface CardFeedProps extends PostsType {
   isComments?: boolean;
@@ -144,18 +145,18 @@ const CardFeed = (props: CardFeedProps) => {
 
 export default CardFeed;
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   cardContainer: {
     marginHorizontal: 0,
-    marginBottom: StyleConstants.PADDING_VERTICAL,
+    marginBottom: theme.spacing.lg,
     margin: 0,
-    borderRadius: StyleConstants.PADDING_HORIZONTAL,
+    borderRadius: sizing.BORDER_RADIUS,
   },
   cardDescription: {
-    marginVertical: 24,
+    marginVertical: theme.spacing.lg,
   },
   socialIcons: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
-});
+}));

@@ -50,7 +50,7 @@ export const _API = {
     LIST: "/notif/list",
   },
   TEST: "/info/version",
-};
+} as const;
 
 export enum Auth {
   KEY = "auth_token",

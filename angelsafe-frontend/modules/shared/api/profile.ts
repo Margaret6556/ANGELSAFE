@@ -13,9 +13,8 @@ type UpdateProfileType = Partial<
 
 type ProfileViewType = Omit<
   UserType,
-  "mobile" | "mobileNumber" | "token" | "email" | "winCount" | "painCount"
+  "mobile" | "mobileNumber" | "token" | "email"
 >;
-
 
 const profileApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({

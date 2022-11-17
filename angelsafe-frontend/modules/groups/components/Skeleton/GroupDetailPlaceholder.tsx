@@ -1,29 +1,42 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
 import React from "react";
 import LinearGradientBackground from "@/shared/components/Layout/LinearGradientBackground";
-import { Card, makeStyles } from "@rneui/themed";
-import {
-  Fade,
-  Placeholder,
-  PlaceholderLine,
-  PlaceholderMedia,
-} from "rn-placeholder";
+import { Text, makeStyles } from "@rneui/themed";
+import { Fade, Placeholder, PlaceholderLine } from "rn-placeholder";
 import { StyleConstants } from "@/shared/styles";
-import { Loading } from "@/shared/components";
+import { GroupsType } from "@/groups/types";
+import useIsDark from "@/shared/hooks/useIsDark";
+import { moderateScale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
-type Props = {};
+type GroupDetailPlaceholderProps = Pick<
+  Partial<GroupsType>,
+  "description" | "groupname"
+>;
 
-const GroupDetailPlaceholder = (props: Props) => {
-  const styles = useStyles();
+const GroupDetailPlaceholder = (props: GroupDetailPlaceholderProps) => {
+  const isDark = useIsDark();
+  const styles = useStyles({ isDark });
+
   return (
     <LinearGradientBackground>
       <Placeholder
         Animation={(props) => <Fade {...props} style={styles.fade} />}
       >
         <View style={styles.top}>
-          <PlaceholderLine height={24} width={40} />
-          <PlaceholderLine width={80} />
-          <PlaceholderLine width={100} />
+          {props.groupname ? (
+            <Text h4 style={styles.title}>
+              {props.groupname}
+            </Text>
+          ) : (
+            <PlaceholderLine height={moderateScale(24)} width={40} />
+          )}
+          <PlaceholderLine height={moderateScale(12)} width={80} />
+          {props.description ? (
+            <Text>{props.description}</Text>
+          ) : (
+            <PlaceholderLine height={moderateScale(12)} width={100} />
+          )}
         </View>
         <View style={styles.bottom}>{/* <Loading /> */}</View>
       </Placeholder>
@@ -33,14 +46,12 @@ const GroupDetailPlaceholder = (props: Props) => {
 
 export default GroupDetailPlaceholder;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
   top: {
     backgroundColor: theme.colors.background,
-    paddingTop: StyleConstants.PADDING_VERTICAL,
-    paddingBottom: StyleConstants.PADDING_VERTICAL / 2,
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    borderBottomLeftRadius: StyleConstants.PADDING_HORIZONTAL,
-    borderBottomRightRadius: StyleConstants.PADDING_HORIZONTAL,
+    padding: theme.spacing.lg,
+    borderBottomLeftRadius: sizing.BORDER_RADIUS,
+    borderBottomRightRadius: sizing.BORDER_RADIUS,
     minHeight: "50%",
     justifyContent: "center",
   },
@@ -50,5 +61,9 @@ const useStyles = makeStyles((theme) => ({
   bottom: {
     flex: 1,
     minHeight: "100%",
+  },
+  title: {
+    marginBottom: theme.spacing.sm,
+    color: props.isDark ? theme.colors.black : theme.colors.primary,
   },
 }));

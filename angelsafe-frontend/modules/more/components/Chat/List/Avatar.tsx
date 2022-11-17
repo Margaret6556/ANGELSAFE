@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { Avatar } from "@rneui/themed";
+import { Avatar, useTheme } from "@rneui/themed";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { moderateScale } from "react-native-size-matters";
 
 interface AvatarChatProps {
   profilePicture: string;
@@ -9,6 +10,7 @@ interface AvatarChatProps {
 }
 
 const AvatarChat = ({ profilePicture, onPress }: AvatarChatProps) => {
+  const { theme } = useTheme();
   const handleOnPress = () => {
     onPress && onPress();
   };
@@ -19,11 +21,10 @@ const AvatarChat = ({ profilePicture, onPress }: AvatarChatProps) => {
         source={{
           uri: profilePicture,
         }}
-        size={45}
         containerStyle={{
-          marginHorizontal: 10,
+          marginHorizontal: theme.spacing.sm,
         }}
-        avatarStyle={{}}
+        size={moderateScale(50)}
         rounded
       />
     </TouchableOpacity>
@@ -31,5 +32,3 @@ const AvatarChat = ({ profilePicture, onPress }: AvatarChatProps) => {
 };
 
 export default AvatarChat;
-
-const styles = StyleSheet.create({});

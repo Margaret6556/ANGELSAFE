@@ -4,11 +4,15 @@ import { StackScreenProps } from "@react-navigation/stack";
 import { GroupDetailsParamList } from "@/groups/types";
 import { useViewProfileQuery } from "@/shared/api/profile";
 import { Divider, Icon, Image, makeStyles, Text } from "@rneui/themed";
-import { Container } from "@/shared/components";
+import { Container, ErrorText } from "@/shared/components";
 import { StyleConstants } from "@/shared/styles";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { useAppSelector } from "@/shared/hooks";
 import { RootStackParamList } from "@/shared/types";
+import { Trend } from "@/profile/components";
+import useSetSolidBackground from "@/shared/hooks/useSetSolidBackground";
+import { moderateScale, scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const ViewProfile = ({
   navigation,
@@ -67,10 +71,11 @@ const ViewProfile = ({
             </Text>
             {profile.username !== user?.username && (
               <TouchableOpacity onPress={handleSendMessage}>
-                <Icon type="ionicon" name="mail" />
+                <Icon type="ionicon" name="mail" size={moderateScale(24)} />
               </TouchableOpacity>
             )}
           </View>
+          <Trend painCount={profile.painCount} winCount={profile.winCount} />
         </View>
         <Divider style={styles.divider} />
         <View style={styles.bottom}>
@@ -84,7 +89,7 @@ const ViewProfile = ({
             Birth year: <Text>{profile.year}</Text>
           </Text>
 
-          <View style={[styles.content, { marginVertical: 24 }]}>
+          <View style={styles.content}>
             <Text style={styles.bio}>Hobbies</Text>
             <View style={styles.hobbyContainer}>
               {profile.hobbies.map((h) => (
@@ -127,7 +132,6 @@ export default ViewProfile;
 const useStyles = makeStyles((theme) => ({
   container: {
     justifyContent: "flex-start",
-    // backgroundColor: theme.colors.background,
   },
   top: {
     width: "100%",
@@ -138,41 +142,42 @@ const useStyles = makeStyles((theme) => ({
     borderWidth: StyleSheet.hairlineWidth,
     minWidth: "100%",
     borderColor: theme.colors.grey5,
-    marginVertical: StyleConstants.PADDING_VERTICAL,
+    marginVertical: theme.spacing.lg,
   },
   message: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: theme.spacing.xl,
   },
   bio: {
     color: theme.colors.primary,
-    marginBottom: 8,
+    marginBottom: theme.spacing.sm,
   },
   bottom: {
     width: "100%",
     alignItems: "flex-start",
   },
   imageContainer: {
-    width: 160,
-    height: 160,
-    marginBottom: 12,
+    width: moderateScale(120),
+    height: moderateScale(120),
+    marginBottom: theme.spacing.lg,
     borderRadius: 100,
   },
-  content: { marginBottom: StyleConstants.PADDING_VERTICAL * 1.5 },
+  content: { marginVertical: theme.spacing.md },
   hobbyContainer: {
     flexWrap: "wrap",
     flexDirection: "row",
     justifyContent: "flex-start",
   },
   hobby: {
-    padding: 10,
-    backgroundColor: theme.colors.background,
-    overflow: "hidden",
-    margin: 10,
+    padding: theme.spacing.md,
+    margin: theme.spacing.md,
     marginLeft: 0,
     marginBottom: 0,
     minWidth: 100,
-    borderRadius: 8,
+    borderRadius: sizing.BORDER_RADIUS,
+    backgroundColor: theme.colors.background,
+    overflow: "hidden",
     textAlign: "center",
   },
 }));

@@ -1,52 +1,32 @@
 import React from "react";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
+import { ActivityIndicator } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import store, { persistor } from "@/shared/state";
-import {
-  NavigationContainer,
-  DefaultTheme,
-  DarkTheme,
-} from "@react-navigation/native";
 import { ChildrenProps } from "../types";
 import { Layout } from "../components";
-import ThemeProvider from "./theme";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import ThemeProvider from "./ThemeProvider";
 import ImageBackgroundContainer from "../components/Layout/ImageBackground";
-import { ActivityIndicator, useColorScheme } from "react-native";
 import SocketProvider from "./SocketProvider";
+import NavigationProvider from "./NavigationProvider";
 
 interface ProviderProps extends ChildrenProps {
   onLayoutView: () => Promise<void>;
 }
 
 const Providers = ({ children, onLayoutView }: ProviderProps) => {
-  const colorScheme = useColorScheme();
-  const navigationTheme =
-    colorScheme === "dark"
-      ? {
-          ...DarkTheme,
-          colors: {
-            ...DarkTheme.colors,
-          },
-        }
-      : {
-          ...DefaultTheme,
-          colors: {
-            ...DefaultTheme.colors,
-            background: "transparent",
-          },
-        };
   return (
     <Provider store={store}>
       <PersistGate loading={<ActivityIndicator />} persistor={persistor}>
         <SocketProvider>
           <ThemeProvider>
             <ImageBackgroundContainer>
-              <NavigationContainer theme={navigationTheme}>
+              <NavigationProvider>
                 <SafeAreaProvider>
                   <Layout onLayout={onLayoutView}>{children}</Layout>
                 </SafeAreaProvider>
-              </NavigationContainer>
+              </NavigationProvider>
             </ImageBackgroundContainer>
           </ThemeProvider>
         </SocketProvider>

@@ -5,6 +5,7 @@ import DropDownPicker, {
   DropDownPickerProps,
 } from "react-native-dropdown-picker";
 import { StyleConstants } from "@/shared/styles";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 type Custom = {
   title?: string;
@@ -18,9 +19,13 @@ type Custom = {
 const DropDownInput = React.forwardRef((props: Custom, ref) => {
   const { theme } = useTheme();
   return (
-    <View style={{ marginBottom: 12 }}>
+    <View style={{ marginBottom: theme.spacing.md }}>
       <Text
-        style={{ marginBottom: 8, fontSize: 18, color: theme.colors.primary }}
+        style={{
+          marginBottom: theme.spacing.sm,
+          fontSize: sizing.FONT.sm,
+          color: theme.colors.primary,
+        }}
       >
         {props.title}
       </Text>
@@ -30,15 +35,15 @@ const DropDownInput = React.forwardRef((props: Custom, ref) => {
           alignItems: "center",
           backgroundColor: theme.colors.background,
           maxWidth: "100%",
-          borderRadius: 12,
-          height: 50,
+          borderRadius: sizing.BORDER_RADIUS,
+          height: sizing.BUTTON,
         }}
       >
         <Icon
           {...props.iconProps}
           color="#546AF1"
           style={{
-            paddingLeft: 12,
+            paddingLeft: theme.spacing.md,
           }}
         />
         <DropDownPicker
@@ -49,12 +54,12 @@ const DropDownInput = React.forwardRef((props: Custom, ref) => {
           listItemContainerStyle={{
             borderBottomWidth: 1,
             borderBottomColor: "#ccc",
-            height: 50,
+            height: sizing.BUTTON,
           }}
           labelStyle={{
             fontFamily: "nunitoRegular",
-            fontSize: 16,
-            paddingLeft: 8,
+            fontSize: sizing.FONT.md,
+            paddingLeft: theme.spacing.sm,
           }}
           style={{
             borderColor: theme.colors.white,
@@ -64,23 +69,27 @@ const DropDownInput = React.forwardRef((props: Custom, ref) => {
             borderWidth: 0,
             backgroundColor: "#fefefe",
             left: "-10%",
-            width:
-              Dimensions.get("screen").width -
-              StyleConstants.PADDING_HORIZONTAL * 2.5,
+            width: Dimensions.get("screen").width,
           }}
           listItemLabelStyle={{
             fontFamily: "nunitoRegular",
-            fontSize: 16,
+            fontSize: sizing.FONT.sm,
           }}
           placeholderStyle={{
             fontFamily: "nunitoRegular",
-            fontSize: 16,
-            paddingLeft: 8,
+            fontSize: sizing.FONT.sm,
+            paddingLeft: theme.spacing.sm,
           }}
           {...props}
         />
       </View>
-      <Text style={{ color: "red", fontSize: 12, marginTop: 8 }}>
+      <Text
+        style={{
+          color: "red",
+          fontSize: sizing.FONT.sm,
+          marginTop: theme.spacing.sm,
+        }}
+      >
         {props.errorMessage}
       </Text>
     </View>

@@ -3,11 +3,13 @@ import { AuthRegisterParamList } from "@/auth/types";
 import { View, StyleSheet } from "react-native";
 import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 // import { login } from "@/shared/state/reducers/auth";
-import { Text, Button, Image } from "@rneui/themed";
+import { Text, Button, Image, useTheme, makeStyles } from "@rneui/themed";
 import { buttomBottomPosition } from "@/shared/styles";
 import { Container } from "@/shared/components";
 import { setLoggedIn, setRedirectToGroup } from "@/shared/state/reducers/auth";
 import { StackScreenProps } from "@react-navigation/stack";
+import { moderateScale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 const AccountCreated = ({
   navigation,
@@ -15,6 +17,8 @@ const AccountCreated = ({
 }: StackScreenProps<AuthRegisterParamList, "Account Created">) => {
   const dispatch = useAppDispatch();
   const { isLoading } = useAppSelector(({ auth }) => auth);
+  const styles = useStyles();
+  const { theme } = useTheme();
 
   const handleGoToHomepage = () => {
     dispatch(setLoggedIn(true));
@@ -35,15 +39,19 @@ const AccountCreated = ({
         style={styles.image}
         resizeMode="contain"
         containerStyle={{
-          height: 300,
-          marginTop: 48,
+          height: moderateScale(300),
+          marginTop: moderateScale(48),
           width: "100%",
           alignItems: "center",
         }}
       />
 
       <View style={styles.button}>
-        <Button title="Find Groups" onPress={handleFindGroups} />
+        <Button
+          title="Find Groups"
+          onPress={handleFindGroups}
+          containerStyle={{ marginBottom: theme.spacing.md }}
+        />
         <Button
           title="Go to Home Page"
           onPress={handleGoToHomepage}
@@ -56,7 +64,7 @@ const AccountCreated = ({
 
 export default AccountCreated;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((theme) => ({
   wrapper: {
     justifyContent: "flex-start",
   },
@@ -67,7 +75,6 @@ const styles = StyleSheet.create({
     width: "100%",
     position: "absolute",
     bottom: buttomBottomPosition,
-    height: 120,
     justifyContent: "space-around",
   },
   image: {
@@ -79,7 +86,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: sizing.FONT.sm,
     color: "#333",
   },
-});
+}));

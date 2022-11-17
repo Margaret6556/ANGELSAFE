@@ -15,6 +15,8 @@ import {
 } from "@/shared/state/reducers/experience";
 import { apiSlice } from "@/shared/api";
 import logger from "@/shared/utils/logger";
+import { scale } from "react-native-size-matters";
+import { sizing } from "@/shared/providers/ThemeProvider";
 
 interface IModalProps {
   isVisible: boolean;
@@ -98,10 +100,12 @@ const index = (props: IModalProps) => {
         {!updated ? (
           <>
             <View style={styles.content}>
-              <Text h2 style={{ textAlign: "center", marginBottom: 56 }}>
+              <Text h2 style={styles.h2}>
                 Daily Entry Log
               </Text>
-              <Text style={{ marginBottom: 40 }}>You stated you're:</Text>
+              <Text style={{ marginBottom: scale(24) }}>
+                You stated you're:
+              </Text>
               <View style={styles.contentSection}>
                 <Text style={{ flex: 1 }}>Feeling:</Text>
                 {selectedMood?.image && (
@@ -109,16 +113,11 @@ const index = (props: IModalProps) => {
                     style={{
                       flex: 1,
                       flexDirection: "row",
-                      alignItems: "center",
                     }}
                   >
                     <Image
                       source={selectedMood.image}
-                      style={{
-                        width: 40,
-                        height: 40,
-                        marginRight: 12,
-                      }}
+                      style={styles.moodImage}
                     />
                     <Text style={styles.labelSelection}>
                       {selectedMood.label}
@@ -142,7 +141,7 @@ const index = (props: IModalProps) => {
             <View style={styles.buttons}>
               <Button
                 title="Submit"
-                containerStyle={{ marginBottom: 24 }}
+                containerStyle={styles.marginBottom}
                 onPress={handleCreateStat}
                 loading={createStatResponse.isLoading}
                 disabled={invalid}
@@ -160,7 +159,7 @@ const index = (props: IModalProps) => {
               },
             ]}
           >
-            <Text h2 style={{ textAlign: "center", marginBottom: 56 }}>
+            <Text h2 style={styles.h2}>
               New Entry Logged
             </Text>
             <Image
@@ -168,14 +167,15 @@ const index = (props: IModalProps) => {
               resizeMode="contain"
               style={{
                 width: "100%",
-                height: 240,
+                height: scale(180),
               }}
             />
-            <View style={{ marginBottom: 24 }}>
+            <View style={styles.marginBottom}>
               <View
                 style={{
                   flexDirection: "row",
                   justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
                 <Icon
@@ -203,6 +203,7 @@ const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
     margin: 0,
     width: "100%",
   },
+  h2: { textAlign: "center", marginBottom: theme.spacing.xl },
   container: {
     flex: 0,
     width: "100%",
@@ -210,20 +211,25 @@ const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
     height: "70%",
     backgroundColor: theme.colors.background,
     justifyContent: "space-between",
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    paddingHorizontal: StyleConstants.PADDING_HORIZONTAL,
-    paddingVertical: StyleConstants.PADDING_VERTICAL,
+    borderTopLeftRadius: sizing.BORDER_RADIUS,
+    borderTopRightRadius: sizing.BORDER_RADIUS,
+    paddingHorizontal: theme.spacing.lg,
+    paddingVertical: theme.spacing.xl,
   },
-  inputContainer: {},
   buttonContainer: {
     width: "100%",
   },
+  moodImage: {
+    width: scale(30),
+    height: scale(30),
+    marginRight: theme.spacing.lg,
+  },
+  marginBottom: { marginBottom: theme.spacing.lg },
   contentSection: {
     flexDirection: "row",
     alignItems: "center",
     minWidth: "100%",
-    marginBottom: StyleConstants.PADDING_VERTICAL,
+    marginBottom: theme.spacing.xl,
   },
   content: {
     width: "100%",
@@ -237,23 +243,9 @@ const useStyles = makeStyles((theme, props: { isSuccess: boolean }) => ({
     flex: 1,
     justifyContent: props.isSuccess ? "center" : "flex-end",
   },
-  textSuccessContainer: {
-    width: "100%",
-    height: 50,
-    borderRadius: 12,
-    backgroundColor: theme.colors.success,
-    justifyContent: "center",
-  },
-  textSuccess: {
-    color: theme.colors.white,
-    fontFamily: "nunitoBold",
-    fontSize: 18,
-    textAlign: "center",
-  },
   viewThis: {
     textAlign: "center",
-    marginBottom: 12,
     color: theme.colors.primary,
-    fontSize: 18,
+    fontSize: sizing.FONT.md,
   },
 }));
