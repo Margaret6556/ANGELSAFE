@@ -2,13 +2,9 @@ import React, { useEffect, useState } from "react";
 import { StackScreenProps } from "@react-navigation/stack";
 import { ChatParamsList } from "@/more/types";
 import { Container, Loading } from "@/shared/components";
-import { GiftedChat, IMessage, User } from "react-native-gifted-chat";
+import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { makeStyles } from "@rneui/themed";
-import {
-  useCreateChatMutation,
-  useLazyViewChatQuery,
-  useViewChatQuery,
-} from "@/shared/api/chat";
+import { useCreateChatMutation, useLazyViewChatQuery } from "@/shared/api/chat";
 import { useAppSelector } from "@/shared/hooks";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import logger from "@/shared/utils/logger";
@@ -21,15 +17,58 @@ const ChatInterface = ({
   const receiverId = route.params.id;
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [isReady, setIsReady] = useState(false);
-  // const { data, isError, isLoading, isSuccess } = useViewChatQuery({
-  //   receiverId,
-  //   // skip: "50",
-  // });
+  const [skip, setSkip] = useState(0);
   const [fetchChat, fetchChatResponse] = useLazyViewChatQuery();
   const [createChat, createChatResponse] = useCreateChatMutation();
   const { user } = useAppSelector((state) => state.auth);
   const styles = useStyles();
-  const { handleSetCb } = useSocketContext();
+  const { socket } = useSocketContext();
+
+  useEffect(() => {
+    const appendLatestMessage = async (id: string) => {
+      let sskip = skip;
+      let lastMessage;
+
+      while (true) {
+        const chat = await fetchChat({
+          receiverId: id,
+          skip: String(sskip),
+        }).unwrap();
+
+        if (chat.data.length > 0) {
+          lastMessage = chat.data[chat.data.length - 1];
+          break;
+        }
+
+        sskip = sskip - 20;
+      }
+
+      setSkip(sskip + 20);
+
+      const mappedObject: IMessage = {
+        _id: lastMessage.id,
+        text: lastMessage.message,
+        createdAt: new Date(lastMessage.timestamp),
+        user: {
+          _id: lastMessage.receiver.id,
+          name: lastMessage.receiver.username,
+          avatar: lastMessage.receiver.profilePic,
+        },
+      };
+
+      setMessages((prev) => [mappedObject, ...prev]);
+    };
+
+    if (socket?.connected) {
+      socket.on("new-message", appendLatestMessage);
+
+      return () => {
+        socket.off("new-message", appendLatestMessage);
+      };
+    }
+
+    return () => {};
+  }, [skip]);
 
   useEffect(() => {
     if (!user) return;
@@ -37,12 +76,12 @@ const ChatInterface = ({
     const getChat = async () => {
       try {
         let ch = [];
-        let skip = 0;
+        let sskip = 0;
 
         while (true) {
           const chats = await fetchChat({
             receiverId,
-            skip: String(skip),
+            skip: String(sskip),
           }).unwrap();
 
           if (!!!chats.data.length) {
@@ -50,11 +89,11 @@ const ChatInterface = ({
           }
 
           ch.push(...chats.data);
-          skip = skip + 20;
+          sskip = sskip + 20;
         }
 
+        setSkip(sskip);
         const copy = ch.reverse();
-
         const isSender = copy[0].sender.id === user.id;
 
         const mappedObject: IMessage[] = copy.map((i) => ({

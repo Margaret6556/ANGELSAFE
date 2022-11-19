@@ -1,5 +1,4 @@
 import useIsDark from "@/shared/hooks/useIsDark";
-import { useTraceUpdate } from "@/shared/hooks/useTraceUpdate";
 import { sizing } from "@/shared/providers/ThemeProvider";
 import { useTheme, Text } from "@rneui/themed";
 import React from "react";
@@ -15,7 +14,6 @@ const CustomMultiSelect = React.forwardRef<MultiSelect, CustomMultiSelectProps>(
   (props, ref) => {
     const { theme } = useTheme();
     const isDark = useIsDark();
-    useTraceUpdate(props);
     return (
       <View>
         <Text

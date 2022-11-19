@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Auth from "./auth";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { useAppSelector } from "@/shared/hooks";
@@ -9,19 +9,29 @@ import AlertStack from "./alerts";
 import MoreStack from "./more";
 import { createStackNavigator } from "@react-navigation/stack";
 import { AppTabParamList, RootStackParamList } from "./shared/types";
-import { TabBarIcon, TransitionSlide } from "./shared/components";
+import { Loading, TabBarIcon, TransitionSlide } from "./shared/components";
 import { useGetNotificationsListQuery } from "./shared/api/alerts";
 import { Platform } from "react-native";
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from "react-native-size-matters";
+import { moderateVerticalScale } from "react-native-size-matters";
 import { sizing } from "./shared/providers/ThemeProvider";
+import { useGetServerVersionQuery } from "./shared/api";
+import { SERVER_VERSION } from "./shared/config";
+import UpdateAppScreen from "./shared/components/UpdateAppScreen";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   const { isLoggedIn } = useAppSelector((state) => state.auth);
+  const { data, isLoading } = useGetServerVersionQuery();
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  if (data) {
+    if (data.data.version !== SERVER_VERSION) {
+      return <UpdateAppScreen />;
+    }
+  }
 
   return (
     <RootStack.Navigator
@@ -58,11 +68,11 @@ const TabNavigator = () => {
         header: () => null,
         tabBarStyle: {
           height: moderateVerticalScale(72),
-          // backgroundColor: "red",
         },
         tabBarLabelStyle: {
           fontSize: sizing.FONT.xs,
         },
+        tabBarLabelPosition: "below-icon",
         tabBarHideOnKeyboard: Platform.OS === "android",
       }}
       initialRouteName="Home"

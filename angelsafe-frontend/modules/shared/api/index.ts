@@ -1,4 +1,4 @@
-import { Auth, FIVE_MINUTES, SERVER_URL, _API } from "@/shared/config";
+import { Auth, FIVE_MINUTES, APP_URL, _API } from "@/shared/config";
 import {
   BaseQueryFn,
   createApi,
@@ -13,7 +13,7 @@ import { BackendErrorResponse, BackendResponse } from "../types";
 import logger from "../utils/logger";
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: SERVER_URL,
+  baseUrl: `${APP_URL}/api`,
   prepareHeaders: (headers, { getState, endpoint }) => {
     const token = (getState() as RootState).auth.user?.token;
     if (token && endpoint !== "login") {
@@ -98,5 +98,15 @@ export const apiSlice = createApi({
     "STAT",
     "NOTIFICATIONS",
   ],
-  endpoints: () => ({}),
+  endpoints: (builder) => ({
+    getServerVersion: builder.query<BackendResponse<{ version: string }>, void>(
+      {
+        query: () => ({
+          url: _API.VERSION,
+        }),
+      }
+    ),
+  }),
 });
+
+export const { useGetServerVersionQuery } = apiSlice;

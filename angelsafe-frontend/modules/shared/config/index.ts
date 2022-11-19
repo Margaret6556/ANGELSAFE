@@ -1,4 +1,5 @@
-export const SERVER_URL = "http://143.198.58.171/api";
+export const APP_URL = "https://mobile.angelsafe.co";
+export const SERVER_VERSION = "v0.1.0";
 
 export const _API = {
   AUTH: {
@@ -49,7 +50,7 @@ export const _API = {
   NOTIFICATIONS: {
     LIST: "/notif/list",
   },
-  TEST: "/info/version",
+  VERSION: "/info/version",
 } as const;
 
 export enum Auth {

@@ -1,74 +1,57 @@
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useMemo } from "react";
 import { ChildrenProps } from "../types";
 import { io, Socket } from "socket.io-client";
 import { useAppSelector } from "../hooks";
 import logger from "../utils/logger";
-import { AppState } from "react-native";
+import { APP_URL } from "../config";
 
 interface SocketProviderProps extends ChildrenProps {}
-
-type CallbackType = (args?: any) => void;
-
 interface SocketContext {
-  socket: Socket;
-  handleSetCb: CallbackType;
+  socket: Socket | null;
 }
 
 const SocketContext = createContext<SocketContext>({} as SocketContext);
 
-const MESSAGE = "new-message";
-
 const SocketProvider = ({ children }: SocketProviderProps) => {
   const { user } = useAppSelector((state) => state.auth);
-  const [cb, setCb] = useState<CallbackType>(() => () => {});
-  const socket = useMemo(
-    () =>
-      io("http://mobile.angelsafe.co", {
+  const socket = useMemo(() => {
+    if (user?.token) {
+      return io(APP_URL, {
         extraHeaders: {
-          token: user?.token || "",
+          token: user.token,
         },
-      }),
-    []
-  );
+      });
+    }
+
+    return null;
+  }, [user?.token]);
 
   useEffect(() => {
-    if (user?.token) {
-      socket.connect();
+    if (socket) {
+      if (socket.disconnected) {
+        socket.connect();
+      }
+
       socket.on("connect", function () {
         logger("chat", "Socket connected");
-        if (cb) {
-          cb();
-        }
       });
 
       socket.on("disconnect", function () {
         logger("chat", "Socket disconnected");
       });
-
-      socket.on(MESSAGE, function () {
-        logger("chat", "new message received");
-      });
     }
 
     return () => {
-      socket.disconnect();
+      if (socket?.connected) {
+        socket.offAny();
+        socket?.disconnect();
+        logger("chat", `Socket closed - ${socket.disconnected}`);
+      }
     };
-  }, [user?.token]);
-
-  const handleSetCb = (cb: CallbackType) => {
-    setCb(cb);
-  };
+  }, [socket]);
 
   const value = {
     socket,
-    handleSetCb,
   };
 
   return (
