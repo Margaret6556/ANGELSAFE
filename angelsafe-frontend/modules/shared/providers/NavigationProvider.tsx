@@ -4,13 +4,10 @@ import {
   DarkTheme,
 } from "@react-navigation/native";
 import { useTheme } from "@rneui/themed";
-import { useColorScheme } from "react-native";
 import useIsDark from "../hooks/useIsDark";
-import useThemeMode from "../hooks/useThemeMode";
 import { ChildrenProps } from "../types";
 
 const NavigationProvider = ({ children }: ChildrenProps) => {
-  useThemeMode();
   const isDark = useIsDark();
   const { theme } = useTheme();
   const navigationTheme = isDark

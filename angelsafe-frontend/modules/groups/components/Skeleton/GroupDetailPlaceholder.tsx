@@ -3,11 +3,11 @@ import React from "react";
 import LinearGradientBackground from "@/shared/components/Layout/LinearGradientBackground";
 import { Text, makeStyles } from "@rneui/themed";
 import { Fade, Placeholder, PlaceholderLine } from "rn-placeholder";
-import { StyleConstants } from "@/shared/styles";
 import { GroupsType } from "@/groups/types";
 import useIsDark from "@/shared/hooks/useIsDark";
 import { moderateScale } from "react-native-size-matters";
 import { sizing } from "@/shared/providers/ThemeProvider";
+import { Container } from "@/shared/components";
 
 type GroupDetailPlaceholderProps = Pick<
   Partial<GroupsType>,
@@ -19,7 +19,15 @@ const GroupDetailPlaceholder = (props: GroupDetailPlaceholderProps) => {
   const styles = useStyles({ isDark });
 
   return (
-    <LinearGradientBackground>
+    <Container
+      type="image"
+      containerProps={{
+        style: styles.container,
+        imageStyle: {
+          opacity: +!isDark,
+        },
+      }}
+    >
       <Placeholder
         Animation={(props) => <Fade {...props} style={styles.fade} />}
       >
@@ -40,13 +48,20 @@ const GroupDetailPlaceholder = (props: GroupDetailPlaceholderProps) => {
         </View>
         <View style={styles.bottom}>{/* <Loading /> */}</View>
       </Placeholder>
-    </LinearGradientBackground>
+    </Container>
   );
 };
 
 export default GroupDetailPlaceholder;
 
 const useStyles = makeStyles((theme, props: { isDark: boolean }) => ({
+  container: {
+    alignItems: "flex-start",
+    justifyContent: "flex-start",
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    backgroundColor: props.isDark ? theme.colors.background : "transparent",
+  },
   top: {
     backgroundColor: theme.colors.background,
     padding: theme.spacing.lg,

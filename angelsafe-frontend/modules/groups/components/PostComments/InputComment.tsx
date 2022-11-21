@@ -45,6 +45,7 @@ const InputComment = (props: InputCommentProps) => {
       if (status === 200) {
         reset();
         Keyboard.dismiss();
+        setMultiLineHeight(0);
       }
     } catch (e) {
       const err = e as BackendResponse<BackendErrorResponse>;

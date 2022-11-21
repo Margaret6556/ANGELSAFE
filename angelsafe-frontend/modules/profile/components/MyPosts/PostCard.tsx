@@ -5,7 +5,7 @@ import { ErrorText, Loading } from "@/shared/components";
 import { useGetSingleGroupQuery } from "@/shared/api/groups";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import { AppTabParamList } from "@/shared/types";
+import { RootStackParamList } from "@/shared/types";
 import { View } from "react-native";
 import MyPostsPlaceholder from "../Skeleton/MyPostsPlaceholder";
 import { PartialGroupsType } from "@/groups/types";
@@ -13,18 +13,23 @@ import { moderateScale, scale } from "react-native-size-matters";
 import { sizing } from "@/shared/providers/ThemeProvider";
 
 const PostCard = (props: PostsType) => {
-  const navigate = useNavigation<NavigationProp<AppTabParamList, "Groups">>();
+  const navigate = useNavigation<NavigationProp<RootStackParamList, "App">>();
   const styles = useStyles();
   const { data, isError, error, isLoading } = useGetSingleGroupQuery(
     props.groupId
   );
 
   const handlePress = (params: PartialGroupsType) => () => {
-    navigate.navigate("Groups", {
-      screen: "GroupDetails",
+    navigate.navigate("App", {
+      initial: true,
+      screen: "Groups",
       params: {
-        screen: "Details",
-        params,
+        initial: false,
+        screen: "GroupDetails",
+        params: {
+          screen: "Details",
+          params,
+        },
       },
     });
   };

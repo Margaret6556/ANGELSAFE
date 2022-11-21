@@ -36,7 +36,7 @@ const ImageBackgroundContainer = ({ children }: LayoutProps) => {
         return BackgroundImageThemes.DEFAULT;
     }
   }, []);
-  // console.log("image", Math.round(Math.random() * 10));
+
   return (
     <ImageBackground
       source={handleSetBg(backgroundImage)}

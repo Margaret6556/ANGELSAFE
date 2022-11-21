@@ -72,6 +72,9 @@ const TabNavigator = () => {
         tabBarLabelStyle: {
           fontSize: sizing.FONT.xs,
         },
+        tabBarIconStyle: {
+          maxHeight: moderateVerticalScale(50),
+        },
         tabBarLabelPosition: "below-icon",
         tabBarHideOnKeyboard: Platform.OS === "android",
       }}

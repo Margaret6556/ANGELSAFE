@@ -30,6 +30,7 @@ const SymptomsCard = ({ title }: ISymptomsCard) => {
         <ListItem.CheckBox
           containerStyle={styles.checkbox}
           checked={includedSymptom}
+          onPress={handleCheck}
         />
         <Text>{title}</Text>
       </ListItem.Content>

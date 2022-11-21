@@ -7,12 +7,14 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { makeStyles, useTheme } from "@rneui/themed";
 import { setSafeAreaBg, setThemeFontSize } from "@/shared/state/reducers/theme";
 import { moderateScale } from "react-native-size-matters";
+import useIsDark from "@/shared/hooks/useIsDark";
 
 interface LayoutProps extends ChildrenProps {
   onLayout: () => Promise<void>;
 }
 const Layout = ({ children, onLayout }: LayoutProps) => {
   useDarkMode();
+  const isDark = useIsDark();
   const { fontSizeMultiplier, safeAreaBg } = useAppSelector(
     (state) => state.theme
   );
@@ -23,8 +25,11 @@ const Layout = ({ children, onLayout }: LayoutProps) => {
   });
 
   useEffect(() => {
+    dispatch(setSafeAreaBg(isDark ? "#000" : "transparent"));
+  }, [isDark]);
+
+  useEffect(() => {
     dispatch(setThemeFontSize(fontSizeMultiplier));
-    dispatch(setSafeAreaBg("transparent"));
 
     updateTheme({
       components: {

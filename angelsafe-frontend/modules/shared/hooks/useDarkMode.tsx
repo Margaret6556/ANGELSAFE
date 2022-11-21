@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useTheme } from "@rneui/themed";
+import { useTheme, useThemeMode } from "@rneui/themed";
 import { useAppDispatch } from ".";
 import { createDynamicTheme } from "../providers/ThemeProvider";
 import {
@@ -12,6 +12,7 @@ const useDarkMode = () => {
   const isDark = useIsDark();
   const prev = useRef(isDark);
   const { replaceTheme } = useTheme();
+  const { setMode } = useThemeMode();
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -21,6 +22,7 @@ const useDarkMode = () => {
       dispatch(setBackgroundColor(isDark ? "#000" : "transparent"));
       prev.current = isDark;
     }
+    setMode(isDark ? "dark" : "light");
   }, [isDark, setBackgroundColor]);
 };
 
