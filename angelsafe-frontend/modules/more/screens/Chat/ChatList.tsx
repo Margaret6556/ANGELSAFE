@@ -6,7 +6,6 @@ import { ChatParamsList } from "@/more/types";
 import { useGetChatListQuery } from "@/shared/api/chat";
 import { useAppSelector } from "@/shared/hooks";
 import { ErrorText, SearchIcon } from "@/shared/components";
-import { StyleConstants } from "@/shared/styles";
 import ChatPreview from "@/more/components/Chat/List/CardPreview";
 import AvatarChat from "@/more/components/Chat/List/Avatar";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -29,10 +28,6 @@ const ChatList = ({
     isDark,
   });
 
-  if (isError || error) {
-    return <ErrorText />;
-  }
-
   const handleChatPerson =
     ({ id, profilePic, username }: ChatParamsList["ChatInterface"]) =>
     () => {
@@ -48,6 +43,10 @@ const ChatList = ({
     ...i.receiver,
     profilePic: "",
   }));
+
+  if (isError || error) {
+    return <ErrorText />;
+  }
 
   return (
     <View style={styles.container}>
@@ -109,6 +108,7 @@ const ChatList = ({
           ) : null
         }
       />
+
       <Animated.FlatList
         data={chats}
         bounces={chats.length > 1}
@@ -158,17 +158,26 @@ const ChatList = ({
             </>
           );
         }}
-        ListFooterComponent={() => (
-          <View style={styles.footer}>
-            {isLoading &&
-              new Array(40).fill(0).map((_, idx) => (
-                <View key={idx} style={styles.placeholderWrapper}>
-                  <ChatListMessagePlaceholder />
-                  <Divider style={{ paddingVertical: 4 }} />
-                </View>
-              ))}
-          </View>
-        )}
+        ListFooterComponent={() => {
+          if (!chats.length) {
+            return (
+              <Text style={{ textAlign: "center" }}>
+                Join a group to connect with people!
+              </Text>
+            );
+          }
+          return (
+            <View style={styles.footer}>
+              {isLoading &&
+                new Array(40).fill(0).map((_, idx) => (
+                  <View key={idx} style={styles.placeholderWrapper}>
+                    <ChatListMessagePlaceholder />
+                    <Divider style={{ paddingVertical: 4 }} />
+                  </View>
+                ))}
+            </View>
+          );
+        }}
       />
     </View>
   );
@@ -186,7 +195,8 @@ const useStyles = makeStyles(
     scrollView: {
       paddingHorizontal: theme.spacing.md,
       paddingVertical: theme.spacing.xl,
-      justifyContent: "center",
+      justifyContent: "flex-start",
+      width: "100%",
     },
     header: {
       flexDirection: "row",

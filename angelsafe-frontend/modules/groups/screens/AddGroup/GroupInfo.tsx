@@ -114,6 +114,8 @@ const AddGroup = ({
               multiline
               inputStyle={{
                 height: Math.max(100, multilineHeight),
+                textAlignVertical: "top",
+                paddingTop: 4,
               }}
               {...field}
               onContentSizeChange={(event) => {

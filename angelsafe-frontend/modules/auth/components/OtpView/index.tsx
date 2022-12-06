@@ -32,7 +32,6 @@ const OtpView = ({ mobile, isLoginScreen = true, navigate }: IOtpViewProps) => {
 
   const [login, loginRes] = useLoginMutation();
   const [resendOtp, otpResponse] = useResendOtpMutation();
-  const [getProfile] = useLazyGetProfileQuery();
   const styles = useStyles();
   const dispatch = useDispatch();
   const loginAndFetchProfile = useLoginFetchProfileStats();

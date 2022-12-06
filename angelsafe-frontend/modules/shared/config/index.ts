@@ -1,5 +1,10 @@
-export const APP_URL = "https://mobile.angelsafe.co";
-export const SERVER_VERSION = "v0.1.0";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
+export const APP_URL =
+  Platform.OS === "android" && process.env.NODE_ENV === "development"
+    ? Constants.expoConfig!.extra?.server.androidDevServerUrl
+    : Constants.expoConfig!.extra?.server.url;
+export const SERVER_VERSION = Constants.expoConfig!.extra?.server.version;
 
 export const _API = {
   AUTH: {
@@ -58,5 +63,6 @@ export enum Auth {
 }
 
 export const ONE_DAY = 60 * 60 * 24 * 1000;
+export const ONE_MINUTE = 60 * 1000;
 export const FIVE_MINUTES = 5 * 60 * 1000;
 export const TEN_MINUTES = 10 * 60 * 1000;

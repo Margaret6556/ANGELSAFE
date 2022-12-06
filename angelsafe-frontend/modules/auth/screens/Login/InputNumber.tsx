@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import NumberInput from "@/shared/components/NumberInput";
 import { StackScreenProps } from "@react-navigation/stack";
 import useIsKeyboardShowing from "@/shared/hooks/useIsKeyboardShowing";
-import { scale } from "react-native-size-matters";
 
 type FieldType = {
   mobile: string;

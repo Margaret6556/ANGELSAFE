@@ -143,22 +143,32 @@ const EntryScreen = ({
             </TouchableOpacity>
           );
         }}
-        ListFooterComponent={
-          <View style={{ paddingBottom: scale(80) }}>
-            {isLoading && (
-              <>
-                {new Array(8).fill(0).map((_, idx) => (
-                  <View style={{ paddingVertical: theme.spacing.lg }} key={idx}>
-                    <View style={{ paddingHorizontal: theme.spacing.lg }}>
-                      <ChatListMessagePlaceholder />
+        ListFooterComponent={() => {
+          if (!notifs.length) {
+            return (
+              <Text style={{ textAlign: "center" }}>Nothing to show yet!</Text>
+            );
+          }
+          return (
+            <View style={{ paddingBottom: scale(80) }}>
+              {isLoading && (
+                <>
+                  {new Array(8).fill(0).map((_, idx) => (
+                    <View
+                      style={{ paddingVertical: theme.spacing.lg }}
+                      key={idx}
+                    >
+                      <View style={{ paddingHorizontal: theme.spacing.lg }}>
+                        <ChatListMessagePlaceholder />
+                      </View>
+                      <Divider style={{ marginVertical: theme.spacing.md }} />
                     </View>
-                    <Divider style={{ marginVertical: theme.spacing.md }} />
-                  </View>
-                ))}
-              </>
-            )}
-          </View>
-        }
+                  ))}
+                </>
+              )}
+            </View>
+          );
+        }}
       />
     </Container>
   );

@@ -84,7 +84,7 @@ const useStyles = makeStyles((theme) => ({
     height: moderateScale(32),
     backgroundColor: "#E1C1FF",
     borderColor: "#192A60",
-    borderWidth: 2,
+    borderWidth: 1,
     borderRadius: 30,
     justifyContent: "center",
     alignItems: "center",

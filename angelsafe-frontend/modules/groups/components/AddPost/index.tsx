@@ -161,6 +161,7 @@ const AddPostModal = (props: IModalProps) => {
                       height: Math.max(250, multilineHeight),
                       color: isDark ? theme.colors.white : theme.colors.black,
                       textAlignVertical: "top",
+                      paddingTop: 4,
                     }}
                     placeholder="Type your thoughts.."
                     {...field}

@@ -1,6 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AuthRegisterParamList } from "@/auth/types";
-import { View, StyleSheet, Keyboard, Animated, Dimensions } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Keyboard,
+  Animated,
+  Dimensions,
+  Platform,
+} from "react-native";
 import { useKeyboardShowing } from "@/shared/hooks";
 import { Text, Button, Input, makeStyles, useTheme, Icon } from "@rneui/themed";
 import { StyleConstants } from "@/shared/styles";
@@ -127,8 +134,11 @@ const SignUp = ({
       ]}
     >
       <KeyboardAwareScrollView
-        showsVerticalScrollIndicator={false}
-        // scrollEnabled={keyboardIsShowing}
+        // showsVerticalScrollIndicator={false}
+        scrollEnabled={true}
+        extraHeight={moderateScale(1000)}
+        enableOnAndroid
+        enableAutomaticScroll={Platform.OS === "ios"}
         contentContainerStyle={{
           justifyContent: "space-between",
           flex: 1,
@@ -170,6 +180,7 @@ const SignUp = ({
                 label="Choose your username:"
                 inputStyle={styles.input}
                 autoCapitalize="none"
+                autoCorrect={false}
                 {...field}
                 onChangeText={field.onChange}
               />
@@ -249,6 +260,7 @@ const SignUp = ({
               <DropDownInput
                 errorMessage={errors.gender?.message}
                 open={genderListOpen}
+                listMode="MODAL"
                 value={genderValue}
                 items={genders}
                 setOpen={setGenderListOpen}

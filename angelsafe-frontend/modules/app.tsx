@@ -11,24 +11,29 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { AppTabParamList, RootStackParamList } from "./shared/types";
 import { Loading, TabBarIcon, TransitionSlide } from "./shared/components";
 import { useGetNotificationsListQuery } from "./shared/api/alerts";
-import { Platform } from "react-native";
 import { moderateVerticalScale } from "react-native-size-matters";
 import { sizing } from "./shared/providers/ThemeProvider";
-import { useGetServerVersionQuery } from "./shared/api";
-import { SERVER_VERSION } from "./shared/config";
+import { useLazyGetServerVersionQuery } from "./shared/api";
+import { SERVER_VERSION, FIVE_MINUTES } from "./shared/config";
 import UpdateAppScreen from "./shared/components/UpdateAppScreen";
 
 const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   const { isLoggedIn } = useAppSelector((state) => state.auth);
-  const { data, isLoading } = useGetServerVersionQuery();
+  const [getVersion, getVersionResponse] = useLazyGetServerVersionQuery();
 
-  if (isLoading) {
+  useEffect(() => {
+    if (!isLoggedIn) {
+      getVersion();
+    }
+  }, [isLoggedIn]);
+
+  if (getVersionResponse.isFetching) {
     return <Loading />;
   }
 
-  if (data) {
-    if (data.data.version !== SERVER_VERSION) {
+  if (getVersionResponse.data) {
+    if (getVersionResponse.data.data.version !== SERVER_VERSION) {
       return <UpdateAppScreen />;
     }
   }
@@ -52,7 +57,9 @@ const App = () => {
 const BottomTab = createBottomTabNavigator<AppTabParamList>();
 
 const TabNavigator = () => {
-  const { data } = useGetNotificationsListQuery();
+  const { data } = useGetNotificationsListQuery(undefined, {
+    pollingInterval: FIVE_MINUTES,
+  });
   const [notifBadge, setNotifBadge] = useState(0);
 
   useEffect(() => {
@@ -76,7 +83,7 @@ const TabNavigator = () => {
           maxHeight: moderateVerticalScale(50),
         },
         tabBarLabelPosition: "below-icon",
-        tabBarHideOnKeyboard: Platform.OS === "android",
+        // tabBarHideOnKeyboard: Platform.OS === "android",
       }}
       initialRouteName="Home"
     >

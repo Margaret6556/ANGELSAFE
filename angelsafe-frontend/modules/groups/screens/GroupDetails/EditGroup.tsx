@@ -76,7 +76,11 @@ const EditGroup = (
                 }
                 placeholder={description}
                 errorMessage={error?.message}
-                style={{ height: Math.max(100, multilineHeight) }}
+                style={{
+                  height: Math.max(100, multilineHeight),
+                  textAlignVertical: "top",
+                  paddingTop: 4,
+                }}
                 maxLength={MAX_LENGTH}
                 onContentSizeChange={(event) => {
                   setMultiLineHeight(event.nativeEvent.contentSize.height);

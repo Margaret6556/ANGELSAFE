@@ -9,6 +9,8 @@ import { useAppSelector } from "@/shared/hooks";
 import { BackendErrorResponse, BackendResponse } from "@/shared/types";
 import logger from "@/shared/utils/logger";
 import { useSocketContext } from "@/shared/providers/SocketProvider";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { moderateScale, scale } from "react-native-size-matters";
 
 const ChatInterface = ({
   navigation,
@@ -23,11 +25,13 @@ const ChatInterface = ({
   const { user } = useAppSelector((state) => state.auth);
   const styles = useStyles();
   const { socket } = useSocketContext();
+  const tabHeight = useBottomTabBarHeight();
 
   useEffect(() => {
     const appendLatestMessage = async (id: string) => {
       let sskip = skip;
       let lastMessage;
+      logger("chat", "Received new message");
 
       while (true) {
         const chat = await fetchChat({
@@ -94,7 +98,7 @@ const ChatInterface = ({
 
         setSkip(sskip);
         const copy = ch.reverse();
-        const isSender = copy[0].sender.id === user.id;
+        const isSender = copy[0]?.sender.id === user.id;
 
         const mappedObject: IMessage[] = copy.map((i) => ({
           _id: i.id,
@@ -232,6 +236,7 @@ const ChatInterface = ({
             messagesContainerStyle={{}}
             wrapInSafeArea={false}
             renderAvatarOnTop
+            bottomOffset={moderateScale(tabHeight)}
             // forceGetKeyboardHeight
             alwaysShowSend
           />

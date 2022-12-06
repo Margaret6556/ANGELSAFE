@@ -204,7 +204,8 @@ const EditProfile = ({
                   multiline
                   inputStyle={{
                     height: Math.max(100, multilineHeight),
-                    color: "red",
+                    textAlignVertical: "top",
+                    paddingTop: 4,
                   }}
                   errorStyle={{ textAlign: "right" }}
                   errorMessage={errors.bio?.message}

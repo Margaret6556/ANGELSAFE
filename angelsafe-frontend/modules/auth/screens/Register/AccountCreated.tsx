@@ -6,60 +6,85 @@ import { useAppDispatch, useAppSelector } from "@/shared/hooks";
 import { Text, Button, Image, useTheme, makeStyles } from "@rneui/themed";
 import { buttomBottomPosition } from "@/shared/styles";
 import { Container } from "@/shared/components";
-import { setLoggedIn, setRedirectToGroup } from "@/shared/state/reducers/auth";
+import {
+  setLoggedIn,
+  setRedirectToGroup,
+  setUser,
+} from "@/shared/state/reducers/auth";
 import { StackScreenProps } from "@react-navigation/stack";
 import { moderateScale } from "react-native-size-matters";
 import { sizing } from "@/shared/providers/ThemeProvider";
+import { useGetProfileQuery } from "@/shared/api/profile";
 
-const AccountCreated = ({
-  navigation,
-  route,
-}: StackScreenProps<AuthRegisterParamList, "Account Created">) => {
+const AccountCreated = ({}: StackScreenProps<
+  AuthRegisterParamList,
+  "Account Created"
+>) => {
   const dispatch = useAppDispatch();
-  const { isLoading } = useAppSelector(({ auth }) => auth);
+  const { user } = useAppSelector(({ auth }) => auth);
   const styles = useStyles();
   const { theme } = useTheme();
+  const { data, isError, isLoading } = useGetProfileQuery(user?.token);
+
+  useEffect(() => {
+    if (data?.status === 200) {
+      dispatch(setUser(data.data));
+    }
+  }, [data]);
 
   const handleGoToHomepage = () => {
     dispatch(setLoggedIn(true));
   };
+
   const handleFindGroups = () => {
     dispatch(setRedirectToGroup());
   };
 
-  return (
-    <Container
-      containerProps={{
-        style: styles.wrapper,
-      }}
-    >
-      <Text>Account Created!</Text>
-      <Image
-        source={require("../../../../assets/auth/Saly-15.png")}
-        style={styles.image}
-        resizeMode="contain"
-        containerStyle={{
-          height: moderateScale(300),
-          marginTop: moderateScale(48),
-          width: "100%",
-          alignItems: "center",
-        }}
-      />
+  if (isLoading) {
+    return <Text>Is Loading..</Text>;
+  }
 
-      <View style={styles.button}>
-        <Button
-          title="Find Groups"
-          onPress={handleFindGroups}
-          containerStyle={{ marginBottom: theme.spacing.md }}
+  if (isError) {
+    return <Text>Error</Text>;
+  }
+
+  if (data) {
+    return (
+      <Container
+        containerProps={{
+          style: styles.wrapper,
+        }}
+      >
+        <Text>Account Created!</Text>
+        <Image
+          source={require("../../../../assets/auth/Saly-15.png")}
+          style={styles.image}
+          resizeMode="contain"
+          containerStyle={{
+            height: moderateScale(300),
+            marginTop: moderateScale(48),
+            width: "100%",
+            alignItems: "center",
+          }}
         />
-        <Button
-          title="Go to Home Page"
-          onPress={handleGoToHomepage}
-          loading={isLoading}
-        />
-      </View>
-    </Container>
-  );
+
+        <View style={styles.button}>
+          <Button
+            title="Find Groups"
+            onPress={handleFindGroups}
+            containerStyle={{ marginBottom: theme.spacing.md }}
+          />
+          <Button
+            title="Go to Home Page"
+            onPress={handleGoToHomepage}
+            loading={isLoading}
+          />
+        </View>
+      </Container>
+    );
+  }
+
+  return null;
 };
 
 export default AccountCreated;

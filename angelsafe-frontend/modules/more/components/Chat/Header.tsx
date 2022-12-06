@@ -33,13 +33,14 @@ const HeaderChatInterface = ({ onBack }: HeaderChatInterfaceProps) => {
             rounded
           />
         </View>
-        <TouchableOpacity activeOpacity={0.5}>
+        <View style={{ minWidth: moderateScale(36) }} />
+        {/* <TouchableOpacity activeOpacity={0.5}>
           <Icon
             type="feather"
             name="more-horizontal"
             size={moderateScale(36)}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
       <Text
         style={{

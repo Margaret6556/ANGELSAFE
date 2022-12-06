@@ -109,4 +109,4 @@ export const apiSlice = createApi({
   }),
 });
 
-export const { useGetServerVersionQuery } = apiSlice;
+export const { useLazyGetServerVersionQuery } = apiSlice;

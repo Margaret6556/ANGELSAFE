@@ -1,16 +1,18 @@
 import React from "react";
-import { StyleSheet } from "react-native";
+import { _API } from "@/shared/config";
 import { Container, ErrorText } from "@/shared/components";
 import { GroupParamsList } from "../types";
-import Groups from "../components/Groups";
+import { makeStyles, Text } from "@rneui/themed";
 import { StackScreenProps } from "@react-navigation/stack";
-import { _API } from "@/shared/config";
+import { StyleSheet } from "react-native";
 import { useGetGroupsQuery } from "@/shared/api/groups";
-import SearchModal from "../components/SearchModal";
 import { useGroupsContext } from "../components/GroupsContext";
+import SearchModal from "../components/SearchModal";
+import Groups from "../components/Groups";
 import GroupListPlaceholder from "../components/Skeleton/GroupListPlaceholder";
 
 const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
+  const styles = useStyles();
   const { data, isError, error } = useGetGroupsQuery();
   const { searchModalVisible, handleToggleSearchModal } = useGroupsContext();
 
@@ -19,7 +21,7 @@ const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
   }
 
   if (data) {
-    const groupNames = data.data.map((details) => details);
+    const groupNames = data.data;
 
     return (
       <>
@@ -28,7 +30,13 @@ const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
             style: styles.wrapper,
           }}
         >
-          <Groups data={data.data} />
+          {!groupNames.length ? (
+            <Text style={styles.noGroupsText}>
+              No groups yet, go ahead and create one!
+            </Text>
+          ) : (
+            <Groups data={data.data} />
+          )}
         </Container>
         <SearchModal
           isVisible={searchModalVisible}
@@ -48,9 +56,12 @@ const EntryScreen = ({}: StackScreenProps<GroupParamsList, "Entry">) => {
 
 export default EntryScreen;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles(({ spacing }) => ({
   wrapper: {
     justifyContent: "flex-start",
     paddingVertical: 0,
   },
-});
+  noGroupsText: {
+    marginTop: spacing.xl,
+  },
+}));

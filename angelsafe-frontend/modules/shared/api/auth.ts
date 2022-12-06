@@ -77,10 +77,6 @@ const authApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["AUTH"],
     }),
-    logout: builder.query<BackendResponse<any>, void>({
-      query: () => _API.TEST,
-      providesTags: ["AUTH"],
-    }),
   }),
   overrideExisting: true,
 });
@@ -89,7 +85,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useResendOtpMutation,
-  useLogoutQuery,
-  useLazyLogoutQuery,
   useRegisterEmailMutation,
 } = authApiSlice;
