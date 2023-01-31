@@ -2,5 +2,6 @@
 APP development
 
 
-Starts today with John A.
-Onboarded Hosni in Oct 5. 
+John A started it on.
+
+Onboarded Hosni on Oct 5, 2022. 
